@@ -118,3 +118,107 @@ body {
     text-decoration: underline;
     cursor: pointer;
 }
+
+
+
+/* REGISTER CSS */
+
+/* Background specifically for register page */
+.bg-light {
+    background-color: #f0f2f5;
+}
+
+/* Register layout structure */
+.register-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+}
+
+.register-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 40px 60px;
+    width: 100%;
+    max-width: 800px;
+    position: relative;
+    /* Optional: adds a subtle shadow to the card */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); 
+}
+
+.back-btn {
+    background-color: #dc3545; /* Red color */
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    font-size: 14px;
+}
+
+.register-title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 40px;
+    margin-top: 0;
+}
+
+.register-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Centers image vertically with form */
+    gap: 40px;
+}
+
+.register-form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Spacings between form groups */
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group input {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Make inputs look exactly like the image labels */
+.input-group label {
+    font-size: 12px;
+    color: #333;
+    margin-top: 5px;
+    margin-left: 2px;
+}
+
+.register-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 40px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    align-self: center; /* Center the button below inputs */
+    margin-top: 10px;
+}
+
+.register-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.register-image img {
+    max-width: 100%;
+    height: auto;
+}
