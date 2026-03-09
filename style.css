@@ -1,0 +1,120 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #18539a;
+    padding: 10px 35px;
+}
+
+.navbar-title {
+    color: white;
+    font-size: 20px;
+}
+
+.navbar-links {
+    list-style: none;
+    display: flex;
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+}
+
+.navbar-links li a {
+    color: white;
+    text-decoration: none;
+}
+
+.main-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.logo-section {
+    display: flex;
+    justify-content: center;
+}
+
+.logo {
+    width: 90%;
+}
+
+.login-form {
+    flex: 1;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    margin-right: 100px;
+    margin-top: 50px;
+}
+
+.login-form input {
+    padding: 12px;
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 17px;
+}
+
+.login-form label {
+    font-size: 16px;
+    color: #333;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-style: none;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
+
+.forgot-form {
+    margin-top: 10px;
+    color: black;
+}
+
+.forgot-form a{
+    text-decoration: none;
+}
+
+.forgot-form a:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.login-form button {
+    background-color: #007bff;
+    border: none;
+    border-radius: 3px;
+    color: white;
+    font-size: 17px;
+    padding: 10px 30px;
+    align-self: center;
+}
+
+.register-options {
+    font-weight: bold;
+    margin-top: 15px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.register-link {
+    color: red;
+    text-decoration: none;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
