@@ -9,7 +9,7 @@ body {
     align-items: center;
     justify-content: space-between;
     background-color: #18539a;
-    padding: 10px 35px;
+    padding: 5px 35px;
 }
 
 .navbar-title {
@@ -43,7 +43,7 @@ body {
 }
 
 .logo {
-    width: 90%;
+    width: 80%;
 }
 
 .login-form {
@@ -100,6 +100,12 @@ body {
     font-size: 17px;
     padding: 10px 30px;
     align-self: center;
+    transition: box-shadow 0.15s;
+    cursor: pointer;
+}
+
+.login-form button:hover {
+    box-shadow: 0px 2.5px 8px rgba(0, 0, 0, 0.5);
 }
 
 .register-options {
@@ -123,12 +129,10 @@ body {
 
 /* REGISTER CSS */
 
-/* Background specifically for register page */
 .bg-light {
     background-color: #f0f2f5;
 }
 
-/* Register layout structure */
 .register-container {
     display: flex;
     justify-content: center;
@@ -142,12 +146,11 @@ body {
     width: 100%;
     max-width: 800px;
     position: relative;
-    /* Optional: adds a subtle shadow to the card */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); 
 }
 
 .back-btn {
-    background-color: #dc3545; /* Red color */
+    background-color: #dc3545; 
     color: white;
     border: none;
     padding: 6px 16px;
@@ -157,6 +160,11 @@ body {
     top: 40px;
     left: 40px;
     font-size: 14px;
+    transition: box-shadow 0.15s;
+}
+
+.back-btn:hover {
+    box-shadow: 0px 2.5px 8px rgba(0, 0, 0, 0.5);
 }
 
 .register-title {
@@ -169,7 +177,7 @@ body {
 .register-content {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Centers image vertically with form */
+    align-items: center; 
     gap: 40px;
 }
 
@@ -177,7 +185,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Spacings between form groups */
+    gap: 15px; 
 }
 
 .input-group {
@@ -185,14 +193,14 @@ body {
     flex-direction: column;
 }
 
-.input-group input {
+.input-group input,
+.input-group select {
     padding: 8px 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
 }
 
-/* Make inputs look exactly like the image labels */
 .input-group label {
     font-size: 12px;
     color: #333;
@@ -208,8 +216,13 @@ body {
     border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
-    align-self: center; /* Center the button below inputs */
+    align-self: center;
     margin-top: 10px;
+    transition: box-shadow 0.15s;
+}
+
+.register-btn:hover {
+    box-shadow: 0px 2.5px 8px rgba(0, 0, 0, 0.5);
 }
 
 .register-image {
