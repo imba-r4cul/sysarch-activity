@@ -2,8 +2,7 @@
 session_start();
 require_once 'includes/db.php';
 
-$error   = '';
-$success = '';
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_number   = trim($_POST['id_number']);
@@ -43,10 +42,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         if ($stmt->execute()) {
-            $success = 'Account created successfully! You can now log in.';
+            $_SESSION['user_id'] = $conn->insert_id;
+            $_SESSION['id_number'] = $id_number;
+            $_SESSION['login_success_name'] = trim($first_name . ' ' . $last_name);
+
+            header('Location: dashboard.php');
+            exit;
         } else {
             // Check for duplicate entry
-            if ($conn->errno === 1062) {
+            if ($stmt->errno === 1062) {
                 $error = 'ID Number or Email is already registered.';
             } else {
                 $error = 'Registration failed. Please try again.';
@@ -76,7 +80,7 @@ function old($field, $default = '') {
 <body class="bg-light">
 
 <nav class="navbar">
-    <h1 class="navbar-title">College of Computer Studies Sit-in Monitoring System</h1>
+    <h1 class="navbar-title">Colleges of Computer Studies Sit-in Monitoring System</h1>
     <ul class="navbar-links">
         <li><a href="index.php">Home</a></li>
         <li><a href="#community">Community🠻</a></li>
@@ -91,13 +95,6 @@ function old($field, $default = '') {
         <button class="back-btn" onclick="window.history.back()">Back</button>
         <h2 class="register-title">Sign up</h2>
         
-        <?php if ($success): ?>
-            <p style="color: green; text-align: center; font-weight: bold; margin-bottom: 12px;">
-                <?= htmlspecialchars($success) ?>
-                <br><a href="index.php">Click here to login</a>
-            </p>
-        <?php endif; ?>
-
         <?php if ($error): ?>
             <p style="color: red; text-align: center; margin-bottom: 12px;">
                 <?= htmlspecialchars($error) ?>
