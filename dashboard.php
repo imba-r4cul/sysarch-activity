@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'includes/db.php';
+require_once 'includes/database.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
@@ -48,6 +48,7 @@ function esc($value)
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,55 +56,61 @@ function esc($value)
     <link rel="stylesheet" href="style.css?v=20260317">
     <link rel="stylesheet" href="dashboard.css?v=20260317">
 </head>
+
 <body class="dashboard-body">
 
-<nav class="navbar dashboard-nav">
-    <h1 class="navbar-title">Dashboard</h1>
-    <ul class="navbar-links dashboard-links">
-        <li><a href="dashboard.php">Home</a></li>
-        <li><a href="dashboard.php?logout=1" class="logout-btn">Log out</a></li>
-    </ul>
-</nav>
+    <nav class="navbar dashboard-nav">
+        <h1 class="navbar-title">College of Computer Studies Sit-in
+            Monitoring System</h1>
+        <ul class="navbar-links dashboard-links">
+            <li><a href="dashboard.php">Home</a></li>
+            <li><a href="edit_profile.php">Edit Profile</a></li>
+            <li><a href="reservations.php">Reservations</a></li>
+            <li><a href="dashboard.php?logout=1" class="logout-btn">Log out</a></li>
+        </ul>
+    </nav>
 
-<main class="dashboard-container single-panel-layout">
-    <section class="student-panel">
-        <div class="panel-header">Student Information</div>
-        <div class="student-content">
-            <img src="./images/ccs.png" alt="Student avatar" class="student-avatar">
+    <main class="dashboard-container single-panel-layout">
+        <section class="student-panel">
+            <div class="panel-header">Student Information</div>
+            <div class="student-content">
+                <img src="./images/ccs.png" alt="Student avatar" class="student-avatar">
 
-            <div class="student-item"><strong>Name:</strong> <?= esc($user['first_name'] . ' ' . $user['last_name']) ?></div>
-            <div class="student-item"><strong>Course:</strong> <?= esc($user['course']) ?></div>
-            <div class="student-item"><strong>Year:</strong> <?= esc($user['course_level']) ?></div>
-            <div class="student-item"><strong>Email:</strong> <?= esc($user['email']) ?></div>
-            <div class="student-item"><strong>Address:</strong> <?= esc($user['address']) ?></div>
-            <div class="student-item"><strong>ID Number:</strong> <?= esc($user['id_number']) ?></div>
+                <div class="student-item"><strong>Name:</strong>
+                    <?= esc($user['first_name'] . ' ' . $user['last_name']) ?></div>
+                <div class="student-item"><strong>Course:</strong> <?= esc($user['course']) ?></div>
+                <div class="student-item"><strong>Year:</strong> <?= esc($user['course_level']) ?></div>
+                <div class="student-item"><strong>Email:</strong> <?= esc($user['email']) ?></div>
+                <div class="student-item"><strong>Address:</strong> <?= esc($user['address']) ?></div>
+                <div class="student-item"><strong>ID Number:</strong> <?= esc($user['id_number']) ?></div>
+            </div>
+        </section>
+    </main>
+
+    <?php if ($showLoginSuccess): ?>
+        <div class="login-success-overlay" id="loginSuccessOverlay">
+            <div class="login-success-modal">
+                <div class="success-icon">✓</div>
+                <h2>Successful Login!</h2>
+                <p>Welcome! <?= esc($successName) ?></p>
+                <button type="button" id="closeSuccessModal">OK</button>
+            </div>
         </div>
-    </section>
-</main>
 
-<?php if ($showLoginSuccess): ?>
-    <div class="login-success-overlay" id="loginSuccessOverlay">
-        <div class="login-success-modal">
-            <div class="success-icon">✓</div>
-            <h2>Successful Login!</h2>
-            <p>Welcome! <?= esc($successName) ?></p>
-            <button type="button" id="closeSuccessModal">OK</button>
-        </div>
-    </div>
+        <script>
+            (function () {
+                const overlay = document.getElementById('loginSuccessOverlay');
+                const closeBtn = document.getElementById('closeSuccessModal');
 
-    <script>
-        (function () {
-            const overlay = document.getElementById('loginSuccessOverlay');
-            const closeBtn = document.getElementById('closeSuccessModal');
-
-            if (closeBtn && overlay) {
-                closeBtn.addEventListener('click', function () {
-                    overlay.style.display = 'none';
-                });
-            }
-        })();
-    </script>
-<?php endif; ?>
+                if (closeBtn && overlay) {
+                    closeBtn.addEventListener('click', function () {
+                        overlay.style.display = 'none';
+                    });
+                }
+            })();
+        </script>
+    <?php endif; ?>
 
 </body>
+
 </html>

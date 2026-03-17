@@ -18,3 +18,6 @@ Thumbs.db
 # Cache/temp
 *.cache
 *.tmp
+
+# Database
+/includes/database.php

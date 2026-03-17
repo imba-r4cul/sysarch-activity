@@ -5,9 +5,6 @@
     min-height: 100vh;
 }
 
-.dashboard-nav {
-    background-color: #073568;
-}
 
 .dashboard-links {
     align-items: center;
@@ -19,11 +16,12 @@
 }
 
 .logout-btn {
-    background: #f5c542;
-    color: #000 !important;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-weight: 600;
+    background: #007bff;
+    /* Consistent with index.php buttons */
+    color: #fff !important;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-weight: 500;
 }
 
 .dashboard-container {
@@ -125,4 +123,166 @@
     border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
+}
+
+/* Edit Profile Styles */
+.edit-profile-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 30px;
+    max-width: 800px;
+    margin: 15px auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    height: auto;
+    max-height: calc(100vh - 120px);
+    /* Fit screen minus navbar/padding approx */
+    overflow-y: auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-shrink: 0;
+}
+
+.profile-header h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-secondary {
+    background: #fff;
+    border: 1px solid #ddd;
+    color: #333;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background: #6c63ff;
+    /* Purple matched */
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.profile-section {
+    margin-bottom: 25px;
+    flex-shrink: 0;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #444;
+}
+
+.section-title-icon {
+    color: #6c63ff;
+    font-size: 18px;
+}
+
+.profile-picture-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-pic-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #eee;
+}
+
+.btn-danger-outline {
+    background: transparent;
+    border: 1px solid #ff4d4f;
+    color: #ff4d4f;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-primary-outline {
+    background: #6c63ff;
+    border: none;
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* Make personal info take up available space nicely */
+.personal-info-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.grid-2-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 25px;
+    row-gap: 15px;
+}
+
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 14px;
+    color: #333;
+    background-color: #fcfcfc;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #a39cf4;
+    background-color: #fff;
 }
