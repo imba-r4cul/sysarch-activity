@@ -20,5 +20,5 @@ Thumbs.db
 *.tmp
 
 # Database
-/includes/database.php
+/config/database.php
 

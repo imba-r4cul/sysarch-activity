@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'includes/database.php';
+require_once '../config/database.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
@@ -50,8 +50,8 @@ function esc($value)
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile - CCS</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="dashboard.css?v=20260319">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css?v=20260319">
     <!-- FontAwesome CDN for standard icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
