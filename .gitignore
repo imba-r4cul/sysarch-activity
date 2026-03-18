@@ -7,7 +7,7 @@ Thumbs.db
 .idea/
 
 # Database dumps
-*.sql
+# *.sql  //BEST PRACTICE TO NOT PUSH THIS ON GITHUB
 
 # Logs
 *.log
@@ -21,3 +21,4 @@ Thumbs.db
 
 # Database
 /includes/database.php
+

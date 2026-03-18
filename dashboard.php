@@ -54,7 +54,7 @@ function esc($value)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - CCS</title>
     <link rel="stylesheet" href="style.css?v=20260317">
-    <link rel="stylesheet" href="dashboard.css?v=20260317">
+    <link rel="stylesheet" href="dashboard.css?v=20260319">
 </head>
 
 <body class="dashboard-body">
@@ -92,7 +92,7 @@ function esc($value)
             <div class="login-success-modal">
                 <div class="success-icon">✓</div>
                 <h2>Successful Login!</h2>
-                <p>Welcome! <?= esc($successName) ?></p>
+                <p>Welcome, <?= esc($successName) ?>!</p>
                 <button type="button" id="closeSuccessModal">OK</button>
             </div>
         </div>

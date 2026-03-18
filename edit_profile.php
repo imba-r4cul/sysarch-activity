@@ -51,12 +51,12 @@ function esc($value)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile - CCS</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="dashboard.css?v=20260319">
     <!-- FontAwesome CDN for standard icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body class="dashboard-body" style="overflow: hidden;">
+<body class="dashboard-body">
 
     <nav class="navbar dashboard-nav">
         <h1 class="navbar-title">College of Computer Studies Sit-in

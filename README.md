@@ -1,20 +1,26 @@
 # Student Management System
 
-A system for managing student records and activities.
+Hey everyone! Here is a quick guide on how to get our system up and running on your own PC (super useful for when we run this in the computer lab).
 
 ## 🚀 Setup Instructions
 
-Follow these steps to get the project running on your local machine.
-
 ### 1. Database Configuration
-The database connection settings are stored in `includes/database.php`. This file is ignored by Git.
+First things first, we need to let the code talk to your local XAMPP SQL database. The connection settings are supposed to be inside `includes/database.php`, but since my password isn't the same as yours, I didn't push mine to GitHub.
 
-To set up your database:
-1.  Copy the template file: `includes/database.example.php`.
-2.  Rename the copy to: `includes/database.php`.
-3.  Open `includes/database.php` and update the credentials (`DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`) to match your local XAMPP/MySQL setup.
+Here is what you need to do:
+1.  Go to the `includes` folder. You will see a template file called `database.example.php`.
+2.  Make a copy of it and rename the copy to exactly `database.php`.
+3.  Open up your new `database.php` and update the credentials (`DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`) to match your local XAMPP setup. *(If you are just using default XAMPP, you usually just leave the password blank!)*
 
-### 2. Importing the Database
-1.  Open **phpMyAdmin**.
-2.  Create a new database named `student_management`.
-3.  Import the SQL dump file (if provided) into the new database.
+- SCHOOL PURPOSE ONLY THAT'S WHY I PUSHED THIS ON GITHUB. (BUT I GUESS IT'S A BAD PRACTICE)
+
+### 2. Importing the Database Structure
+Next, you need the actual tables for the code to work. I exported the clean table structure into the `database_setup.sql` file so you guys don't have to create the columns manually. Don't worry, it doesn't contain any real user data, just the structure!
+
+1.  Make sure your XAMPP is running (both Apache and MySQL).
+2.  Open up your browser and go to `http://localhost/phpmyadmin`.
+3.  Look at the very top menu and click on the **Import** tab.
+4.  Click **Choose File** and select the `database_setup.sql` file from our project folder.
+5.  Scroll down to the bottom and hit **Import** (or **Go**).
+
+And that's it! That file automatically creates the `student_management` database and the `users` table with all the correct fields. We are good to go!

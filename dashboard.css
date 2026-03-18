@@ -1,5 +1,3 @@
-/* Dedicated dashboard styles to avoid conflicts/caching */
-
 .dashboard-body {
     background: #efefef;
     min-height: 100vh;
@@ -12,20 +10,31 @@
 }
 
 .dashboard-links a {
-    font-size: 16px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 18px;
 }
 
 .logout-btn {
-    background: #007bff;
+    background: #dc3545 !important;
     /* Consistent with index.php buttons */
     color: #fff !important;
-    padding: 8px 18px;
+    padding: 5px 18px;
     border-radius: 4px;
     font-weight: 500;
+    font-size: 14px;
+}
+
+.logout-btn:hover {
+    background: #bb2d3b !important;
 }
 
 .dashboard-container {
     padding: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 66px);
+    box-sizing: border-box;
 }
 
 .single-panel-layout {
@@ -72,74 +81,35 @@
     margin-right: 6px;
 }
 
-.login-success-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-.login-success-modal {
-    background: #fff;
-    width: min(92vw, 400px);
-    border-radius: 6px;
-    text-align: center;
-    padding: 34px 24px 24px;
-    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.18);
-}
-
-.success-icon {
-    width: 62px;
-    height: 62px;
-    border: 4px solid #cfe9c9;
-    color: #8fd08b;
-    font-size: 42px;
-    line-height: 56px;
-    border-radius: 50%;
-    margin: 0 auto 16px;
-    font-weight: 700;
-}
-
-.login-success-modal h2 {
-    margin: 0 0 10px;
-    color: #444;
-    font-size: 28px;
-}
-
-.login-success-modal p {
-    margin: 0 0 18px;
-    font-size: 18px;
-    color: #555;
-}
-
-.login-success-modal button {
-    border: none;
-    background: #6c63ff;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-}
 
 /* Edit Profile Styles */
 .edit-profile-card {
     background: #fff;
     border-radius: 12px;
-    padding: 20px 30px;
+    padding: 30px;
+    width: 100%;
     max-width: 800px;
-    margin: 15px auto;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    height: auto;
     max-height: calc(100vh - 120px);
-    /* Fit screen minus navbar/padding approx */
     overflow-y: auto;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+}
+
+@media (max-width: 900px) {
+    .edit-profile-card {
+        max-width: 100%;
+        margin: 15px auto;
+        padding: 24px;
+    }
+}
+
+@media (max-width: 600px) {
+    .edit-profile-card {
+        padding: 16px;
+        border-radius: 8px;
+    }
 }
 
 .profile-header {
@@ -148,12 +118,32 @@
     align-items: center;
     margin-bottom: 25px;
     flex-shrink: 0;
+    gap: 15px;
 }
 
 .profile-header h2 {
     margin: 0;
     font-size: 24px;
     color: #333;
+}
+
+@media (max-width: 600px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .profile-header h2 {
+        font-size: 20px;
+    }
+
+    .profile-actions {
+        width: 100%;
+    }
+
+    .profile-actions button {
+        flex: 1;
+    }
 }
 
 .profile-actions {
@@ -211,6 +201,18 @@
     gap: 20px;
 }
 
+@media (max-width: 600px) {
+    .profile-picture-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .profile-picture-row button {
+        width: 100%;
+    }
+}
+
 .profile-pic-placeholder {
     width: 80px;
     height: 80px;
@@ -253,6 +255,13 @@
     grid-template-columns: 1fr 1fr;
     column-gap: 25px;
     row-gap: 15px;
+}
+
+@media (max-width: 600px) {
+    .grid-2-col {
+        grid-template-columns: 1fr;
+        column-gap: 0;
+    }
 }
 
 .form-group {

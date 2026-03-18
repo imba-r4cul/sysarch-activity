@@ -44,10 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCS</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20260319-2">
 </head>
 
-<body>
+<body class="bg-light">
 
     <nav class="navbar">
         <h1 class="navbar-title">College of Computer Studies Sit-in
@@ -65,23 +65,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="logo-section">
             <img src="./images/ccs.png" alt="CCS Logo" class="logo">
         </div>
-        <form class="login-form" method="POST" action="index.php">
-            <input type="text" name="id_number" placeholder="Enter a valid ID number">
-            <label>ID Number</label>
-            <input type="password" name="password" placeholder="Enter your password">
-            <label>Password</label>
-            <div class="form-options">
-                <label><input type="checkbox"> Remember me</label>
-                <span class="forgot-form"><a href="#">Forgot password?</a></span>
-            </div>
-            <?php if ($error): ?>
-                <p style="color:red; text-align:center;"><?= htmlspecialchars($error) ?></p>
-            <?php endif; ?>
-            <button type="submit" class="login-btn">Login</button>
-            <div class="register-options">
-                <span>Don't have an account? <a href="register.php" class="register-link" ;>Register</a></span>
-            </div>
-        </form>
+        <div class="login-card" id="login">
+            <form class="login-form" method="POST" action="index.php">
+                <input type="text" name="id_number" placeholder="Enter a valid ID number">
+                <label>ID Number</label>
+                <input type="password" name="password" placeholder="Enter your password">
+                <label>Password</label>
+                <div class="form-options">
+                    <label><input type="checkbox"> Remember me</label>
+                    <span class="forgot-form"><a href="#">Forgot password?</a></span>
+                </div>
+                <?php if ($error): ?>
+                    <p class="login-error"><?= htmlspecialchars($error) ?></p>
+                <?php endif; ?>
+                <button type="submit" class="login-btn">Login</button>
+                <div class="register-options">
+                    <span>Don't have an account? <a href="register.php" class="register-link">Register</a></span>
+                </div>
+            </form>
+        </div>
     </div>
 
 </body>
