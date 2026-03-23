@@ -52,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->execute()) {
             $showRegisterSuccess = true;
-            $successName = trim($first_name . ' ' . $last_name);
         } else {
             // Check for duplicate entry
             if ($stmt->errno === 1062) {

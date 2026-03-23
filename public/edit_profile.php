@@ -215,7 +215,7 @@ function esc($value)
                         Profile picture
                     </div>
                     <div class="profile-picture-row">
-                        <img src="./<?= esc($profileImagePath) ?>" alt="Profile" class="profile-pic-placeholder">
+                        <img src="./<?= esc($profileImagePath) ?>" alt="Profile" class="profile-pic-placeholder" id="profile-image-preview">
                         <input type="file" id="profile_image" name="profile_image" accept="image/jpeg,image/png,image/gif" hidden>
                         <button type="button" class="btn-primary-outline" id="upload-picture-btn">Upload picture</button>
                         <button type="submit" name="delete_picture" value="1" class="btn-danger-outline" formnovalidate
@@ -283,10 +283,32 @@ function esc($value)
     <script>
         const uploadBtn = document.getElementById('upload-picture-btn');
         const profileImageInput = document.getElementById('profile_image');
+        const profileImagePreview = document.getElementById('profile-image-preview');
+        const profilePictureHelp = document.querySelector('.profile-picture-help');
+        let previewObjectUrl = '';
 
         if (uploadBtn && profileImageInput) {
             uploadBtn.addEventListener('click', () => {
                 profileImageInput.click();
+            });
+
+            profileImageInput.addEventListener('change', (event) => {
+                const selectedFile = event.target.files && event.target.files[0] ? event.target.files[0] : null;
+                if (!selectedFile || !profileImagePreview) {
+                    return;
+                }
+
+                if (previewObjectUrl !== '') {
+                    URL.revokeObjectURL(previewObjectUrl);
+                    previewObjectUrl = '';
+                }
+
+                previewObjectUrl = URL.createObjectURL(selectedFile);
+                profileImagePreview.src = previewObjectUrl;
+
+                if (profilePictureHelp) {
+                    profilePictureHelp.textContent = 'Selected image preview shown. Click Save to apply changes.';
+                }
             });
         }
 
