@@ -181,8 +181,7 @@ function old($field, $default = '')
             <div class="login-success-modal">
                 <div class="success-icon">✓</div>
                 <h2>Registered Successfully!</h2>
-                <p>Welcome, <strong><?= htmlspecialchars($successName, ENT_QUOTES, 'UTF-8') ?>!</strong><br><br>
-                   Your account has been created successfully. You can now log in with your credentials.</p>
+                <p> Your account has been created successfully. You can now log in with your credentials.</p>
                 <a href="index.php" class="modal-link-btn">Go to Login</a>
             </div>
         </div>

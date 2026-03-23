@@ -17,7 +17,7 @@ if (isset($_GET['logout'])) {
 $userId = (int) $_SESSION['user_id'];
 
 $stmt = $conn->prepare(
-    'SELECT id_number, first_name, last_name, course, course_level, email, address
+    'SELECT id_number, first_name, last_name, course, course_level, email, address, profile_image
      FROM users
      WHERE id = ?
      LIMIT 1'
@@ -40,6 +40,17 @@ $successName = $showLoginSuccess
     ? $_SESSION['login_success_name']
     : trim($user['first_name'] . ' ' . $user['last_name']);
 unset($_SESSION['login_success_name']);
+
+$defaultProfileImage = 'images/edit-profile.png';
+$avatarPath = $defaultProfileImage;
+
+if (!empty($user['profile_image'])) {
+    $safeFileName = basename($user['profile_image']);
+    $diskPath = __DIR__ . '/uploads/' . $safeFileName;
+    if (is_file($diskPath)) {
+        $avatarPath = 'uploads/' . rawurlencode($safeFileName);
+    }
+}
 
 function esc($value)
 {
@@ -74,7 +85,9 @@ function esc($value)
         <section class="student-panel">
             <div class="panel-header">Student Information</div>
             <div class="student-content">
-                <img src="./images/ccs.png" alt="Student avatar" class="student-avatar">
+                <a href="edit_profile.php" class="avatar-link" title="Click to upload or change profile picture">
+                    <img src="./<?= esc($avatarPath) ?>" alt="Student avatar" class="student-avatar">
+                </a>
 
                 <div class="student-item"><strong>Name:</strong>
                     <?= esc($user['first_name'] . ' ' . $user['last_name']) ?></div>

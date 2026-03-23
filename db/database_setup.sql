@@ -11,8 +11,12 @@ CREATE TABLE IF NOT EXISTS `users` (
   `course_level` int(11) NOT NULL,
   `email` varchar(150) NOT NULL,
   `address` varchar(255) NOT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_number` (`id_number`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Migration for existing databases:
+-- ALTER TABLE `users` ADD COLUMN `profile_image` varchar(255) DEFAULT NULL AFTER `address`;

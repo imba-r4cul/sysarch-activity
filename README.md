@@ -24,3 +24,22 @@ Next, you need the actual tables for the code to work. I exported the clean tabl
 5.  Scroll down to the bottom and hit **Import** (or **Go**).
 
 And that's it! That file automatically creates the `student_management` database and the `users` table with all the correct fields. We are good to go!
+
+## Profile Picture Support
+
+The app now supports profile picture upload and delete from the Edit Profile page.
+
+### If you are using an existing database
+
+Run this SQL once in phpMyAdmin:
+
+```sql
+ALTER TABLE `users`
+ADD COLUMN `profile_image` varchar(255) DEFAULT NULL AFTER `address`;
+```
+
+### Default image behavior
+
+- New users without an uploaded image will use `public/images/edit-profile.png`.
+- In Dashboard, clicking the profile image opens the Edit Profile page.
+- Uploaded images are saved in `public/uploads/`.
