@@ -158,7 +158,7 @@ function esc($value)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile - CCS</title>
+    <title>Edit Profile</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="./css/dashboard.css">
     <!-- FontAwesome CDN for standard icons -->
@@ -181,7 +181,8 @@ function esc($value)
     <main class="dashboard-container">
         <div class="edit-profile-card">
 
-            <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; height: 100%;">
+            <form method="POST" enctype="multipart/form-data"
+                style="display: flex; flex-direction: column; height: 100%;">
 
                 <div class="profile-header">
                     <h2>Your Profile</h2>
@@ -215,9 +216,12 @@ function esc($value)
                         Profile picture
                     </div>
                     <div class="profile-picture-row">
-                        <img src="./<?= esc($profileImagePath) ?>" alt="Profile" class="profile-pic-placeholder" id="profile-image-preview">
-                        <input type="file" id="profile_image" name="profile_image" accept="image/jpeg,image/png,image/gif" hidden>
-                        <button type="button" class="btn-primary-outline" id="upload-picture-btn">Upload picture</button>
+                        <img src="./<?= esc($profileImagePath) ?>" alt="Profile" class="profile-pic-placeholder"
+                            id="profile-image-preview">
+                        <input type="file" id="profile_image" name="profile_image"
+                            accept="image/jpeg,image/png,image/gif" hidden>
+                        <button type="button" class="btn-primary-outline" id="upload-picture-btn">Upload
+                            picture</button>
                         <button type="submit" name="delete_picture" value="1" class="btn-danger-outline" formnovalidate
                             onclick="return confirm('Delete your profile picture?');">Delete picture</button>
                     </div>

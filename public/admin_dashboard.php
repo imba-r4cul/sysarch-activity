@@ -16,28 +16,41 @@ if (isset($_GET['logout'])) {
 }
 
 $adminName = $_SESSION['admin_name'] ?? 'Admin';
-$adminId   = (int) $_SESSION['admin_id'];
+$adminId = (int) $_SESSION['admin_id'];
 
-function esc($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
+function esc($v)
+{
+    return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
+}
 
 // ── Statistics ──
-$totalStudents  = 0;
-$currentSitIn   = 0;
-$totalSitIn     = 0;
+$totalStudents = 0;
+$currentSitIn = 0;
+$totalSitIn = 0;
 
 $r = $conn->query("SELECT COUNT(*) AS c FROM users");
-if ($r) { $totalStudents = (int)$r->fetch_assoc()['c']; }
+if ($r) {
+    $totalStudents = (int) $r->fetch_assoc()['c'];
+}
 
 $r = $conn->query("SELECT COUNT(*) AS c FROM sit_in_records WHERE status='Active'");
-if ($r) { $currentSitIn = (int)$r->fetch_assoc()['c']; }
+if ($r) {
+    $currentSitIn = (int) $r->fetch_assoc()['c'];
+}
 
 $r = $conn->query("SELECT COUNT(*) AS c FROM sit_in_records");
-if ($r) { $totalSitIn = (int)$r->fetch_assoc()['c']; }
+if ($r) {
+    $totalSitIn = (int) $r->fetch_assoc()['c'];
+}
 
 // Purpose breakdown
 $purposes = [];
 $r = $conn->query("SELECT purpose, COUNT(*) AS c FROM sit_in_records GROUP BY purpose ORDER BY c DESC");
-if ($r) { while ($row = $r->fetch_assoc()) { $purposes[$row['purpose']] = (int)$row['c']; } }
+if ($r) {
+    while ($row = $r->fetch_assoc()) {
+        $purposes[$row['purpose']] = (int) $row['c'];
+    }
+}
 
 // ── Handle announcement post ──
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['announcement_content'])) {
@@ -55,9 +68,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['announcement_content'
 // ── Handle sit-in submission ──
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sitin_id_number'])) {
     $sitinIdNumber = trim($_POST['sitin_id_number']);
-    $sitinName     = trim($_POST['sitin_student_name']);
-    $sitinPurpose  = trim($_POST['sitin_purpose']);
-    $sitinLab      = trim($_POST['sitin_lab']);
+    $sitinName = trim($_POST['sitin_student_name']);
+    $sitinPurpose = trim($_POST['sitin_purpose']);
+    $sitinLab = trim($_POST['sitin_lab']);
 
     // Get user_id from id_number
     $stmt = $conn->prepare("SELECT id FROM users WHERE id_number = ?");
@@ -79,7 +92,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sitin_id_number'])) {
 // ── Fetch announcements ──
 $announcements = [];
 $r = $conn->query("SELECT a.content, a.created_at, au.display_name FROM announcements a JOIN admin_users au ON a.admin_id = au.id ORDER BY a.created_at DESC LIMIT 20");
-if ($r) { while ($row = $r->fetch_assoc()) { $announcements[] = $row; } }
+if ($r) {
+    while ($row = $r->fetch_assoc()) {
+        $announcements[] = $row;
+    }
+}
 
 // ── Search handling (AJAX) ──
 if (isset($_GET['ajax_search'])) {
@@ -90,7 +107,9 @@ if (isset($_GET['ajax_search'])) {
     $stmt->execute();
     $result = $stmt->get_result();
     $students = [];
-    while ($row = $result->fetch_assoc()) { $students[] = $row; }
+    while ($row = $result->fetch_assoc()) {
+        $students[] = $row;
+    }
     $stmt->close();
     echo json_encode($students);
     exit;
@@ -98,46 +117,48 @@ if (isset($_GET['ajax_search'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - CCS</title>
+    <title>Admin Dashboard</title>
     <link rel="icon" type="image/x-icon" href="./images/ccs.png">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: #eef1f5;
+            background: #eff1f3;
             min-height: 100vh;
         }
 
         /* ─── Navbar ─── */
         .admin-nav {
-            background: #0b3d6e;
+            background-color: #18539a;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 30px;
-            height: 56px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            padding: 5px 25px;
+            min-height: 66px;
         }
 
         .admin-nav .brand {
             color: #fff;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
-            white-space: nowrap;
         }
 
         .admin-nav ul {
             list-style: none;
             display: flex;
-            gap: 6px;
+            gap: 5px;
             margin: 0;
             padding: 0;
+            font-size: 18px;
             align-items: center;
         }
 
@@ -145,24 +166,19 @@ if (isset($_GET['ajax_search'])) {
         .admin-nav ul li button {
             color: #fff;
             text-decoration: none;
-            font-size: 14px;
-            padding: 8px 16px;
+            font-size: 18px;
+            padding: 8px 10px;
             border-radius: 6px;
             border: none;
             background: none;
             cursor: pointer;
             font-family: inherit;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
 
         .admin-nav ul li a:hover,
         .admin-nav ul li button:hover {
-            background: rgba(255,255,255,0.12);
-        }
-
-        .admin-nav .nav-active {
-            background: rgba(255,255,255,0.18) !important;
-            font-weight: 600;
+            background: rgba(255, 255, 255, 0.12);
         }
 
         .admin-nav .logout-link {
@@ -190,11 +206,11 @@ if (isset($_GET['ajax_search'])) {
             background: #fff;
             border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
         }
 
         .card-header {
-            background: linear-gradient(135deg, #0b4b8f, #1a6fd4);
+            background: linear-gradient(160deg, #0b4b8f 0%, #18539a 40%, #2471c9 100%);
             color: #fff;
             padding: 12px 20px;
             font-size: 16px;
@@ -268,12 +284,29 @@ if (isset($_GET['ajax_search'])) {
         }
 
         /* Color palette for bars */
-        .bar-blue    { background: linear-gradient(90deg, #2471c9, #4a90d9); }
-        .bar-red     { background: linear-gradient(90deg, #e74c3c, #f1948a); }
-        .bar-green   { background: linear-gradient(90deg, #27ae60, #6fcf97); }
-        .bar-orange  { background: linear-gradient(90deg, #f39c12, #f7c948); }
-        .bar-purple  { background: linear-gradient(90deg, #8e44ad, #bb6bd9); }
-        .bar-teal    { background: linear-gradient(90deg, #1abc9c, #76d7c4); }
+        .bar-blue {
+            background: linear-gradient(90deg, #2471c9, #4a90d9);
+        }
+
+        .bar-red {
+            background: linear-gradient(90deg, #e74c3c, #f1948a);
+        }
+
+        .bar-green {
+            background: linear-gradient(90deg, #27ae60, #6fcf97);
+        }
+
+        .bar-orange {
+            background: linear-gradient(90deg, #f39c12, #f7c948);
+        }
+
+        .bar-purple {
+            background: linear-gradient(90deg, #8e44ad, #bb6bd9);
+        }
+
+        .bar-teal {
+            background: linear-gradient(90deg, #1abc9c, #76d7c4);
+        }
 
         /* ─── Announcements ─── */
         .announce-form textarea {
@@ -308,7 +341,7 @@ if (isset($_GET['ajax_search'])) {
 
         .announce-form button:hover {
             transform: translateY(-1px);
-            box-shadow: 0 3px 10px rgba(39,174,96,0.3);
+            box-shadow: 0 3px 10px rgba(39, 174, 96, 0.3);
         }
 
         .announce-list {
@@ -342,7 +375,7 @@ if (isset($_GET['ajax_search'])) {
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.4);
             display: none;
             justify-content: center;
             align-items: center;
@@ -358,18 +391,25 @@ if (isset($_GET['ajax_search'])) {
             border-radius: 14px;
             width: 94%;
             max-width: 520px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             animation: modalSlide 0.25s ease;
         }
 
         @keyframes modalSlide {
-            from { transform: translateY(-20px); opacity: 0; }
-            to   { transform: translateY(0);     opacity: 1; }
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .modal-header {
-            background: linear-gradient(135deg, #0b4b8f, #1a6fd4);
+            background: linear-gradient(160deg, #0b4b8f 0%, #18539a 40%, #2471c9 100%);
             color: #fff;
             padding: 16px 22px;
             display: flex;
@@ -380,7 +420,7 @@ if (isset($_GET['ajax_search'])) {
         }
 
         .modal-close {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             border: none;
             color: #fff;
             width: 30px;
@@ -395,7 +435,7 @@ if (isset($_GET['ajax_search'])) {
         }
 
         .modal-close:hover {
-            background: rgba(255,255,255,0.35);
+            background: rgba(255, 255, 255, 0.35);
         }
 
         .modal-body {
@@ -427,7 +467,7 @@ if (isset($_GET['ajax_search'])) {
 
         .modal-field input:focus {
             border-color: #4a90d9;
-            box-shadow: 0 0 0 3px rgba(74,144,217,0.12);
+            box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.12);
             background: #fff;
         }
 
@@ -463,13 +503,13 @@ if (isset($_GET['ajax_search'])) {
         }
 
         .btn-confirm {
-            background: linear-gradient(135deg, #0b4b8f, #2471c9);
+            background: linear-gradient(160deg, #0b4b8f 0%, #18539a 40%, #2471c9 100%);
             color: #fff;
         }
 
         .btn-confirm:hover {
             transform: translateY(-1px);
-            box-shadow: 0 3px 10px rgba(11,75,143,0.3);
+            box-shadow: 0 3px 10px rgba(11, 75, 143, 0.3);
         }
 
         /* Search results table */
@@ -516,7 +556,7 @@ if (isset($_GET['ajax_search'])) {
 
         .search-input-row button {
             padding: 10px 20px;
-            background: linear-gradient(135deg, #0b4b8f, #2471c9);
+            background: linear-gradient(160deg, #0b4b8f 0%, #18539a 40%, #2471c9 100%);
             color: #fff;
             border: none;
             border-radius: 8px;
@@ -556,11 +596,12 @@ if (isset($_GET['ajax_search'])) {
         }
     </style>
 </head>
+
 <body>
 
     <!-- ─── Navbar ─── -->
     <nav class="admin-nav">
-        <span class="brand">College of Computer Studies Admin</span>
+        <span class="brand">CCS Sit-in Monitoring System (ADMIN DASHBOARD)</span>
         <ul>
             <li><a href="admin_dashboard.php" class="nav-active">Home</a></li>
             <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
@@ -574,7 +615,7 @@ if (isset($_GET['ajax_search'])) {
         <!-- Statistics Card -->
         <div class="card">
             <div class="card-header">
-                📊 Statistics
+                Statistics
             </div>
             <div class="card-body">
                 <div class="stat-row">
@@ -593,7 +634,7 @@ if (isset($_GET['ajax_search'])) {
                 <div class="progress-section">
                     <h4>Sit-in by Purpose</h4>
                     <?php
-                    $barColors = ['bar-blue','bar-red','bar-green','bar-orange','bar-purple','bar-teal'];
+                    $barColors = ['bar-blue', 'bar-red', 'bar-green', 'bar-orange', 'bar-purple', 'bar-teal'];
                     $maxVal = $totalSitIn > 0 ? $totalSitIn : 1;
                     $i = 0;
                     if (empty($purposes)): ?>
@@ -603,17 +644,17 @@ if (isset($_GET['ajax_search'])) {
                             $pct = round(($count / $maxVal) * 100);
                             $color = $barColors[$i % count($barColors)];
                             $i++;
-                    ?>
-                        <div class="progress-item">
-                            <div class="progress-label">
-                                <span><?= esc($name) ?></span>
-                                <span><?= $count ?></span>
+                            ?>
+                            <div class="progress-item">
+                                <div class="progress-label">
+                                    <span><?= esc($name) ?></span>
+                                    <span><?= $count ?></span>
+                                </div>
+                                <div class="progress-bar-track">
+                                    <div class="progress-bar-fill <?= $color ?>" style="width: <?= $pct ?>%"></div>
+                                </div>
                             </div>
-                            <div class="progress-bar-track">
-                                <div class="progress-bar-fill <?= $color ?>" style="width: <?= $pct ?>%"></div>
-                            </div>
-                        </div>
-                    <?php
+                            <?php
                         endforeach;
                     endif;
                     ?>
@@ -624,7 +665,7 @@ if (isset($_GET['ajax_search'])) {
         <!-- Announcements Card -->
         <div class="card">
             <div class="card-header">
-                📢 Announcement
+                Announcement
             </div>
             <div class="card-body">
                 <form class="announce-form" method="POST" action="admin_dashboard.php">
@@ -639,7 +680,9 @@ if (isset($_GET['ajax_search'])) {
                     <?php else: ?>
                         <?php foreach ($announcements as $ann): ?>
                             <div class="announce-item">
-                                <div class="meta"><?= esc($ann['display_name']) ?> | <?= date('M d, Y', strtotime($ann['created_at'])) ?></div>
+                                <div class="meta"><?= esc($ann['display_name']) ?> |
+                                    <?= date('M d, Y', strtotime($ann['created_at'])) ?>
+                                </div>
                                 <div class="text"><?= nl2br(esc($ann['content'])) ?></div>
                             </div>
                         <?php endforeach; ?>
@@ -679,15 +722,18 @@ if (isset($_GET['ajax_search'])) {
                 <div class="modal-body">
                     <div class="modal-field">
                         <label for="sitin_id_number">ID Number</label>
-                        <input type="text" id="sitin_id_number" name="sitin_id_number" placeholder="e.g. 20230001" required>
+                        <input type="text" id="sitin_id_number" name="sitin_id_number" placeholder="e.g. 20230001"
+                            required>
                     </div>
                     <div class="modal-field">
                         <label for="sitin_student_name">Student Name</label>
-                        <input type="text" id="sitin_student_name" name="sitin_student_name" placeholder="Full name" required>
+                        <input type="text" id="sitin_student_name" name="sitin_student_name" placeholder="Full name"
+                            required>
                     </div>
                     <div class="modal-field">
                         <label for="sitin_purpose">Purpose</label>
-                        <input type="text" id="sitin_purpose" name="sitin_purpose" placeholder="e.g. C Programming" required>
+                        <input type="text" id="sitin_purpose" name="sitin_purpose" placeholder="e.g. C Programming"
+                            required>
                     </div>
                     <div class="modal-field">
                         <label for="sitin_lab">Lab</label>
@@ -717,7 +763,7 @@ if (isset($_GET['ajax_search'])) {
 
         // Close modal on overlay click
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', function(e) {
+            overlay.addEventListener('click', function (e) {
                 if (e.target === this) {
                     this.classList.remove('active');
                 }
@@ -760,13 +806,13 @@ if (isset($_GET['ajax_search'])) {
         }
 
         // Search on Enter key
-        document.getElementById('searchInput').addEventListener('keydown', function(e) {
+        document.getElementById('searchInput').addEventListener('keydown', function (e) {
             if (e.key === 'Enter') doSearch();
         });
 
         // ─── Auto-fill sit-in form when ID is entered ───
         let sitinTimeout;
-        document.getElementById('sitin_id_number').addEventListener('input', function() {
+        document.getElementById('sitin_id_number').addEventListener('input', function () {
             clearTimeout(sitinTimeout);
             const idNum = this.value.trim();
             if (idNum.length < 3) return;
@@ -785,4 +831,5 @@ if (isset($_GET['ajax_search'])) {
     </script>
 
 </body>
+
 </html>
