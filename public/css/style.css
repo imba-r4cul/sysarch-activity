@@ -10,7 +10,7 @@ body {
   align-items: center;
   justify-content: space-between;
   background-color: #18539a;
-  padding: 5px 35px;
+  padding: 5px 25px;
 }
 
 .navbar-title {
@@ -21,16 +21,31 @@ body {
 .navbar-links {
   list-style: none;
   display: flex;
-  gap: 24px;
+  gap: 5px;
   margin: 0;
   padding: 0;
   font-size: 18px;
 }
 
-.navbar-links li a {
-  color: white;
+.navbar-links li a,
+.navbar-links li button {
+  color: #fff;
   text-decoration: none;
+  font-size: 18px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
 }
+
+.navbar-links li a:hover,
+.navbar-links li button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
 
 .main-container {
   display: flex;
@@ -60,6 +75,7 @@ body {
 .logo-box:hover {
   background-image: url("../images/uc-logo.png");
 }
+
 .login-card {
   width: 100%;
   max-width: 500px;
@@ -165,6 +181,7 @@ body {
   .logo-box {
     width: min(100%, 360px);
   }
+
   .login-card {
     max-width: 640px;
   }

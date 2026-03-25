@@ -7,8 +7,8 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$userId    = (int) $_SESSION['user_id'];
-$idNumber  = $_SESSION['id_number'] ?? '';
+$userId = (int) $_SESSION['user_id'];
+$idNumber = $_SESSION['id_number'] ?? '';
 
 // Fetch student info for pre-fill
 $stmt = $conn->prepare("SELECT id_number, first_name, last_name FROM users WHERE id = ?");
@@ -18,18 +18,21 @@ $user = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
 $studentName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
-$studentId   = $user['id_number'] ?? '';
+$studentId = $user['id_number'] ?? '';
 
-function esc($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
+function esc($v)
+{
+    return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
+}
 
 // Handle reservation form
 $success = '';
-$error   = '';
+$error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $purpose = trim($_POST['purpose'] ?? '');
-    $lab     = trim($_POST['lab'] ?? '');
-    $date    = trim($_POST['reservation_date'] ?? '');
-    $time    = trim($_POST['reservation_time'] ?? '');
+    $lab = trim($_POST['lab'] ?? '');
+    $date = trim($_POST['reservation_date'] ?? '');
+    $time = trim($_POST['reservation_time'] ?? '');
 
     if (empty($purpose) || empty($lab) || empty($date) || empty($time)) {
         $error = 'Please fill in all fields.';
@@ -51,15 +54,18 @@ $stmt = $conn->prepare("SELECT purpose, lab, reservation_date, reservation_time,
 $stmt->bind_param('i', $userId);
 $stmt->execute();
 $result = $stmt->get_result();
-while ($row = $result->fetch_assoc()) { $reservations[] = $row; }
+while ($row = $result->fetch_assoc()) {
+    $reservations[] = $row;
+}
 $stmt->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sit-in Reservation - CCS</title>
+    <title>Sit-in Reservation</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="icon" type="image/x-icon" href="./images/ccs.png">
@@ -80,7 +86,7 @@ $stmt->close();
         .res-card {
             background: #fff;
             border-radius: 14px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             overflow: hidden;
             margin-bottom: 24px;
         }
@@ -127,7 +133,7 @@ $stmt->close();
 
         .res-field input:focus {
             border-color: #4a90d9;
-            box-shadow: 0 0 0 3px rgba(74,144,217,0.12);
+            box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.12);
             background: #fff;
         }
 
@@ -154,7 +160,7 @@ $stmt->close();
 
         .res-submit-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(11,75,143,0.35);
+            box-shadow: 0 4px 14px rgba(11, 75, 143, 0.35);
         }
 
         .res-msg {
@@ -163,8 +169,18 @@ $stmt->close();
             font-size: 14px;
             margin-bottom: 16px;
         }
-        .res-msg.success { background: #e8f8e8; color: #27ae60; border: 1px solid #c3e6cb; }
-        .res-msg.error   { background: #fff0f0; color: #c0392b; border: 1px solid #f5c6cb; }
+
+        .res-msg.success {
+            background: #e8f8e8;
+            color: #27ae60;
+            border: 1px solid #c3e6cb;
+        }
+
+        .res-msg.error {
+            background: #fff0f0;
+            color: #c0392b;
+            border: 1px solid #f5c6cb;
+        }
 
         /* History table */
         .history-table {
@@ -199,9 +215,20 @@ $stmt->close();
             font-weight: 600;
         }
 
-        .status-pending  { background: #fff3cd; color: #856404; }
-        .status-approved { background: #d4edda; color: #155724; }
-        .status-rejected { background: #f8d7da; color: #721c24; }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
 
         .no-history {
             text-align: center;
@@ -217,6 +244,7 @@ $stmt->close();
         }
     </style>
 </head>
+
 <body class="dashboard-body">
 
     <nav class="navbar dashboard-nav">
@@ -301,7 +329,8 @@ $stmt->close();
                                     <tr>
                                         <td><?= esc($res['purpose']) ?></td>
                                         <td><?= esc($res['lab']) ?></td>
-                                        <td><?= date('M d, Y h:i A', strtotime($res['reservation_date'] . ' ' . $res['reservation_time'])) ?></td>
+                                        <td><?= date('M d, Y h:i A', strtotime($res['reservation_date'] . ' ' . $res['reservation_time'])) ?>
+                                        </td>
                                         <td>
                                             <?php
                                             $statusClass = 'status-' . esc(strtolower($res['status']));
@@ -321,4 +350,5 @@ $stmt->close();
     </div>
 
 </body>
+
 </html>

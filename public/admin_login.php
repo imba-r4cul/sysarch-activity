@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - CCS</title>
+    <title>Admin Login</title>
     <link rel="icon" type="image/x-icon" href="./images/ccs.png">
     <link rel="stylesheet" href="css/style.css">
     <style>
@@ -180,7 +180,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="admin-login-card">
             <div class="admin-badge">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.4 0 2.5 1.1 2.5 2.5S13.4 12 12 12s-2.5-1.1-2.5-2.5S10.6 7 12 7zm5 10H7v-1c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5v1z"/>
+                    <path
+                        d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.4 0 2.5 1.1 2.5 2.5S13.4 12 12 12s-2.5-1.1-2.5-2.5S10.6 7 12 7zm5 10H7v-1c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5v1z" />
                 </svg>
             </div>
             <h2>Admin Portal</h2>
