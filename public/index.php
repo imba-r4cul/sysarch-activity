@@ -44,13 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCS</title>
-    <link rel="stylesheet" href="css/style.css?v=20260319-2">
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body class="bg-light">
 
     <nav class="navbar">
-        <h1 class="navbar-title">Colleges of Computer Studies Sit-in
+        <h1 class="navbar-title">College of Computer Studies Sit-in
             Monitoring System</h1>
         <ul class="navbar-links">
             <li><a href="#home">Home</a></li>
@@ -63,7 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="main-container">
         <div class="logo-section">
-            <img src="./images/ccs.png" alt="CCS Logo" class="logo">
+            <!-- <img src="./images/ccs.png" alt="CCS Logo" class="logo"> -->
+            <div class="logo-box"></div>
         </div>
         <div class="login-card" id="login">
             <form class="login-form" method="POST" action="index.php">

@@ -2,6 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #eff1f3;
 }
 
 .navbar {
@@ -46,8 +47,18 @@ body {
     justify-content: center;
 }
 
-.logo {
-    width: min(100%, 550px);
+.logo-box {
+  width: 550px; 
+  height: 500px;
+  background-image: url('../images/ccs.png'); 
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background-image 0.15s ease-in-out;
+}
+
+.logo-box:hover {
+  background-image: url('../images/uc-logo.PNG');
 }
 
 .login-card {
@@ -170,10 +181,6 @@ body {
 
 
 /* REGISTER CSS */
-
-.bg-light {
-    background-color: #f0f2f5;
-}
 
 .register-container {
     display: flex;

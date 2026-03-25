@@ -310,3 +310,7 @@
     border-color: #a39cf4;
     background-color: #fff;
 }
+
+#closeSuccessModal {
+    background-color: rgb(0, 0, 0);
+}
