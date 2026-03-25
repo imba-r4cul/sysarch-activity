@@ -22,3 +22,9 @@ Thumbs.db
 # Database
 /config/database.php
 
+# Uploaded files
+/public/uploads/
+
+/.agents
+
+/SKILL.md
