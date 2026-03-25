@@ -304,7 +304,7 @@ $stmt->close();
                                         <td><?= date('M d, Y h:i A', strtotime($res['reservation_date'] . ' ' . $res['reservation_time'])) ?></td>
                                         <td>
                                             <?php
-                                            $statusClass = 'status-' . strtolower($res['status']);
+                                            $statusClass = 'status-' . esc(strtolower($res['status']));
                                             ?>
                                             <span class="status-badge <?= $statusClass ?>"><?= esc($res['status']) ?></span>
                                         </td>

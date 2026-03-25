@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ) {
         $error = 'Please fill in all required fields.';
     } elseif ($password !== $repeat_pw) {
-        $error = 'Password do not match.';
+        $error = 'Passwords do not match.';
     } elseif (strlen($password) < 6) {
         $error = 'Password must be at least 6 characters.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
