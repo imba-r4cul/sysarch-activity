@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ) {
         $error = 'Please fill in all required fields.';
     } elseif ($password !== $repeat_pw) {
-        $error = 'Passwords do not match.';
+        $error = 'Password do not match.';
     } elseif (strlen($password) < 6) {
         $error = 'Password must be at least 6 characters.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -82,222 +82,9 @@ function old($field, $default = '')
     <title>Register - CCS</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/x-icon" href="./images/ccs.png">
-    <style>
-        .signup-wrapper {
-            min-height: calc(100vh - 66px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 40px 20px;
-        }
-
-        .signup-card {
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 8px 32px rgba(24, 83, 154, 0.12), 0 1.5px 6px rgba(0, 0, 0, 0.04);
-            width: 100%;
-            max-width: 920px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: row;
-        }
-
-        .signup-sidebar {
-            background: linear-gradient(160deg, #0b4b8f 0%, #18539a 40%, #2471c9 100%);
-            color: #fff;
-            padding: 48px 36px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-width: 260px;
-            max-width: 300px;
-            text-align: center;
-            gap: 18px;
-        }
-
-        .signup-sidebar .sidebar-icon {
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
-
-        .signup-sidebar .sidebar-icon svg {
-            width: 44px;
-            height: 44px;
-            fill: #fff;
-        }
-
-        .signup-sidebar h2 {
-            margin: 0;
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-        }
-
-        .signup-sidebar p {
-            margin: 0;
-            font-size: 15px;
-            opacity: 0.85;
-            line-height: 1.5;
-        }
-
-        .signup-sidebar .login-link-sidebar {
-            margin-top: 16px;
-            color: #fff;
-            font-size: 14px;
-        }
-
-        .signup-sidebar .login-link-sidebar a {
-            color: #ffd966;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .signup-sidebar .login-link-sidebar a:hover {
-            text-decoration: underline;
-        }
-
-        .signup-form-area {
-            flex: 1;
-            padding: 40px 44px;
-        }
-
-        .signup-form-area h3 {
-            margin: 0 0 6px;
-            font-size: 22px;
-            color: #1a1a2e;
-        }
-
-        .signup-form-area .subtitle {
-            color: #777;
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-
-        .signup-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px 22px;
-        }
-
-        .signup-grid .full-width {
-            grid-column: span 2;
-        }
-
-        .field-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .field-group label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #444;
-        }
-
-        .field-group input,
-        .field-group select {
-            padding: 10px 14px;
-            border: 1.5px solid #dde2ea;
-            border-radius: 8px;
-            font-size: 14px;
-            color: #333;
-            background: #f8f9fb;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            outline: none;
-        }
-
-        .field-group input:focus,
-        .field-group select:focus {
-            border-color: #4a90d9;
-            box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.12);
-            background: #fff;
-        }
-
-        .signup-actions {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            margin-top: 22px;
-            gap: 14px;
-        }
-
-        .signup-submit-btn {
-            background: linear-gradient(135deg, #0b4b8f, #2471c9);
-            color: #fff;
-            border: none;
-            padding: 11px 38px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.2s;
-            letter-spacing: 0.4px;
-        }
-
-        .signup-submit-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(11, 75, 143, 0.35);
-        }
-
-        .signup-error {
-            background: #fff0f0;
-            color: #c0392b;
-            border: 1px solid #f5c6cb;
-            border-radius: 8px;
-            padding: 10px 16px;
-            font-size: 14px;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-
-        @media (max-width: 800px) {
-            .signup-card {
-                flex-direction: column;
-            }
-
-            .signup-sidebar {
-                max-width: 100%;
-                min-width: 100%;
-                padding: 28px 20px;
-                flex-direction: row;
-                gap: 16px;
-            }
-
-            .signup-sidebar .sidebar-icon {
-                width: 52px;
-                height: 52px;
-                margin-bottom: 0;
-            }
-
-            .signup-sidebar .sidebar-icon svg {
-                width: 28px;
-                height: 28px;
-            }
-
-            .signup-form-area {
-                padding: 28px 20px;
-            }
-
-            .signup-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .signup-grid .full-width {
-                grid-column: span 1;
-            }
-        }
-    </style>
 </head>
 
-<body class="bg-light">
+<body class="bg-light register-page">
 
     <nav class="navbar">
         <h1 class="navbar-title">College of Computer Studies Sit-in Monitoring System</h1>
@@ -314,14 +101,7 @@ function old($field, $default = '')
         <div class="signup-card">
             <!-- Sidebar -->
             <div class="signup-sidebar">
-                <div class="sidebar-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path
-                            d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
-                    </svg>
-                </div>
-                <h2>Create Account</h2>
-                <p>Join the CCS Sit-in Monitoring System and manage your lab sessions with ease.</p>
+                <div class="login-logo"></div>
                 <div class="login-link-sidebar">
                     Already have an account?<br><a href="index.php">Sign In →</a>
                 </div>
