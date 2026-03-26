@@ -20,3 +20,61 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 -- Migration for existing databases:
 -- ALTER TABLE `users` ADD COLUMN `profile_image` varchar(255) DEFAULT NULL AFTER `address`;
+
+-- Admin users table (for admin login)
+CREATE TABLE IF NOT EXISTS `admin_users` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(100) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
+  `display_name` VARCHAR(150) NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Sit-in records table
+CREATE TABLE IF NOT EXISTS `sit_in_records` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `id_number` VARCHAR(50) NOT NULL,
+  `first_name` VARCHAR(100) NOT NULL,
+  `last_name` VARCHAR(100) NOT NULL,
+  `purpose` VARCHAR(255) NOT NULL,
+  `lab` VARCHAR(100) NOT NULL,
+  `time_in` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `time_out` TIMESTAMP NULL DEFAULT NULL,
+  `status` ENUM('Active', 'Completed') DEFAULT 'Active',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  INDEX `idx_status` (`status`),
+  INDEX `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Announcements table
+CREATE TABLE IF NOT EXISTS `announcements` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `admin_id` INT NOT NULL,
+  `content` TEXT NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`admin_id`) REFERENCES `admin_users` (`id`) ON DELETE CASCADE,
+  INDEX `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Reservations table
+CREATE TABLE IF NOT EXISTS `reservations` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `purpose` VARCHAR(255) NOT NULL,
+  `lab` VARCHAR(100) NOT NULL,
+  `reservation_date` DATE NOT NULL,
+  `reservation_time` TIME NOT NULL,
+  `status` ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
+  `admin_note` TEXT,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  INDEX `idx_user_id` (`user_id`),
+  INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

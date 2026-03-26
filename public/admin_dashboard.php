@@ -68,19 +68,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['announcement_content'
 // ── Handle sit-in submission ──
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sitin_id_number'])) {
     $sitinIdNumber = trim($_POST['sitin_id_number']);
-    $sitinName = trim($_POST['sitin_student_name']);
     $sitinPurpose = trim($_POST['sitin_purpose']);
     $sitinLab = trim($_POST['sitin_lab']);
 
-    // Get user_id from id_number
-    $stmt = $conn->prepare("SELECT id FROM users WHERE id_number = ?");
+    // Get user details from id_number
+    $stmt = $conn->prepare("SELECT id, first_name, last_name FROM users WHERE id_number = ?");
     $stmt->bind_param('s', $sitinIdNumber);
     $stmt->execute();
     $res = $stmt->get_result();
     if ($user = $res->fetch_assoc()) {
         $uid = $user['id'];
-        $ins = $conn->prepare("INSERT INTO sit_in_records (user_id, id_number, student_name, purpose, lab) VALUES (?, ?, ?, ?, ?)");
-        $ins->bind_param('issss', $uid, $sitinIdNumber, $sitinName, $sitinPurpose, $sitinLab);
+        $firstName = $user['first_name'];
+        $lastName = $user['last_name'];
+        $ins = $conn->prepare("INSERT INTO sit_in_records (user_id, id_number, first_name, last_name, purpose, lab) VALUES (?, ?, ?, ?, ?, ?)");
+        $ins->bind_param('isssss', $uid, $sitinIdNumber, $firstName, $lastName, $sitinPurpose, $sitinLab);
         $ins->execute();
         $ins->close();
     }
@@ -102,15 +103,39 @@ if ($r) {
 if (isset($_GET['ajax_search'])) {
     header('Content-Type: application/json');
     $q = '%' . trim($_GET['q'] ?? '') . '%';
-    $stmt = $conn->prepare("SELECT id_number, first_name, last_name, course, course_level, email, remaining_sessions FROM users WHERE id_number LIKE ? OR first_name LIKE ? OR last_name LIKE ? LIMIT 20");
-    $stmt->bind_param('sss', $q, $q, $q);
-    $stmt->execute();
-    $result = $stmt->get_result();
     $students = [];
-    while ($row = $result->fetch_assoc()) {
-        $students[] = $row;
+
+    $sql = "
+        SELECT
+            u.id_number,
+            u.first_name,
+            u.last_name,
+            u.course,
+            u.course_level,
+            u.email,
+            GREATEST(0, 30 - IFNULL(sr.total_sessions, 0)) AS remaining_sessions
+        FROM users u
+        LEFT JOIN (
+            SELECT user_id, COUNT(*) AS total_sessions
+            FROM sit_in_records
+            GROUP BY user_id
+        ) sr ON sr.user_id = u.id
+        WHERE u.id_number LIKE ? OR u.first_name LIKE ? OR u.last_name LIKE ?
+        ORDER BY u.last_name ASC, u.first_name ASC
+        LIMIT 20
+    ";
+
+    $stmt = $conn->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param('sss', $q, $q, $q);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $students[] = $row;
+        }
+        $stmt->close();
     }
-    $stmt->close();
+
     echo json_encode($students);
     exit;
 }
@@ -455,7 +480,8 @@ if (isset($_GET['ajax_search'])) {
             color: #444;
         }
 
-        .modal-field input {
+        .modal-field input,
+        .modal-field select {
             padding: 10px 14px;
             border: 1.5px solid #dde2ea;
             border-radius: 8px;
@@ -465,7 +491,8 @@ if (isset($_GET['ajax_search'])) {
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .modal-field input:focus {
+        .modal-field input:focus,
+        .modal-field select:focus {
             border-color: #4a90d9;
             box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.12);
             background: #fff;
@@ -545,6 +572,21 @@ if (isset($_GET['ajax_search'])) {
             background: #f0f5ff;
         }
 
+        .search-action-btn {
+            padding: 6px 10px;
+            background: #2471c9;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .search-action-btn:hover {
+            background: #18539a;
+        }
+
         .search-input-row {
             display: flex;
             gap: 10px;
@@ -605,7 +647,7 @@ if (isset($_GET['ajax_search'])) {
         <ul>
             <li><a href="admin_dashboard.php" class="nav-active">Home</a></li>
             <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
-            <li><button type="button" onclick="openModal('sitinModal')">Sit-in Form</button></li>
+            <li><button type="button" onclick="openSitInForm()">Sit-in Form</button></li>
             <li><a href="admin_dashboard.php?logout=1" class="logout-link">Log out</a></li>
         </ul>
     </nav>
@@ -722,26 +764,38 @@ if (isset($_GET['ajax_search'])) {
                 <div class="modal-body">
                     <div class="modal-field">
                         <label for="sitin_id_number">ID Number</label>
-                        <input type="text" id="sitin_id_number" name="sitin_id_number" placeholder="e.g. 20230001"
+                        <input type="text" id="sitin_id_number" name="sitin_id_number" placeholder="Default"
                             required>
                     </div>
                     <div class="modal-field">
                         <label for="sitin_student_name">Student Name</label>
-                        <input type="text" id="sitin_student_name" name="sitin_student_name" placeholder="Full name"
-                            required>
+                        <input type="text" id="sitin_student_name" name="sitin_student_name" placeholder="Default"
+                            readonly required>
                     </div>
                     <div class="modal-field">
                         <label for="sitin_purpose">Purpose</label>
-                        <input type="text" id="sitin_purpose" name="sitin_purpose" placeholder="e.g. C Programming"
-                            required>
+                        <select id="sitin_purpose" name="sitin_purpose" required>
+                            <option value="" selected disabled>Select purpose</option>
+                            <option value="Python">Python</option>
+                            <option value="C#">C#</option>
+                            <option value="PHP">PHP</option>
+                            <option value="Java">Java</option>
+                            <option value="C++">C++</option>
+                        </select>
                     </div>
                     <div class="modal-field">
                         <label for="sitin_lab">Lab</label>
-                        <input type="text" id="sitin_lab" name="sitin_lab" placeholder="e.g. 524" required>
+                        <select id="sitin_lab" name="sitin_lab" required>
+                            <option value="" selected disabled>Select lab</option>
+                            <option value="524">524</option>
+                            <option value="525">525</option>
+                            <option value="526">526</option>
+                            <option value="527">527</option>
+                        </select>
                     </div>
                     <div class="modal-field">
                         <label for="sitin_sessions">Remaining Sessions</label>
-                        <input type="text" id="sitin_sessions" readonly value="—">
+                        <input type="text" id="sitin_sessions" readonly value="30">
                     </div>
                 </div>
                 <div class="modal-actions">
@@ -761,6 +815,15 @@ if (isset($_GET['ajax_search'])) {
             document.getElementById(id).classList.remove('active');
         }
 
+        function openSitInForm() {
+            document.getElementById('sitin_id_number').value = '';
+            document.getElementById('sitin_student_name').value = '';
+            document.getElementById('sitin_purpose').selectedIndex = 0;
+            document.getElementById('sitin_lab').selectedIndex = 0;
+            document.getElementById('sitin_sessions').value = 30;
+            openModal('sitinModal');
+        }
+
         // Close modal on overlay click
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', function (e) {
@@ -771,6 +834,22 @@ if (isset($_GET['ajax_search'])) {
         });
 
         // ─── Search ───
+        let latestSearchData = [];
+
+        function selectStudentForSitIn(index) {
+            const student = latestSearchData[index];
+            if (!student) return;
+
+            document.getElementById('sitin_id_number').value = student.id_number || '';
+            document.getElementById('sitin_student_name').value = ((student.first_name || '') + ' ' + (student.last_name || '')).trim();
+            document.getElementById('sitin_sessions').value = student.remaining_sessions ?? 30;
+            document.getElementById('sitin_purpose').selectedIndex = 0;
+            document.getElementById('sitin_lab').selectedIndex = 0;
+
+            closeModal('searchModal');
+            openModal('sitinModal');
+        }
+
         function doSearch() {
             const q = document.getElementById('searchInput').value.trim();
             const container = document.getElementById('searchResults');
@@ -783,18 +862,20 @@ if (isset($_GET['ajax_search'])) {
             fetch('admin_dashboard.php?ajax_search=1&q=' + encodeURIComponent(q))
                 .then(r => r.json())
                 .then(data => {
+                    latestSearchData = data;
                     if (!data.length) {
                         container.innerHTML = '<p class="no-results">No students found.</p>';
                         return;
                     }
-                    let html = '<table><tr><th>ID</th><th>Name</th><th>Course</th><th>Year</th><th>Sessions</th></tr>';
-                    data.forEach(s => {
+                    let html = '<table><tr><th>ID</th><th>Name</th><th>Course</th><th>Year</th><th>Sessions</th><th>Action</th></tr>';
+                    data.forEach((s, idx) => {
                         html += `<tr>
                             <td>${s.id_number}</td>
                             <td>${s.first_name} ${s.last_name}</td>
                             <td>${s.course}</td>
                             <td>${s.course_level}</td>
                             <td>${s.remaining_sessions}</td>
+                            <td><button type="button" class="search-action-btn" onclick="selectStudentForSitIn(${idx})">Use</button></td>
                         </tr>`;
                     });
                     html += '</table>';
@@ -815,7 +896,11 @@ if (isset($_GET['ajax_search'])) {
         document.getElementById('sitin_id_number').addEventListener('input', function () {
             clearTimeout(sitinTimeout);
             const idNum = this.value.trim();
-            if (idNum.length < 3) return;
+            if (idNum.length < 1) {
+                document.getElementById('sitin_student_name').value = '';
+                document.getElementById('sitin_sessions').value = 30;
+                return;
+            }
             sitinTimeout = setTimeout(() => {
                 fetch('admin_dashboard.php?ajax_search=1&q=' + encodeURIComponent(idNum))
                     .then(r => r.json())
@@ -823,7 +908,10 @@ if (isset($_GET['ajax_search'])) {
                         const match = data.find(s => s.id_number === idNum);
                         if (match) {
                             document.getElementById('sitin_student_name').value = match.first_name + ' ' + match.last_name;
-                            document.getElementById('sitin_sessions').value = match.remaining_sessions;
+                            document.getElementById('sitin_sessions').value = match.remaining_sessions ?? 30;
+                        } else {
+                            document.getElementById('sitin_student_name').value = '';
+                            document.getElementById('sitin_sessions').value = 30;
                         }
                     });
             }, 400);
