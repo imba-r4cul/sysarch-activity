@@ -4,14 +4,14 @@ require_once '../config/database.php';
 
 // Guard: admin only
 if (!isset($_SESSION['admin_id'])) {
-    header('Location: admin_login.php');
+    header('Location: index.php');
     exit;
 }
 
 if (isset($_GET['logout'])) {
     session_unset();
     session_destroy();
-    header('Location: admin_login.php');
+    header('Location: index.php');
     exit;
 }
 
@@ -788,9 +788,11 @@ if (isset($_GET['ajax_search'])) {
                         <select id="sitin_lab" name="sitin_lab" required>
                             <option value="" selected disabled>Select lab</option>
                             <option value="524">524</option>
-                            <option value="525">525</option>
-                            <option value="526">526</option>
-                            <option value="527">527</option>
+                            <option value="525">526</option>
+                            <option value="526">528</option>
+                            <option value="527">530</option>
+                            <option value="527">542</option>
+                            <option value="527">544</option>
                         </select>
                     </div>
                     <div class="modal-field">

@@ -9,30 +9,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['password']);
     $hashed_password = '';
 
-    $stmt = $conn->prepare(
-        'SELECT id, first_name, last_name, password FROM users WHERE id_number = ?'
-    );
-    $stmt->bind_param('s', $id_number);
-    $stmt->execute();
-    $stmt->store_result();
+    // Unified admin login via this page
+    if ($id_number === 'admin') {
+        $stmt = $conn->prepare(
+            'SELECT id, password, display_name FROM admin_users WHERE username = ?'
+        );
+        $adminUsername = 'admin';
+        $stmt->bind_param('s', $adminUsername);
+        $stmt->execute();
+        $stmt->store_result();
 
-    if ($stmt->num_rows === 1) {
-        $stmt->bind_result($user_id, $first_name, $last_name, $hashed_password);
-        $stmt->fetch();
+        if ($stmt->num_rows === 1) {
+            $stmt->bind_result($admin_id, $admin_hashed_password, $admin_display_name);
+            $stmt->fetch();
 
-        if (password_verify($password, $hashed_password)) {
-            $_SESSION['user_id'] = $user_id;
-            $_SESSION['id_number'] = $id_number;
-            $_SESSION['login_success_name'] = trim($first_name . ' ' . $last_name);
-            header('Location: dashboard.php');
-            exit;
+            if (password_verify($password, $admin_hashed_password)) {
+                $_SESSION['admin_id'] = $admin_id;
+                $_SESSION['admin_name'] = $admin_display_name;
+                header('Location: admin_dashboard.php');
+                exit;
+            } else {
+                $error = 'Invalid admin credentials.';
+            }
         } else {
-            $error = 'Incorrect password.';
+            $error = 'Admin account not found.';
         }
-    } else {
-        $error = 'ID Number not found.';
+
+        $stmt->close();
     }
-    $stmt->close();
+
+    if ($error !== '') {
+        // Skip student login when admin login attempt already failed
+    } else {
+
+        $stmt = $conn->prepare(
+            'SELECT id, first_name, last_name, password FROM users WHERE id_number = ?'
+        );
+        $stmt->bind_param('s', $id_number);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows === 1) {
+            $stmt->bind_result($user_id, $first_name, $last_name, $hashed_password);
+            $stmt->fetch();
+
+            if (password_verify($password, $hashed_password)) {
+                $_SESSION['user_id'] = $user_id;
+                $_SESSION['id_number'] = $id_number;
+                $_SESSION['login_success_name'] = trim($first_name . ' ' . $last_name);
+                header('Location: dashboard.php');
+                exit;
+            } else {
+                $error = 'Incorrect password.';
+            }
+        } else {
+            $error = 'ID Number not found.';
+        }
+
+        $stmt->close();
+    }
 }
 ?>
 
