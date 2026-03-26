@@ -765,7 +765,7 @@ if (isset($_GET['ajax_search'])) {
                     <div class="modal-field">
                         <label for="sitin_id_number">ID Number</label>
                         <input type="text" id="sitin_id_number" name="sitin_id_number" placeholder="Default"
-                            required>
+                            readonly required>
                     </div>
                     <div class="modal-field">
                         <label for="sitin_student_name">Student Name</label>
