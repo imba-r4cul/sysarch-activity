@@ -133,9 +133,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_student'])) {
         $stmt = $conn->prepare("INSERT INTO users (id_number, last_name, first_name, middle_name, course, course_level, email, address, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         if ($stmt) {
             $stmt->bind_param('sssssisss', $idNumber, $lastName, $firstName, $middleName, $course, $courseLevel, $email, $address, $passwordHash);
-            $stmt->execute();
+            if (!$stmt->execute()) {
+                error_log('Failed to add student: ' . $stmt->error);
+                $_SESSION['flash_error'] = 'An internal error occurred. Please try again later.';
+            }
             $stmt->close();
+        } else {
+            error_log('Database error during student add: ' . $conn->error);
+            $_SESSION['flash_error'] = 'An internal error occurred. Please try again later.';
         }
+    } else {
+        $_SESSION['flash_error'] = 'Please fill in all required fields correctly.';
     }
 
     redirectStudentsView();
@@ -159,9 +167,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_student'])) {
         $stmt = $conn->prepare("UPDATE users SET id_number = ?, last_name = ?, first_name = ?, middle_name = ?, course = ?, course_level = ?, email = ?, address = ? WHERE id = ?");
         if ($stmt) {
             $stmt->bind_param('sssssissi', $idNumber, $lastName, $firstName, $middleName, $course, $courseLevel, $email, $address, $studentId);
-            $stmt->execute();
+            if (!$stmt->execute()) {
+                error_log('Failed to update student: ' . $stmt->error);
+                $_SESSION['flash_error'] = 'An internal error occurred. Please try again later.';
+            }
             $stmt->close();
+        } else {
+            error_log('Database error during student update: ' . $conn->error);
+            $_SESSION['flash_error'] = 'An internal error occurred. Please try again later.';
         }
+    } else {
+        $_SESSION['flash_error'] = 'Please fill in all required fields correctly.';
     }
 
     redirectStudentsView();
@@ -173,9 +189,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_student'])) {
         $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
         if ($stmt) {
             $stmt->bind_param('i', $studentId);
-            $stmt->execute();
+            if (!$stmt->execute()) {
+                error_log('Failed to delete student: ' . $stmt->error);
+                $_SESSION['flash_error'] = 'An internal error occurred. Please try again later.';
+            }
             $stmt->close();
+        } else {
+            error_log('Database error during student delete: ' . $conn->error);
+            $_SESSION['flash_error'] = 'An internal error occurred. Please try again later.';
         }
+    } else {
+        $_SESSION['flash_error'] = 'Invalid student ID.';
     }
 
     redirectStudentsView();
@@ -255,6 +279,49 @@ if ($r) {
     while ($row = $r->fetch_assoc()) {
         $studentRows[] = $row;
     }
+}
+
+// ── Fetch student details endpoint (AJAX) ──
+if (isset($_GET['ajax_get_student_details'])) {
+    header('Content-Type: application/json');
+    
+    // Enforce admin authentication
+    if (!isset($_SESSION['admin_id'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Unauthorized']);
+        exit;
+    }
+    
+    $studentId = (int) ($_GET['student_id'] ?? 0);
+    if ($studentId <= 0) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid student ID']);
+        exit;
+    }
+    
+    // Fetch student details with proper escaping
+    $stmt = $conn->prepare("SELECT id, email, address FROM users WHERE id = ?");
+    if ($stmt) {
+        $stmt->bind_param('i', $studentId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            // Return raw data for JSON - HTML escaping should be done client-side at render time
+            echo json_encode([
+                'id' => (int) $row['id'],
+                'email' => $row['email'],
+                'address' => $row['address']
+            ]);
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'Student not found']);
+        }
+        $stmt->close();
+    } else {
+        http_response_code(500);
+        echo json_encode(['error' => 'Database error']);
+    }
+    exit;
 }
 
 // ── Search handling (AJAX) ──
@@ -933,6 +1000,13 @@ if (isset($_GET['ajax_search'])) {
                     </button>
                 </div>
             </section>
+            <?php if (isset($_SESSION['flash_error'])): ?>
+                <div class="flash-message flash-error" style="margin-bottom: 20px; padding: 12px 16px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                    <span><?= esc($_SESSION['flash_error']) ?></span>
+                    <button type="button" class="flash-close" onclick="this.parentElement.style.display='none';" style="background: none; border: none; color: #721c24; cursor: pointer; font-size: 18px; padding: 0; line-height: 1;">×</button>
+                </div>
+                <?php unset($_SESSION['flash_error']); ?>
+            <?php endif; ?>
             <section class="ledger-container">
                 <div class="table-controls">
                     <div class="entries-select">
@@ -994,8 +1068,6 @@ if (isset($_GET['ajax_search'])) {
                                         data-middle-name="<?= esc($student['middle_name']) ?>"
                                         data-course="<?= esc($student['course']) ?>"
                                         data-course-level="<?= (int) $student['course_level'] ?>"
-                                        data-email="<?= esc($student['email']) ?>"
-                                        data-address="<?= esc($student['address']) ?>"
                                         data-display-name="<?= esc($displayName) ?>">
                                         <td class="id-cell"><?= esc($student['id_number']) ?></td>
                                         <td>
@@ -1302,15 +1374,33 @@ if (isset($_GET['ajax_search'])) {
             const row = triggerBtn.closest('tr');
             if (!row) return;
 
-            document.getElementById('edit_student_id').value = row.dataset.studentId || '';
+            const studentId = row.dataset.studentId || '';
+            if (!studentId) return;
+
+            // Populate non-sensitive fields immediately
+            document.getElementById('edit_student_id').value = studentId;
             document.getElementById('edit_id_number').value = row.dataset.idNumber || '';
             document.getElementById('edit_last_name').value = row.dataset.lastName || '';
             document.getElementById('edit_first_name').value = row.dataset.firstName || '';
             document.getElementById('edit_middle_name').value = row.dataset.middleName || '';
             document.getElementById('edit_course').value = row.dataset.course || '';
             document.getElementById('edit_course_level').value = row.dataset.courseLevel || '';
-            document.getElementById('edit_email').value = row.dataset.email || '';
-            document.getElementById('edit_address').value = row.dataset.address || '';
+
+            // Fetch sensitive fields via secure AJAX
+            fetch('admin_dashboard.php?ajax_get_student_details=1&student_id=' + encodeURIComponent(studentId))
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch student details');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        console.error('Student details error:', data.error);
+                        return;
+                    }
+                    document.getElementById('edit_email').value = data.email || '';
+                    document.getElementById('edit_address').value = data.address || '';
+                })
+                .catch(error => console.error('Error fetching student details:', error));
 
             openModal('editStudentModal');
         }

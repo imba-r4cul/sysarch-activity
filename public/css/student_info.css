@@ -6,9 +6,11 @@
   --on-primary: #ffffff;
   --on-primary-fixed: #001b3f;
   --on-primary-fixed-variant: #00458f;
+  --primary-hover: #003566;
   --secondary: #b6171e;
   --on-secondary: #ffffff;
   --secondary-container: #da3433;
+  --secondary-hover: #9a1318;
   --tertiary-fixed: #ffdbcc;
   --on-tertiary-fixed: #351000;
   --surface: #f8f9fa;
@@ -93,7 +95,7 @@
   transition: background-color 0.2s, transform 0.15s;
 }
 .student-info-wrapper .resetSession-btn:hover {
-  background-color: #9a1318;
+  background-color: var(--secondary-hover, #9a1318);
   transform: translateY(-1px);
 }
 .student-info-wrapper .addStudent-btn {
@@ -102,7 +104,7 @@
   transition: background-color 0.2s, transform 0.15s;
 }
 .student-info-wrapper .addStudent-btn:hover {
-  background-color: #003566;
+  background-color: var(--primary-hover, #003566);
   transform: translateY(-1px);
 }
 .student-info-wrapper .ledger-container {

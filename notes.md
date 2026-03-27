@@ -43,10 +43,8 @@
   - `rgba(0, 0, 0, 0.35)` — login success overlay background.
   - `rgba(255, 255, 255, 0.12)` — `.navbar-links` hover background.
 
-Notes and recommendations
+## Notes and recommendations
 
 - Do not change the values above directly in the CSS files unless you coordinate with design/UX. These colors are reused across multiple components; changing one may break visual consistency.
 - If you want a theme change, first replace these hard-coded values with CSS variables (declare them in [public/css/style.css](public/css/style.css#L1)) then update components to use the variables.
-- For quick edits, modify only component-specific colors (e.g., temporary badges) and avoid changing the brand blues, navbar background, logout button red, success green, or body background.
-
-Created to document protected styles referenced by [public/dashboard.php](public/dashboard.php#L1).
+- For quick edits, modify only component-specific colors (e.g., temporary badges) and avoid changing the brand blues, navbar background, logout button red, success green, or body background.Created to document protected styles referenced by [public/dashboard.php](public/dashboard.php#L1).
