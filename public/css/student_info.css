@@ -21,12 +21,13 @@
   --error: #ba1a1a;
   --font-main: "Inter", sans-serif;
   --font-headline: "Manrope", sans-serif;
+  --navbar-height: 76px;
 
   font-family: var(--font-main);
   background-color: transparent;
   color: var(--on-surface);
   line-height: 1.5;
-  height: calc(100vh - 76px);
+  height: calc(100vh - var(--navbar-height));
   display: flex;
   flex-direction: column;
 }
@@ -89,10 +90,20 @@
 .student-info-wrapper .resetSession-btn {
   background-color: var(--secondary);
   color: var(--on-secondary);
+  transition: background-color 0.2s, transform 0.15s;
+}
+.student-info-wrapper .resetSession-btn:hover {
+  background-color: #9a1318;
+  transform: translateY(-1px);
 }
 .student-info-wrapper .addStudent-btn {
   background-color: var(--primary);
   color: var(--on-primary);
+  transition: background-color 0.2s, transform 0.15s;
+}
+.student-info-wrapper .addStudent-btn:hover {
+  background-color: #003566;
+  transform: translateY(-1px);
 }
 .student-info-wrapper .ledger-container {
   background-color: #fff;
@@ -211,7 +222,8 @@
   color: var(--on-primary-fixed-variant);
 }
 .student-info-wrapper .session-count {
-  text-align: right;
+  text-align: center;
+  vertical-align: middle;
   font-family: var(--font-headline);
   font-weight: 700;
   font-size: 1.125rem;

@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_student'])) {
     $password = trim($_POST['password'] ?? '');
 
     if (
-        $idNumber !== '' && $lastName !== '' && $firstName !== '' && $middleName !== '' &&
+        $idNumber !== '' && ctype_digit($idNumber) && $lastName !== '' && $firstName !== '' && $middleName !== '' &&
         $course !== '' && $courseLevel > 0 && $email !== '' && $address !== '' && $password !== ''
     ) {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
@@ -153,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_student'])) {
     $address = trim($_POST['address'] ?? '');
 
     if (
-        $studentId > 0 && $idNumber !== '' && $lastName !== '' && $firstName !== '' &&
+        $studentId > 0 && $idNumber !== '' && ctype_digit($idNumber) && $lastName !== '' && $firstName !== '' &&
         $middleName !== '' && $course !== '' && $courseLevel > 0 && $email !== '' && $address !== ''
     ) {
         $stmt = $conn->prepare("UPDATE users SET id_number = ?, last_name = ?, first_name = ?, middle_name = ?, course = ?, course_level = ?, email = ?, address = ? WHERE id = ?");
@@ -248,7 +248,7 @@ $studentSql = "
         FROM sit_in_records
         GROUP BY user_id
     ) sr ON sr.user_id = u.id
-    ORDER BY u.last_name ASC, u.first_name ASC
+    ORDER BY u.id ASC
 ";
 $r = $conn->query($studentSql);
 if ($r) {
@@ -279,7 +279,7 @@ if (isset($_GET['ajax_search'])) {
             GROUP BY user_id
         ) sr ON sr.user_id = u.id
         WHERE u.id_number LIKE ? OR u.first_name LIKE ? OR u.last_name LIKE ? OR u.course LIKE ?
-        ORDER BY u.last_name ASC, u.first_name ASC
+        ORDER BY u.id ASC
         LIMIT 20
     ";
 
@@ -580,9 +580,19 @@ if (isset($_GET['ajax_search'])) {
             border-radius: 14px;
             width: 94%;
             max-width: 520px;
+            max-height: 90vh; /* Limits height strictly within viewport */
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
             animation: modalSlide 0.25s ease;
+        }
+
+        .modal-box form {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Lets .modal-body handle the scroll */
+            flex: 1; /* Occupies available height inside modal-box */
         }
 
         @keyframes modalSlide {
@@ -606,6 +616,7 @@ if (isset($_GET['ajax_search'])) {
             align-items: center;
             font-size: 18px;
             font-weight: 700;
+            flex-shrink: 0;
         }
 
         .modal-close {
@@ -629,6 +640,8 @@ if (isset($_GET['ajax_search'])) {
 
         .modal-body {
             padding: 24px;
+            overflow-y: auto; /* Internal scrolling if content exceeds height */
+            flex: 1;
         }
 
         .modal-field {
@@ -671,7 +684,10 @@ if (isset($_GET['ajax_search'])) {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-            padding: 0 24px 20px;
+            padding: 20px 24px;
+            background: #fff;
+            border-top: 1px solid #dde2ea;
+            flex-shrink: 0;
         }
 
         .modal-btn {
@@ -940,7 +956,7 @@ if (isset($_GET['ajax_search'])) {
                                 <th>Name</th>
                                 <th>Year&nbsp;Level</th>
                                 <th>Course</th>
-                                <th style="text-align: right;">Remaining Session</th>
+                                <th style="text-align: center;">Remaining Session</th>
                                 <th style="text-align: center;">Actions</th>
                             </tr>
                         </thead>
@@ -992,7 +1008,7 @@ if (isset($_GET['ajax_search'])) {
                                         </td>
                                         <td><span class="tag"><?= esc(yearLevelLabel($student['course_level'])) ?></span></td>
                                         <td><?= esc($student['course']) ?></td>
-                                        <td class="session-count<?= $remaining <= 3 ? ' session-low' : '' ?>">
+                                        <td class="session-count<?= $remaining <= 3 ? ' session-low' : '' ?>" style="text-align: center; vertical-align: middle;">
                                             <?= str_pad((string) $remaining, 2, '0', STR_PAD_LEFT) ?>
                                         </td>
                                         <td>
@@ -1050,7 +1066,7 @@ if (isset($_GET['ajax_search'])) {
                 <div class="modal-body">
                     <div class="modal-field">
                         <label for="add_id_number">ID Number</label>
-                        <input type="text" id="add_id_number" name="id_number" required>
+                        <input type="number" id="add_id_number" name="id_number" min="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required title="Please enter a valid numeric ID number">
                     </div>
                     <div class="modal-field">
                         <label for="add_last_name">Last Name</label>
@@ -1066,11 +1082,22 @@ if (isset($_GET['ajax_search'])) {
                     </div>
                     <div class="modal-field">
                         <label for="add_course">Course</label>
-                        <input type="text" id="add_course" name="course" required>
+                        <select id="add_course" name="course" required>
+                            <option value="" disabled selected>Select Course</option>
+                            <option value="BSIT">BS Information Technology</option>
+                            <option value="BSCS">BS Computer Science</option>
+                            <option value="BSIS">BS Information Systems</option>
+                        </select>
                     </div>
                     <div class="modal-field">
                         <label for="add_course_level">Year Level</label>
-                        <input type="number" id="add_course_level" name="course_level" min="1" max="10" required>
+                        <select id="add_course_level" name="course_level" required>
+                            <option value="" disabled selected>Select Year</option>
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
                     </div>
                     <div class="modal-field">
                         <label for="add_email">Email</label>
@@ -1106,7 +1133,7 @@ if (isset($_GET['ajax_search'])) {
                 <div class="modal-body">
                     <div class="modal-field">
                         <label for="edit_id_number">ID Number</label>
-                        <input type="text" id="edit_id_number" name="id_number" required>
+                        <input type="number" id="edit_id_number" name="id_number" min="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required title="Please enter a valid numeric ID number">
                     </div>
                     <div class="modal-field">
                         <label for="edit_last_name">Last Name</label>
@@ -1122,11 +1149,22 @@ if (isset($_GET['ajax_search'])) {
                     </div>
                     <div class="modal-field">
                         <label for="edit_course">Course</label>
-                        <input type="text" id="edit_course" name="course" required>
+                        <select id="edit_course" name="course" required>
+                            <option value="" disabled>Select Course</option>
+                            <option value="BSIT">BS Information Technology</option>
+                            <option value="BSCS">BS Computer Science</option>
+                            <option value="BSIS">BS Information Systems</option>
+                        </select>
                     </div>
                     <div class="modal-field">
                         <label for="edit_course_level">Year Level</label>
-                        <input type="number" id="edit_course_level" name="course_level" min="1" max="10" required>
+                        <select id="edit_course_level" name="course_level" required>
+                            <option value="" disabled>Select Year</option>
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
                     </div>
                     <div class="modal-field">
                         <label for="edit_email">Email</label>
