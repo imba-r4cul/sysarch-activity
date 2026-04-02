@@ -7,7 +7,7 @@
         </div>
         <div class="modal-body">
             <div class="search-input-row">
-                <input type="text" id="searchInput" placeholder="Search by name or ID number...">
+                <input type="text" id="modalSearchInput" placeholder="Search by name or ID number...">
                 <button type="button" onclick="doSearch()">Search</button>
             </div>
             <div class="search-results" id="searchResults">
@@ -36,7 +36,7 @@
     }
 
     function doSearch() {
-        const q = document.getElementById('searchInput').value.trim();
+        const q = document.getElementById('modalSearchInput').value.trim();
         const container = document.getElementById('searchResults');
         if (!q) {
             container.innerHTML = '<p class="no-results">Enter a query to search for students.</p>';
@@ -66,7 +66,7 @@
 
     // Search on Enter key
     document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('searchInput');
+        const searchInput = document.getElementById('modalSearchInput');
         if (searchInput) {
             searchInput.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') doSearch();

@@ -269,12 +269,12 @@ unset($_SESSION['current_sitin_flash']);
             <li><a href="admin_dashboard.php?view=students">Student Information</a></li>
             <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
             <li><a href="current_sit_in.php" class="nav-active">Current Sit in</a></li>
-            <li><a href="admin_dashboard.php">Sit-in Form</a></li>
             <li><a href="current_sit_in.php?logout=1" class="logout-link">Log out</a></li>
         </ul>
     </nav>
 
     <?php include 'search_student_modal.php'; ?>
+    <?php include 'sitin_form_modal.php'; ?>
 
     <script>
         // Shared modal functions for non-dashboard pages
