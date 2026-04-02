@@ -391,6 +391,7 @@ if (isset($_GET['ajax_search'])) {
             <li><a href="#" class="nav-active" id="nav-home" onclick="switchView('dashboard')">Home</a></li>
             <li><a href="#" id="nav-students" onclick="switchView('students')">Student Information</a></li>
             <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
+            <li><a href="current_sit_in.php">Current Sit in</a></li>
             <li><button type="button" onclick="openSitInForm()">Sit-in Form</button></li>
             <li><a href="admin_dashboard.php?logout=1" class="logout-link">Log out</a></li>
         </ul>
@@ -751,24 +752,7 @@ if (isset($_GET['ajax_search'])) {
         </div>
     </div>
 
-    <!-- ─── Search Student Modal ─── -->
-    <div class="modal-overlay" id="searchModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <span>Search Student</span>
-                <button class="modal-close" onclick="closeModal('searchModal')">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="search-input-row">
-                    <input type="text" id="searchInput" placeholder="Search by name or ID number...">
-                    <button type="button" onclick="doSearch()">Search</button>
-                </div>
-                <div class="search-results" id="searchResults">
-                    <p class="no-results">Enter a query to search for students.</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php include 'search_student_modal.php'; ?>
 
     <!-- ─── Sit-in Form Modal ─── -->
     <div class="modal-overlay" id="sitinModal">
@@ -929,59 +913,6 @@ if (isset($_GET['ajax_search'])) {
                 }
             });
         });
-
-        // ─── Search ───
-        let latestSearchData = [];
-
-        function selectStudentForSitIn(index) {
-            const student = latestSearchData[index];
-            if (!student) return;
-
-            document.getElementById('sitin_id_number').value = student.id_number || '';
-            document.getElementById('sitin_student_name').value = ((student.first_name || '') + ' ' + (student.last_name || '')).trim();
-            document.getElementById('sitin_sessions').value = student.remaining_sessions ?? 30;
-            document.getElementById('sitin_purpose').selectedIndex = 0;
-            document.getElementById('sitin_lab').selectedIndex = 0;
-
-            closeModal('searchModal');
-            openModal('sitinModal');
-        }
-
-        function doSearch() {
-            const q = document.getElementById('searchInput').value.trim();
-            const container = document.getElementById('searchResults');
-            if (!q) {
-                container.innerHTML = '<p class="no-results">Enter a query to search for students.</p>';
-                return;
-            }
-            container.innerHTML = '<p class="no-results">Searching...</p>';
-
-            fetch('admin_dashboard.php?ajax_search=1&q=' + encodeURIComponent(q))
-                .then(r => r.json())
-                .then(data => {
-                    latestSearchData = data;
-                    if (!data.length) {
-                        container.innerHTML = '<p class="no-results">No students found.</p>';
-                        return;
-                    }
-                    let html = '<table><tr><th>ID</th><th>Name</th><th>Course</th><th>Year</th><th>Sessions</th><th>Action</th></tr>';
-                    data.forEach((s, idx) => {
-                        html += `<tr>
-                            <td>${s.id_number}</td>
-                            <td>${s.first_name} ${s.last_name}</td>
-                            <td>${s.course}</td>
-                            <td>${s.course_level}</td>
-                            <td>${s.remaining_sessions}</td>
-                            <td><button type="button" class="search-action-btn" onclick="selectStudentForSitIn(${idx})">Use</button></td>
-                        </tr>`;
-                    });
-                    html += '</table>';
-                    container.innerHTML = html;
-                })
-                .catch(() => {
-                    container.innerHTML = '<p class="no-results">Error searching. Please try again.</p>';
-                });
-        }
 
         // ─── Student table filter (ID, Name, Course) ───
         const studentFilterInput = document.getElementById('studentFilterInput');

@@ -23,7 +23,7 @@
   --error: #ba1a1a;
   --font-main: "Inter", sans-serif;
   --font-headline: "Manrope", sans-serif;
-  --navbar-height: 76px;
+  --navbar-height: 66px;
 
   font-family: var(--font-main);
   background-color: transparent;
@@ -32,17 +32,19 @@
   height: calc(100vh - var(--navbar-height));
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .student-info-wrapper main {
   max-width: 1100px;
   width: 100%;
-  margin: 28px auto 28px;
-  padding: 0 20px;
+  margin: 20px auto;
+  padding: 0 20px 20px;
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 0;
 }
 .student-info-wrapper .page-header {
   display: flex;
