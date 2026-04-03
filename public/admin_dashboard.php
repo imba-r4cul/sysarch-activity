@@ -391,7 +391,7 @@ if (isset($_GET['ajax_search'])) {
             <li><a href="#" class="nav-active" id="nav-home" onclick="switchView('dashboard')">Home</a></li>
             <li><a href="#" id="nav-students" onclick="switchView('students')">Student Information</a></li>
             <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
-            <li><a href="current_sit_in.php">Current Sit in</a></li>
+            <li><a href="current_sit_in.php">Active Sessions</a></li>
             <li><a href="admin_dashboard.php?logout=1" class="logout-link">Log out</a></li>
         </ul>
     </nav>
@@ -507,10 +507,11 @@ if (isset($_GET['ajax_search'])) {
                 <div class="table-controls">
                     <div class="entries-select">
                         <span>Show entries:</span>
-                        <select>
-                            <option>10</option>
-                            <option>25</option>
-                            <option>50</option>
+                        <select id="entriesPerPage">
+                            <option value="5" selected>5</option>
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
                         </select>
                     </div>
                     <div class="filter-box">
@@ -600,13 +601,9 @@ if (isset($_GET['ajax_search'])) {
                     <p id="studentCountText">Showing <b><?= !empty($studentRows) ? '1 to ' . count($studentRows) : '0 to 0' ?></b>
                         of <?= count($studentRows) ?> students</p>
                     <div class="pagination-controls">
-                        <button class="page-btn"><span class="material-symbols-outlined">chevron_left</span></button>
-                        <button class="page-btn active">1</button>
-                        <button class="page-btn">2</button>
-                        <button class="page-btn">3</button>
-                        <span style="padding: 0px 0.5rem;">...</span>
-                        <button class="page-btn">50</button>
-                        <button class="page-btn"><span class="material-symbols-outlined">chevron_right</span></button>
+                        <button class="page-btn" type="button" id="studentPrevBtn"><span class="material-symbols-outlined">chevron_left</span></button>
+                        <button class="page-btn active" type="button" id="studentPageBtn">1</button>
+                        <button class="page-btn" type="button" id="studentNextBtn"><span class="material-symbols-outlined">chevron_right</span></button>
                     </div>
                 </div>
             </section>
@@ -849,49 +846,113 @@ if (isset($_GET['ajax_search'])) {
             });
         });
 
-        // ─── Student table filter (ID, Name, Course) ───
+        // ─── Student table filter & pagination ───
         const studentFilterInput = document.getElementById('studentFilterInput');
         const studentTableBody = document.getElementById('studentTableBody');
         const studentCountText = document.getElementById('studentCountText');
         const studentNoMatchRow = document.getElementById('studentNoMatchRow');
+        const entriesPerPageSelect = document.getElementById('entriesPerPage');
+        const studentPrevBtn = document.getElementById('studentPrevBtn');
+        const studentPageBtn = document.getElementById('studentPageBtn');
+        const studentNextBtn = document.getElementById('studentNextBtn');
         const studentDataRows = studentTableBody
             ? Array.from(studentTableBody.querySelectorAll('tr[data-student-row="1"]'))
             : [];
+            
+        let studentFilteredRows = studentDataRows.slice();
+        let studentCurrentPage = 1;
 
-        function updateStudentCountText(visibleCount) {
-            if (!studentCountText) return;
+        function getStudentPageSize() {
+            if (!entriesPerPageSelect) return 10;
+            const size = parseInt(entriesPerPageSelect.value, 10);
+            return isNaN(size) || size <= 0 ? 10 : size;
+        }
 
-            const total = studentDataRows.length;
-            const rangeText = visibleCount > 0 ? ('1 to ' + visibleCount) : '0 to 0';
-            studentCountText.innerHTML = 'Showing <b>' + rangeText + '</b> of ' + total + ' students';
+        function getStudentPageCount() {
+            const total = studentFilteredRows.length;
+            const size = getStudentPageSize();
+            return Math.max(1, Math.ceil(total / size));
+        }
+
+        function renderStudentRows() {
+            if (!studentTableBody) return;
+
+            // Hide all first
+            studentDataRows.forEach(row => row.style.display = 'none');
+
+            if (studentFilteredRows.length === 0) {
+                if (studentNoMatchRow) studentNoMatchRow.style.display = '';
+                if (studentCountText) studentCountText.innerHTML = 'Showing <b>0 to 0</b> of 0 students';
+                if (studentPageBtn) studentPageBtn.textContent = '0';
+                if (studentPrevBtn) studentPrevBtn.disabled = true;
+                if (studentNextBtn) studentNextBtn.disabled = true;
+                return;
+            }
+
+            if (studentNoMatchRow) studentNoMatchRow.style.display = 'none';
+
+            const size = getStudentPageSize();
+            const start = (studentCurrentPage - 1) * size;
+            const end = Math.min(start + size, studentFilteredRows.length);
+            
+            const rowsToShow = studentFilteredRows.slice(start, end);
+            rowsToShow.forEach(row => row.style.display = '');
+
+            if (studentCountText) {
+                studentCountText.innerHTML = 'Showing <b>' + (start + 1) + ' to ' + end + '</b> of ' + studentFilteredRows.length + ' students';
+            }
+
+            const totalPages = getStudentPageCount();
+            if (studentPageBtn) studentPageBtn.textContent = studentCurrentPage;
+            if (studentPrevBtn) studentPrevBtn.disabled = studentCurrentPage <= 1;
+            if (studentNextBtn) studentNextBtn.disabled = studentCurrentPage >= totalPages;
         }
 
         function applyStudentFilter() {
             if (!studentFilterInput || !studentTableBody) return;
 
             const keyword = studentFilterInput.value.trim().toLowerCase();
-            let visibleCount = 0;
-
-            studentDataRows.forEach((row) => {
+            
+            studentFilteredRows = studentDataRows.filter(row => {
                 const searchable = row.dataset.search || '';
-                const isMatch = keyword === '' || searchable.includes(keyword);
-                row.style.display = isMatch ? '' : 'none';
-                if (isMatch) {
-                    visibleCount++;
-                }
+                return keyword === '' || searchable.includes(keyword);
             });
 
-            if (studentNoMatchRow) {
-                studentNoMatchRow.style.display = visibleCount === 0 ? '' : 'none';
-            }
-
-            updateStudentCountText(visibleCount);
+            studentCurrentPage = 1;
+            renderStudentRows();
         }
 
         if (studentFilterInput) {
             studentFilterInput.addEventListener('input', applyStudentFilter);
-            applyStudentFilter();
         }
+        
+        if (entriesPerPageSelect) {
+            entriesPerPageSelect.addEventListener('change', () => {
+                studentCurrentPage = 1;
+                renderStudentRows();
+            });
+        }
+        
+        if (studentPrevBtn) {
+            studentPrevBtn.addEventListener('click', () => {
+                if (studentCurrentPage > 1) {
+                    studentCurrentPage--;
+                    renderStudentRows();
+                }
+            });
+        }
+        
+        if (studentNextBtn) {
+            studentNextBtn.addEventListener('click', () => {
+                if (studentCurrentPage < getStudentPageCount()) {
+                    studentCurrentPage++;
+                    renderStudentRows();
+                }
+            });
+        }
+        
+        // Initial render
+        renderStudentRows();
 
         // Keep Student Information view active after student actions.
         if (new URLSearchParams(window.location.search).get('view') === 'students') {

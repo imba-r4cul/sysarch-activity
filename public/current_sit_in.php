@@ -63,7 +63,7 @@ $sql = "
         ) AS session_no
     FROM sit_in_records sr
     WHERE sr.status = 'Active'
-    ORDER BY sr.time_in DESC
+    ORDER BY sr.time_in ASC
 ";
 
 $result = $conn->query($sql);
@@ -84,181 +84,10 @@ unset($_SESSION['current_sitin_flash']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Current Sit in</title>
     <link rel="icon" type="image/x-icon" href="./images/ccs.png">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/admin_dashboard.css">
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        .page {
-            max-width: 1180px;
-            margin: 20px auto;
-            padding: 0 14px 28px;
-        }
-
-        h1 {
-            text-align: center;
-            margin: 6px 0 18px;
-            font-size: 46px;
-            line-height: 1.1;
-        }
-
-        .table-card {
-            background: #fff;
-            border: 1px solid #d7dde6;
-            padding: 12px;
-        }
-
-        .flash {
-            margin: 0 0 12px;
-            padding: 10px 12px;
-            border: 1px solid #bdd7ee;
-            background: #eef6ff;
-            color: #0b4b8f;
-            font-size: 14px;
-        }
-
-        .table-toolbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .entries-control,
-        .search-control {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .entries-control select,
-        .search-control input {
-            border: 1px solid #bcc6d1;
-            background: #fff;
-            padding: 4px 8px;
-            font-size: 14px;
-            min-height: 30px;
-        }
-
-        .search-control input {
-            width: 220px;
-        }
-
-        .table-wrap {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        .table-wrap table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 940px;
-            font-size: 14px;
-        }
-
-        .table-wrap th,
-        .table-wrap td {
-            text-align: left;
-            border-bottom: 1px solid #e3e7ec;
-            padding: 10px 8px;
-            vertical-align: middle;
-        }
-
-        .table-wrap th {
-            color: #252f3a;
-            font-weight: 700;
-            background: #f9fbfd;
-        }
-
-        tr.no-data-row td {
-            text-align: center;
-            color: #616f7f;
-            font-style: italic;
-            background: #fafafa;
-        }
-
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-            color: #11653f;
-            background: #dff6e9;
-            border: 1px solid #c6e9d5;
-        }
-
-        .action-btn {
-            border: 1px solid #0d6efd;
-            color: #0d6efd;
-            background: #fff;
-            border-radius: 4px;
-            padding: 5px 10px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .action-btn:hover {
-            background: #0d6efd;
-            color: #fff;
-        }
-
-        .table-footer {
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            font-size: 14px;
-        }
-
-        .pager {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-        }
-
-        .pager button {
-            min-width: 30px;
-            height: 28px;
-            border: 1px solid #bec7d1;
-            background: #fff;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .pager button.active {
-            background: #eff3f8;
-            border-color: #8797ab;
-            font-weight: 600;
-        }
-
-        .pager button:disabled {
-            opacity: 0.55;
-            cursor: not-allowed;
-        }
-
-        @media (max-width: 900px) {
-            h1 {
-                font-size: 34px;
-            }
-
-            .table-toolbar {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .search-control input {
-                width: 100%;
-                min-width: 200px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/current_sit_in.css">
 </head>
 
 <body>
@@ -268,7 +97,7 @@ unset($_SESSION['current_sitin_flash']);
             <li><a href="admin_dashboard.php">Home</a></li>
             <li><a href="admin_dashboard.php?view=students">Student Information</a></li>
             <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
-            <li><a href="current_sit_in.php" class="nav-active">Current Sit in</a></li>
+            <li><a href="current_sit_in.php" class="nav-active">Active Sessions</a></li>
             <li><a href="current_sit_in.php?logout=1" class="logout-link">Log out</a></li>
         </ul>
     </nav>
@@ -277,7 +106,6 @@ unset($_SESSION['current_sitin_flash']);
     <?php include 'sitin_form_modal.php'; ?>
 
     <script>
-        // Shared modal functions for non-dashboard pages
         function openModal(id) {
             const modal = document.getElementById(id);
             if (modal) modal.classList.add('active');
@@ -288,31 +116,36 @@ unset($_SESSION['current_sitin_flash']);
         }
     </script>
 
-    <main class="page">
-        <h1>Current Sit in</h1>
+    <main>
+        <div class="header-section">
+            <h1>Active Sessions</h1>
+        </div>
 
-        <section class="table-card">
-            <?php if ($flashMessage !== ''): ?>
-                <p class="flash"><?= esc($flashMessage) ?></p>
-            <?php endif; ?>
+        <?php if ($flashMessage !== ''): ?>
+            <div class="flash"><?= esc($flashMessage) ?></div>
+        <?php endif; ?>
 
-            <div class="table-toolbar">
+        <div class="card">
+            <div class="card-toolbar">
                 <div class="entries-control">
-                    <select id="entriesPerPage" aria-label="Entries per page">
-                        <option value="10" selected>10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                    </select>
-                    <span>entries per page</span>
+                    <label class="label-uppercase" for="entriesPerPage">Show entries</label>
+                    <div class="select-wrapper">
+                        <select id="entriesPerPage" aria-label="Entries per page">
+                            <option value="5" selected>5</option>
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span class="material-symbols-outlined">expand_more</span>
+                    </div>
                 </div>
-
-                <div class="search-control">
-                    <label for="searchInput">Search:</label>
-                    <input type="text" id="searchInput" placeholder="Search by ID, name, purpose, lab">
+                <div class="search-wrapper">
+                    <span class="material-symbols-outlined">search</span>
+                    <input type="text" id="searchInput" aria-label="Search entries" placeholder="Search by ID, name, purpose, lab">
                 </div>
             </div>
 
-            <div class="table-wrap">
+            <div class="table-container">
                 <table>
                     <thead>
                         <tr>
@@ -321,63 +154,87 @@ unset($_SESSION['current_sitin_flash']);
                             <th>Name</th>
                             <th>Purpose</th>
                             <th>Sit Lab</th>
-                            <th>Session</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th style="text-align: center;">Session</th>
+                            <th style="text-align: center;">Status</th>
+                            <th class="text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="currentSitTableBody">
                         <?php if (empty($currentRecords)): ?>
-                            <tr class="no-data-row" id="noDataRow">
-                                <td colspan="8">No data available</td>
+                            <tr id="noDataRow">
+                                <td colspan="8" style="text-align: center; color: var(--on-surface-variant); font-style: italic; padding: 32px;">No data available</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($currentRecords as $record):
                                 $displayName = trim(($record['last_name'] ?? '') . ', ' . ($record['first_name'] ?? ''));
                                 $searchBlob = strtolower(trim(
-                                    ($record['id'] ?? '') . ' ' .
                                     ($record['id_number'] ?? '') . ' ' .
                                     $displayName . ' ' .
                                     ($record['purpose'] ?? '') . ' ' .
                                     ($record['lab'] ?? '')
                                 ));
-                                ?>
-                                <tr class="data-row" data-search="<?= esc($searchBlob) ?>">
-                                    <td><?= esc($record['id']) ?></td>
-                                    <td><?= esc($record['id_number']) ?></td>
-                                    <td><?= esc($displayName) ?></td>
-                                    <td><?= esc($record['purpose']) ?></td>
-                                    <td><?= esc($record['lab']) ?></td>
-                                    <td><?= esc($record['session_no']) ?></td>
-                                    <td><span class="status-pill">Active</span></td>
-                                    <td>
-                                        <form method="POST" action="current_sit_in.php"
-                                            onsubmit="return confirm('Mark this sit-in as completed?');">
-                                            <input type="hidden" name="record_id" value="<?= esc($record['id']) ?>">
-                                            <button type="submit" name="mark_completed" value="1" class="action-btn">End</button>
-                                        </form>
-                                    </td>
-                                </tr>
+                            ?>
+                            <tr class="data-row" data-search="<?= esc($searchBlob) ?>">
+                                <td class="sit-id"><?= esc($record['id']) ?></td>
+                                <td><?= esc($record['id_number']) ?></td>
+                                <td class="student-name"><?= esc($displayName) ?></td>
+                                <td><span class="purpose-badge"><?= esc($record['purpose']) ?></span></td>
+                                <td class="lab-text"><?= esc($record['lab']) ?></td>
+                                <td class="session-time" style="text-align: center;"><?= esc($record['session_no']) ?></td>
+                                <td style="text-align: center;">
+                                    <span class="status-badge">
+                                        <span class="status-dot"></span>
+                                        Active
+                                    </span>
+                                </td>
+                                <td class="text-right">
+                                    <form method="POST" action="current_sit_in.php" class="action-form" onsubmit="return confirm('Mark this sit-in as completed?');">
+                                        <input type="hidden" name="record_id" value="<?= esc($record['id']) ?>">
+                                        <button type="submit" name="mark_completed" value="1" class="btn-end">End</button>
+                                    </form>
+                                </td>
+                            </tr>
                             <?php endforeach; ?>
-                            <tr class="no-data-row" id="noDataRow" style="display:none;">
-                                <td colspan="8">No data available</td>
+                            <tr id="noDataRow" style="display:none;">
+                                <td colspan="8" style="text-align: center; color: var(--on-surface-variant); font-style: italic; padding: 32px;">No data available</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
             </div>
 
-            <div class="table-footer">
-                <div id="tableInfo">Showing 0 to 0 of 0 entries</div>
-                <div class="pager">
-                    <button type="button" id="firstBtn" aria-label="First page">&laquo;</button>
-                    <button type="button" id="prevBtn" aria-label="Previous page">&lsaquo;</button>
-                    <button type="button" id="pageBtn" class="active" aria-label="Current page">1</button>
-                    <button type="button" id="nextBtn" aria-label="Next page">&rsaquo;</button>
-                    <button type="button" id="lastBtn" aria-label="Last page">&raquo;</button>
+            <div class="pagination-footer">
+                <span class="pagination-info" id="tableInfo">Showing 0 to 0 of 0 entries</span>
+                <nav class="pagination-nav">
+                    <button class="page-btn" type="button" id="firstBtn" aria-label="First page">
+                        <span class="material-symbols-outlined">keyboard_double_arrow_left</span>
+                    </button>
+                    <button class="page-btn" type="button" id="prevBtn" aria-label="Previous page">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <button class="page-btn active" type="button" id="pageBtn" aria-label="Current page">1</button>
+                    <button class="page-btn" type="button" id="nextBtn" aria-label="Next page">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                    <button class="page-btn" type="button" id="lastBtn" aria-label="Last page">
+                        <span class="material-symbols-outlined">keyboard_double_arrow_right</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-label">Active Sessions</span>
+                    <span class="material-symbols-outlined">sensors</span>
+                </div>
+                <div>
+                    <h3 class="stat-value"><?= count($currentRecords) ?></h3>
+                    <p class="stat-subtext">Across 6 Computer Labs</p>
                 </div>
             </div>
-        </section>
+        </div>
     </main>
 
     <script>
@@ -393,9 +250,7 @@ unset($_SESSION['current_sitin_flash']);
             const nextBtn = document.getElementById('nextBtn');
             const lastBtn = document.getElementById('lastBtn');
 
-            if (!tableBody) {
-                return;
-            }
+            if (!tableBody) return;
 
             const allRows = Array.from(tableBody.querySelectorAll('tr.data-row'));
             let filteredRows = allRows.slice();
@@ -437,29 +292,21 @@ unset($_SESSION['current_sitin_flash']);
             }
 
             function renderRows() {
-                allRows.forEach((row) => {
-                    row.style.display = 'none';
-                });
+                allRows.forEach((row) => row.style.display = 'none');
 
                 if (filteredRows.length === 0) {
-                    if (noDataRow) {
-                        noDataRow.style.display = '';
-                    }
+                    if (noDataRow) noDataRow.style.display = '';
                     updateInfo();
                     updatePagerButtons();
                     return;
                 }
 
-                if (noDataRow) {
-                    noDataRow.style.display = 'none';
-                }
+                if (noDataRow) noDataRow.style.display = 'none';
 
                 const size = getPageSize();
                 const start = (page - 1) * size;
                 const rowsToShow = filteredRows.slice(start, start + size);
-                rowsToShow.forEach((row) => {
-                    row.style.display = '';
-                });
+                rowsToShow.forEach((row) => row.style.display = '');
 
                 updateInfo();
                 updatePagerButtons();
@@ -468,8 +315,18 @@ unset($_SESSION['current_sitin_flash']);
             function applyFilters() {
                 const query = searchInput.value.trim().toLowerCase();
                 filteredRows = allRows.filter((row) => {
+                    if (query === '') return true;
+
+                    // If query is numeric, avoid false positive substring matches inside lab/session numbers (e.g. '2' matching lab '526')
+                    if (/^\d+$/.test(query)) {
+                        const id = row.cells[1].textContent.trim().toLowerCase();
+                        const lab = row.cells[4].textContent.trim().toLowerCase();
+                        const session = row.cells[5].textContent.trim().toLowerCase();
+                        return id.startsWith(query) || lab.startsWith(query) || session.startsWith(query);
+                    }
+
                     const blob = row.dataset.search || '';
-                    return query === '' || blob.includes(query);
+                    return blob.includes(query);
                 });
 
                 page = 1;
