@@ -22,8 +22,9 @@ Thumbs.db
 # Database
 /config/database.php
 
-# Uploaded files
-/public/uploads/
+# Uploaded files (but keep .htaccess for security)
+/public/uploads/*
+!/public/uploads/.htaccess
 
 /.agents
 

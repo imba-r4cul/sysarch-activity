@@ -569,13 +569,14 @@ if (isset($_GET['ajax_search'])) {
                                         <td class="id-cell"><?= esc($student['id_number']) ?></td>
                                         <td>
                                             <div class="name-cell">
-                                                <div class="avatar" style="<?= esc($avatarStyles[$idx % count($avatarStyles)]) ?>">
+                                                <?php $style = [['bg' => 'var(--primary-fixed)', 'fg' => 'var(--on-primary-fixed)'], ['bg' => 'var(--tertiary-fixed)', 'fg' => 'var(--on-tertiary-fixed)']][$idx % 2]; ?>
+                                                <div class="avatar" style="background-color: <?= $style['bg'] ?>; color: <?= $style['fg'] ?>;">
                                                     <?= esc(studentInitials($student['first_name'], $student['last_name'])) ?>
                                                 </div>
                                                 <span><?= esc($displayName) ?></span>
                                             </div>
                                         </td>
-                                        <td><span class="tag"><?= esc(yearLevelLabel($student['course_level'])) ?></span></td>
+                                        <td><?= esc(yearLevelLabel($student['course_level'])) ?></td>
                                         <td><?= esc($student['course']) ?></td>
                                         <td class="session-count<?= $remaining <= 3 ? ' session-low' : '' ?>" style="text-align: center; vertical-align: middle;">
                                             <?= str_pad((string) $remaining, 2, '0', STR_PAD_LEFT) ?>
@@ -601,9 +602,11 @@ if (isset($_GET['ajax_search'])) {
                     <p id="studentCountText">Showing <b><?= !empty($studentRows) ? '1 to ' . count($studentRows) : '0 to 0' ?></b>
                         of <?= count($studentRows) ?> students</p>
                     <div class="pagination-controls">
+                        <button class="page-btn" type="button" id="studentFirstBtn"><span class="material-symbols-outlined">keyboard_double_arrow_left</span></button>
                         <button class="page-btn" type="button" id="studentPrevBtn"><span class="material-symbols-outlined">chevron_left</span></button>
                         <button class="page-btn active" type="button" id="studentPageBtn">1</button>
                         <button class="page-btn" type="button" id="studentNextBtn"><span class="material-symbols-outlined">chevron_right</span></button>
+                        <button class="page-btn" type="button" id="studentLastBtn"><span class="material-symbols-outlined">keyboard_double_arrow_right</span></button>
                     </div>
                 </div>
             </section>
@@ -852,9 +855,11 @@ if (isset($_GET['ajax_search'])) {
         const studentCountText = document.getElementById('studentCountText');
         const studentNoMatchRow = document.getElementById('studentNoMatchRow');
         const entriesPerPageSelect = document.getElementById('entriesPerPage');
+        const studentFirstBtn = document.getElementById('studentFirstBtn');
         const studentPrevBtn = document.getElementById('studentPrevBtn');
         const studentPageBtn = document.getElementById('studentPageBtn');
         const studentNextBtn = document.getElementById('studentNextBtn');
+        const studentLastBtn = document.getElementById('studentLastBtn');
         const studentDataRows = studentTableBody
             ? Array.from(studentTableBody.querySelectorAll('tr[data-student-row="1"]'))
             : [];
@@ -904,8 +909,10 @@ if (isset($_GET['ajax_search'])) {
 
             const totalPages = getStudentPageCount();
             if (studentPageBtn) studentPageBtn.textContent = studentCurrentPage;
+            if (studentFirstBtn) studentFirstBtn.disabled = studentCurrentPage <= 1;
             if (studentPrevBtn) studentPrevBtn.disabled = studentCurrentPage <= 1;
             if (studentNextBtn) studentNextBtn.disabled = studentCurrentPage >= totalPages;
+            if (studentLastBtn) studentLastBtn.disabled = studentCurrentPage >= totalPages;
         }
 
         function applyStudentFilter() {
@@ -933,6 +940,13 @@ if (isset($_GET['ajax_search'])) {
             });
         }
         
+        if (studentFirstBtn) {
+            studentFirstBtn.addEventListener('click', () => {
+                studentCurrentPage = 1;
+                renderStudentRows();
+            });
+        }
+        
         if (studentPrevBtn) {
             studentPrevBtn.addEventListener('click', () => {
                 if (studentCurrentPage > 1) {
@@ -944,10 +958,18 @@ if (isset($_GET['ajax_search'])) {
         
         if (studentNextBtn) {
             studentNextBtn.addEventListener('click', () => {
-                if (studentCurrentPage < getStudentPageCount()) {
+                const totalPages = getStudentPageCount();
+                if (studentCurrentPage < totalPages) {
                     studentCurrentPage++;
                     renderStudentRows();
                 }
+            });
+        }
+
+        if (studentLastBtn) {
+            studentLastBtn.addEventListener('click', () => {
+                studentCurrentPage = getStudentPageCount();
+                renderStudentRows();
             });
         }
         

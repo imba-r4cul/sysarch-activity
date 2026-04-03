@@ -19,6 +19,18 @@ function esc($value)
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 
+function studentInitials($firstName, $lastName)
+{
+    $first = trim((string) $firstName);
+    $last = trim((string) $lastName);
+
+    $a = $first !== '' ? strtoupper(substr($first, 0, 1)) : '';
+    $b = $last !== '' ? strtoupper(substr($last, 0, 1)) : '';
+    $initials = $a . $b;
+
+    return $initials !== '' ? $initials : 'NA';
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_completed'])) {
     $recordId = (int) ($_POST['record_id'] ?? 0);
 
@@ -45,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_completed'])) {
 }
 
 $currentRecords = [];
+$activeCount = 0;
 $sql = "
     SELECT
         sr.id,
@@ -71,6 +84,11 @@ if ($result) {
     while ($row = $result->fetch_assoc()) {
         $currentRecords[] = $row;
     }
+}
+
+$activeResult = $conn->query("SELECT COUNT(*) AS total FROM sit_in_records WHERE status = 'Active'");
+if ($activeResult && ($activeRow = $activeResult->fetch_assoc())) {
+    $activeCount = (int) ($activeRow['total'] ?? 0);
 }
 
 $flashMessage = $_SESSION['current_sitin_flash'] ?? '';
@@ -160,12 +178,19 @@ unset($_SESSION['current_sitin_flash']);
                         </tr>
                     </thead>
                     <tbody id="currentSitTableBody">
+                        <?php
+                        $avatarStyles = [
+                            ['bg' => 'var(--primary-fixed)', 'fg' => 'var(--on-primary-fixed)'],
+                            ['bg' => 'var(--tertiary-fixed)', 'fg' => 'var(--on-tertiary-fixed)'],
+                        ];
+                        ?>
                         <?php if (empty($currentRecords)): ?>
                             <tr id="noDataRow">
                                 <td colspan="8" style="text-align: center; color: var(--on-surface-variant); font-style: italic; padding: 32px;">No data available</td>
                             </tr>
                         <?php else: ?>
-                            <?php foreach ($currentRecords as $record):
+                            <?php foreach ($currentRecords as $idx => $record):
+                                $style = $avatarStyles[$idx % count($avatarStyles)];
                                 $displayName = trim(($record['last_name'] ?? '') . ', ' . ($record['first_name'] ?? ''));
                                 $searchBlob = strtolower(trim(
                                     ($record['id_number'] ?? '') . ' ' .
@@ -177,21 +202,32 @@ unset($_SESSION['current_sitin_flash']);
                             <tr class="data-row" data-search="<?= esc($searchBlob) ?>">
                                 <td class="sit-id"><?= esc($record['id']) ?></td>
                                 <td><?= esc($record['id_number']) ?></td>
-                                <td class="student-name"><?= esc($displayName) ?></td>
-                                <td><span class="purpose-badge"><?= esc($record['purpose']) ?></span></td>
+                                <td class="student-name">
+                                    <div class="name-cell">
+                                        <div class="avatar" style="background-color: <?= $style['bg'] ?>; color: <?= $style['fg'] ?>;">
+                                            <?= esc(studentInitials($record['first_name'], $record['last_name'])) ?>
+                                        </div>
+                                        <span><?= esc($displayName) ?></span>
+                                    </div>
+                                </td>
+                                <td><?= esc($record['purpose']) ?></td>
                                 <td class="lab-text"><?= esc($record['lab']) ?></td>
                                 <td class="session-time" style="text-align: center;"><?= esc($record['session_no']) ?></td>
                                 <td style="text-align: center;">
-                                    <span class="status-badge">
+                                    <span class="status-badge<?= ($record['status'] ?? '') === 'Completed' ? ' completed' : '' ?>">
                                         <span class="status-dot"></span>
-                                        Active
+                                        <?= esc($record['status'] ?? 'Unknown') ?>
                                     </span>
                                 </td>
                                 <td class="text-right">
-                                    <form method="POST" action="current_sit_in.php" class="action-form" onsubmit="return confirm('Mark this sit-in as completed?');">
-                                        <input type="hidden" name="record_id" value="<?= esc($record['id']) ?>">
-                                        <button type="submit" name="mark_completed" value="1" class="btn-end">End</button>
-                                    </form>
+                                    <?php if (($record['status'] ?? '') === 'Active'): ?>
+                                        <form method="POST" action="current_sit_in.php" class="action-form" onsubmit="return confirm('Mark this sit-in as completed?');">
+                                            <input type="hidden" name="record_id" value="<?= esc($record['id']) ?>">
+                                            <button type="submit" name="mark_completed" value="1" class="btn-end">End</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <span class="action-done">Done</span>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -230,7 +266,7 @@ unset($_SESSION['current_sitin_flash']);
                     <span class="material-symbols-outlined">sensors</span>
                 </div>
                 <div>
-                    <h3 class="stat-value"><?= count($currentRecords) ?></h3>
+                    <h3 class="stat-value"><?= $activeCount ?></h3>
                     <p class="stat-subtext">Across 6 Computer Labs</p>
                 </div>
             </div>
@@ -366,6 +402,19 @@ unset($_SESSION['current_sitin_flash']);
 
             renderRows();
         })();
+
+        // Auto-dismiss flash message after 3 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const flash = document.querySelector('.flash');
+            if (flash) {
+                setTimeout(() => {
+                    flash.style.animation = 'fadeOut 0.5s ease-out forwards';
+                    setTimeout(() => {
+                        flash.remove();
+                    }, 500);
+                }, 3000);
+            }
+        });
     </script>
 </body>
 

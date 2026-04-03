@@ -3,13 +3,16 @@
 
 ## Overview
 
-- This file lists CSS classes and color values referenced by [public/dashboard.php](public/dashboard.php#L1) that should not be changed without coordination.
+- This file lists CSS classes and color values shared across student-facing pages ([public/dashboard.php](public/dashboard.php#L1), [public/edit_profile.php](public/edit_profile.php#L1), [public/reservations.php](public/reservations.php#L1)) that should not be changed without coordination.
 
 
 ## Primary files referenced
 
 - [public/css/style.css](public/css/style.css#L1)
 - [public/css/dashboard.css](public/css/dashboard.css#L1)
+- [public/dashboard.php](public/dashboard.php#L1)
+- [public/edit_profile.php](public/edit_profile.php#L1)
+- [public/reservations.php](public/reservations.php#L1)
 
 
 ## Protected colors (do not change)
