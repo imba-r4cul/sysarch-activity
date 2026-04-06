@@ -389,9 +389,10 @@ if (isset($_GET['ajax_search'])) {
         <span class="brand">CCS Sit-in Monitoring System (ADMIN DASHBOARD)</span>
         <ul>
             <li><a href="#" class="nav-active" id="nav-home" onclick="switchView('dashboard')">Home</a></li>
-            <li><a href="#" id="nav-students" onclick="switchView('students')">Student Information</a></li>
             <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
-            <li><a href="current_sit_in.php">Active Sessions</a></li>
+            <li><a href="#" id="nav-students" onclick="switchView('students')">Student Information</a></li>
+            <li><a href="current_sit_in.php">Active session</a></li>
+            <li><a href="sit_in_history.php">Sit-in History</a></li>
             <li><a href="admin_dashboard.php?logout=1" class="logout-link">Log out</a></li>
         </ul>
     </nav>
