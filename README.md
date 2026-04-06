@@ -1,44 +1,36 @@
 # Student Management System
 
-This is a small student management system I put together for class. Below are the steps I use to run it locally with XAMPP.
+This is a small student management system I built for class. The app runs on XAMPP, and the notes below are the same steps I use when I set it up locally.
 
-## Setup instructions
+## Setup
 
 ### Database configuration
 
-Edit `config/database.php` and update these values: `DB_HOST`, `DB_USER`, `DB_PASS`, and `DB_NAME`.
+Open `config/database.php` and set `DB_HOST`, `DB_USER`, `DB_PASS`, and `DB_NAME`.
 
-Steps:
+If you are using the default XAMPP setup, `DB_USER` is usually `root` and `DB_PASS` is usually blank.
 
-1. Open `config/database.php`.
-2. Update your database credentials (defaults work for XAMPP: `DB_USER` = `root`, `DB_PASS` = empty).
+### Import the database
 
-If you're using default XAMPP, `DB_USER` is usually `root` and `DB_PASS` is usually blank.
+The schema lives in `db/database_setup.sql`. To import it:
 
-### Importing the database
-
-The database schema is in `db/database_setup.sql`. To import:
-
-1. Start Apache and MySQL from XAMPP.
-2. Open http://localhost/phpmyadmin.
+1. Start Apache and MySQL in XAMPP.
+2. Go to http://localhost/phpmyadmin.
 3. Use the Import tab to upload `db/database_setup.sql` and run it.
 
-That creates the `student_management` database with all required tables: `users`, `admin_users`, `sit_in_records`, `announcements`, and `reservations`.
+That creates the `student_management` database with these tables: `users`, `admin_users`, `sit_in_records`, `announcements`, and `reservations`.
 
-## Profile picture support
+## Features
 
-The app supports uploading and deleting profile pictures from the Edit Profile page.
+This application includes the following features:
 
-If you already have a database, run this once in phpMyAdmin:
-
-```sql
-ALTER TABLE `users`
-ADD COLUMN `profile_image` varchar(255) DEFAULT NULL AFTER `address`;
-```
-
-Default behavior:
-
-- Users without a photo use `public/images/edit-profile.png`.
-- Clicking the profile image in the dashboard opens the Edit Profile page.
-- Uploaded images are stored in `public/uploads/` (this folder is ignored in version control).
+- **User registration & authentication:** Register, log in, and edit profile information.
+- **Student dashboard:** View current sit-ins, announcements, and quick actions from a student view.
+- **Admin dashboard:** Manage sit-in records, announcements, users, and reservations.
+- **Current sit-in (active sessions):** The Current Sit-in page asks for confirmation before ending a session and updates the row in-place without a full page reload.
+- **Sit-in history:** Browse historical sit-in records per student.
+- **Reservations:** Create and manage seat reservations.
+- **Search student:** Modal-based search for quick student lookups.
+- **File uploads:** Support for student image uploads and other files under public/uploads.
+- **Styles & assets:** Page styles are organized in `public/css` and images in `public/images`.
 

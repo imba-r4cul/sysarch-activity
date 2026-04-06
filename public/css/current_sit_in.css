@@ -82,7 +82,10 @@ main {
   border-radius: var(--radius-lg);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
   overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+
 
 .card-toolbar {
   padding: 24px;
@@ -193,10 +196,7 @@ td {
   vertical-align: middle;
 }
 
-tr:hover {
-  background-color: var(--surface-container-low);
-  transition: background-color 0.2s;
-}
+
 
 .sit-id {
   font-family: var(--font-headline);
@@ -367,6 +367,12 @@ tr:hover {
   width: 100%;
   max-width: 300px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 24px rgba(0, 0, 0, 0.15);
 }
 
 .stat-card-header {

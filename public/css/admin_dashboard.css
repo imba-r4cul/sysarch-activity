@@ -86,7 +86,10 @@
             border-radius: 14px;
             overflow: hidden;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+
 
         .card-header {
             background: linear-gradient(160deg, #0b4b8f 0%, #18539a 40%, #2471c9 100%);
@@ -438,9 +441,7 @@
             color: #333;
         }
 
-        .search-results tr:hover td {
-            background: #f0f5ff;
-        }
+
 
         .search-action-btn {
             padding: 6px 10px;

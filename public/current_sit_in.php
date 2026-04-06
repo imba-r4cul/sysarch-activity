@@ -17,27 +17,44 @@ if (isset($_GET['logout'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_completed'])) {
     $recordId = (int) ($_POST['record_id'] ?? 0);
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 
     if ($recordId > 0) {
         $stmt = $conn->prepare("UPDATE sit_in_records SET status = 'Completed', time_out = NOW() WHERE id = ? AND status = 'Active'");
         if ($stmt) {
             $stmt->bind_param('i', $recordId);
             $stmt->execute();
-            if ($stmt->affected_rows > 0) {
-                $_SESSION['current_sitin_flash'] = 'Sit-in record marked as completed.';
-            } else {
-                $_SESSION['current_sitin_flash'] = 'Record not found or already completed.';
-            }
+            $success = $stmt->affected_rows > 0;
             $stmt->close();
+            
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => $success]);
+                exit;
+            } else {
+                $_SESSION['current_sitin_flash'] = $success ? 'Sit-in record marked as completed.' : 'Record not found or already completed.';
+            }
         } else {
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'error' => 'Database error.']);
+                exit;
+            }
             $_SESSION['current_sitin_flash'] = 'Database error. Please try again.';
         }
     } else {
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => 'Invalid sit-in record selected.']);
+            exit;
+        }
         $_SESSION['current_sitin_flash'] = 'Invalid sit-in record selected.';
     }
 
-    header('Location: current_sit_in.php');
-    exit;
+    if (!$isAjax) {
+        header('Location: current_sit_in.php');
+        exit;
+    }
 }
 
 $currentRecords = [];
@@ -206,10 +223,7 @@ unset($_SESSION['current_sitin_flash']);
                                 </td>
                                 <td class="text-right">
                                     <?php if (($record['status'] ?? '') === 'Active'): ?>
-                                        <form method="POST" action="current_sit_in.php" class="action-form" onsubmit="return confirm('Mark this sit-in as completed?');">
-                                            <input type="hidden" name="record_id" value="<?= esc($record['id']) ?>">
-                                            <button type="submit" name="mark_completed" value="1" class="btn-end">End</button>
-                                        </form>
+                                        <button type="button" class="btn-end" onclick="confirmEndSession(<?= esc($record['id']) ?>, this.closest('tr'))">End</button>
                                     <?php else: ?>
                                         <span class="action-done">Done</span>
                                     <?php endif; ?>
@@ -258,7 +272,86 @@ unset($_SESSION['current_sitin_flash']);
         </div>
     </main>
 
+    <!-- ─── Confirmation Modal ─── -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-box confirmation-box" style="max-width: 400px; text-align: center;">
+            <div class="modal-header" style="justify-content: center; border-bottom: none;">
+            </div>
+            <div class="modal-body" style="padding: 10px 20px 25px;">
+                <h3 id="confirmModalTitle" style="margin: 0 0 10px; color: #333; font-size: 20px;">Confirm Action</h3>
+                <p id="confirmModalMessage" style="margin: 0; color: #666; font-size: 15px;">Are you sure?</p>
+            </div>
+            <div class="modal-actions" style="justify-content: center; background: #f9f9f9; padding: 15px;">
+                <button type="button" class="modal-btn btn-cancel" onclick="closeModal('confirmModal')">Cancel</button>
+                <button type="button" class="modal-btn btn-confirm" id="confirmModalBtn" style="background-color: #d32f2f; color: white;">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        let rowToTerminate = null;
+
+        function confirmEndSession(recordId, rowElement) {
+            rowToTerminate = rowElement;
+            document.getElementById('confirmModalTitle').textContent = 'End Session';
+            document.getElementById('confirmModalMessage').textContent = 'Are you sure you want to end this sit-in session?';
+            
+            const confirmBtn = document.getElementById('confirmModalBtn');
+            confirmBtn.onclick = function() {
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = 'Ending...';
+                endSessionAjax(recordId, confirmBtn);
+            };
+            openModal('confirmModal');
+        }
+
+        function endSessionAjax(recordId, confirmBtn) {
+            const formData = new FormData();
+            formData.append('mark_completed', '1');
+            formData.append('record_id', recordId);
+
+            fetch('current_sit_in.php', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                closeModal('confirmModal');
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Confirm';
+
+                if (data.success) {
+                    if (rowToTerminate) {
+                        rowToTerminate.style.transition = 'all 0.4s ease';
+                        rowToTerminate.style.opacity = '0';
+                        rowToTerminate.style.transform = 'translateX(-20px)';
+                        
+                        setTimeout(() => {
+                            rowToTerminate.remove();
+                            // Update total session count if possible
+                            const h3 = document.querySelector('.stat-value');
+                            if (h3) {
+                                h3.textContent = Math.max(0, parseInt(h3.textContent) - 1);
+                            }
+                            // Trigger table filter update to fix pagination
+                            applyFilters();
+                        }, 400);
+                    }
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to complete session.'));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Confirm';
+                alert('Network error occurred.');
+            });
+        }
+
         (function () {
             const searchInput = document.getElementById('searchInput');
             const entriesPerPage = document.getElementById('entriesPerPage');

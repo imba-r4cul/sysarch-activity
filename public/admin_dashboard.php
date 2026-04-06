@@ -375,7 +375,7 @@ if (isset($_GET['ajax_search'])) {
             <li><a href="#" class="nav-active" id="nav-home" onclick="switchView('dashboard')">Home</a></li>
             <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
             <li><a href="#" id="nav-students" onclick="switchView('students')">Student Information</a></li>
-            <li><a href="current_sit_in.php">Active session</a></li>
+            <li><a href="current_sit_in.php">Active sessions</a></li>
             <li><a href="sit_in_history.php">Sit-in History</a></li>
             <li><a href="admin_dashboard.php?logout=1" class="logout-link">Log out</a></li>
         </ul>
@@ -610,6 +610,23 @@ if (isset($_GET['ajax_search'])) {
         <input type="hidden" name="delete_student_id" id="delete_student_id" value="">
     </form>
 
+    <!-- ─── Confirmation Modal ─── -->
+    <div class="modal-overlay" id="confirmActionModal">
+        <div class="modal-box confirmation-box" style="max-width: 400px; text-align: center;">
+            <div class="modal-header" style="flex-direction: column; justify-content: center; align-items: center; border-bottom: none; padding: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 50px; color: #d32f2f;">warning</span>
+            </div>
+            <div class="modal-body" style="padding: 5px 15px 15px;">
+                <h3 id="confirmActionTitle" style="margin: 0 0 5px; color: #333; font-size: 18px;">Confirm Action</h3>
+                <p id="confirmActionMessage" style="margin: 0; color: #666; font-size: 14px;">Are you sure?</p>
+            </div>
+            <div class="modal-actions" style="justify-content: center; background: #f9f9f9; padding: 12px;">
+                <button type="button" class="modal-btn btn-cancel" onclick="closeModal('confirmActionModal')">Cancel</button>
+                <button type="button" class="modal-btn btn-confirm" id="confirmActionBtn" style="background-color: #d32f2f; color: white;">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ─── Add Student Modal ─── -->
     <div class="modal-overlay" id="addStudentModal">
         <div class="modal-box">
@@ -816,16 +833,22 @@ if (isset($_GET['ajax_search'])) {
             const studentName = row.dataset.displayName || 'this student';
             if (!studentId) return;
 
-            if (confirm('Delete ' + studentName + '? This action cannot be undone.')) {
+            document.getElementById('confirmActionTitle').textContent = 'Delete Student';
+            document.getElementById('confirmActionMessage').textContent = 'Delete ' + studentName + '? This action cannot be undone.';
+            document.getElementById('confirmActionBtn').onclick = function() {
                 document.getElementById('delete_student_id').value = studentId;
                 document.getElementById('deleteStudentForm').submit();
-            }
+            };
+            openModal('confirmActionModal');
         }
 
         function confirmResetSessions() {
-            if (confirm('Reset all session counts for every student? This will clear all sit-in records.')) {
+            document.getElementById('confirmActionTitle').textContent = 'Reset Sessions';
+            document.getElementById('confirmActionMessage').textContent = 'Reset all session counts for every student? This will clear all sit-in records.';
+            document.getElementById('confirmActionBtn').onclick = function() {
                 document.getElementById('resetSessionForm').submit();
-            }
+            };
+            openModal('confirmActionModal');
         }
 
         // Close modal on overlay click

@@ -73,7 +73,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
             <li><a href="admin_dashboard.php">Home</a></li>
             <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
             <li><a href="admin_dashboard.php?view=students">Student Information</a></li>
-            <li><a href="current_sit_in.php">Active session</a></li>
+            <li><a href="current_sit_in.php">Active sessions</a></li>
             <li><a href="sit_in_history.php" class="nav-active">Sit-in History</a></li>
             <li><a href="sit_in_history.php?logout=1" class="logout-link">Log out</a></li>
         </ul>
