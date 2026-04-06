@@ -27,25 +27,26 @@ body {
 main {
     max-width: 1600px;
     margin: 0 auto;
-    padding: 40px 48px;
+    padding: 30px 48px;
 }
 
 .history-header {
     display: flex;
     flex-direction: row;
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: space-between;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     gap: 24px;
 }
 
 h1 {
     margin: 0;
     font-family: Manrope, sans-serif;
-    font-size: 3rem;
+    font-size: 36px;
     font-weight: 800;
     letter-spacing: -0.025em;
     color: var(--primary);
+    margin-top: 20px;
 }
 
 .stats-container {
