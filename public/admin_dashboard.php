@@ -489,19 +489,22 @@ if (isset($_GET['ajax_search'])) {
                 <?php unset($_SESSION['flash_error']); ?>
             <?php endif; ?>
             <section class="ledger-container">
-                <div class="table-controls">
-                    <div class="entries-select">
-                        <span>Show entries:</span>
-                        <select id="entriesPerPage">
-                            <option value="5" selected>5</option>
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                        </select>
+                 <div class="table-controls">
+                    <div class="entries-control">
+                        <label class="label-uppercase" for="entriesPerPage">Show entries</label>
+                        <div class="select-wrapper">
+                            <select id="entriesPerPage" aria-label="Entries per page">
+                                <option value="5" selected>5</option>
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span class="material-symbols-outlined">expand_more</span>
+                        </div>
                     </div>
-                    <div class="filter-box">
-                        <span class="material-symbols-outlined">filter_list</span>
-                        <input id="studentFilterInput" placeholder="Filter by ID, Name or Course..." type="text">
+                    <div class="search-wrapper">
+                        <span class="material-symbols-outlined">search</span>
+                        <input type="text" id="studentFilterInput" aria-label="Filter students" placeholder="Filter by ID, Name or Course...">
                     </div>
                 </div>
                 <div class="table-responsive">
