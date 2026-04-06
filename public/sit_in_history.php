@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config/database.php';
+require_once 'helpers.php';
 
 if (!isset($_SESSION['admin_id'])) {
     header('Location: index.php');
@@ -12,37 +13,6 @@ if (isset($_GET['logout'])) {
     session_destroy();
     header('Location: index.php');
     exit;
-}
-
-function esc($value)
-{
-    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
-}
-
-function studentInitials($firstName, $lastName)
-{
-    $first = trim((string) $firstName);
-    $last = trim((string) $lastName);
-
-    $a = $first !== '' ? strtoupper(substr($first, 0, 1)) : '';
-    $b = $last !== '' ? strtoupper(substr($last, 0, 1)) : '';
-    $initials = $a . $b;
-
-    return $initials !== '' ? $initials : 'NA';
-}
-
-function formatDateTime($value)
-{
-    if ($value === null || $value === '') {
-        return '--';
-    }
-
-    $timestamp = strtotime((string) $value);
-    if ($timestamp === false) {
-        return '--';
-    }
-
-    return date('d M Y, h:i A', $timestamp);
 }
 
 $historyRecords = [];

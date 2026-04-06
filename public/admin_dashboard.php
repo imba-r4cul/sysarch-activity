@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config/database.php';
+require_once 'helpers.php';
 
 // Guard: admin only
 if (!isset($_SESSION['admin_id'])) {
@@ -17,23 +18,6 @@ if (isset($_GET['logout'])) {
 
 $adminName = $_SESSION['admin_name'] ?? 'Admin';
 $adminId = (int) $_SESSION['admin_id'];
-
-function esc($v)
-{
-    return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
-}
-
-function studentInitials($firstName, $lastName)
-{
-    $first = trim((string) $firstName);
-    $last = trim((string) $lastName);
-
-    $a = $first !== '' ? strtoupper(substr($first, 0, 1)) : '';
-    $b = $last !== '' ? strtoupper(substr($last, 0, 1)) : '';
-    $initials = $a . $b;
-
-    return $initials !== '' ? $initials : 'NA';
-}
 
 function studentDisplayName($student)
 {
