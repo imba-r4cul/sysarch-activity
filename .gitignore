@@ -20,7 +20,7 @@ Thumbs.db
 *.tmp
 
 # Database
-/config/database.php
+# /config/database.php   //BEST PRACTICE TO NOT PUSH THIS ON GITHUB
 
 # Uploaded files (but keep .htaccess for security)
 /public/uploads/*
