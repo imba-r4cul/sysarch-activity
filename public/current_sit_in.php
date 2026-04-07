@@ -118,7 +118,7 @@ unset($_SESSION['current_sitin_flash']);
             <li><a href="admin_dashboard.php?view=students">Student Information</a></li>
             <li><a href="current_sit_in.php" class="nav-active">Active Sessions</a></li>
             <li><a href="sit_in_history.php">Sit-in History</a></li>
-            <li><a href="current_sit_in.php?logout=1" class="logout-link">Log out</a></li>
+            <li><a href="current_sit_in.php?logout=1" class="logout-link">Logout</a></li>
         </ul>
     </nav>
 
