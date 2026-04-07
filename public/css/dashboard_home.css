@@ -1,0 +1,380 @@
+/* =====================================================
+   Dashboard Home — Redesigned Student Information Panel
+   ===================================================== */
+
+:root {
+  /* Color Tokens */
+  --dh-primary: #002a5c;
+  --dh-secondary: #b6171e;
+  --dh-tertiary: #4e1b00;
+  --dh-surface: #f8f9fa;
+  --dh-surface-container: #edeeef;
+  --dh-surface-container-low: #f3f4f5;
+  --dh-surface-container-lowest: #ffffff;
+  --dh-on-surface: #191c1d;
+  --dh-on-surface-variant: #434751;
+  --dh-outline: #737782;
+  --dh-outline-variant: rgba(195, 198, 210, 0.3);
+  --dh-secondary-fixed: #ffdad6;
+  --dh-on-secondary-fixed: #410003;
+  --dh-tertiary-fixed-bg: rgba(255, 219, 204, 0.4);
+  --dh-on-tertiary-fixed-variant: #793004;
+
+  /* Typography */
+  --dh-font-headline: "Manrope", sans-serif;
+  --dh-font-body: "Inter", sans-serif;
+
+  /* Spacing & Radii */
+  --dh-radius-lg: 0.75rem;
+  --dh-radius-md: 0.5rem;
+  --dh-spacing-xs: 0.5rem;
+  --dh-spacing-sm: 1rem;
+  --dh-spacing-md: 1.5rem;
+  --dh-spacing-lg: 2rem;
+}
+
+/* ── Main Container ── */
+.dashboard-home-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 2rem 2.5rem;
+  min-height: calc(100vh - 66px);
+  box-sizing: border-box;
+  display: flex;
+  align-items: stretch;
+}
+
+/* ── Layout Grid ── */
+.dashboard-home-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 2rem;
+  align-items: stretch;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-home-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Reusable Card ── */
+.dh-card {
+  background-color: var(--dh-surface-container-lowest);
+  border-radius: 1rem;
+  padding: var(--dh-spacing-lg);
+  border: 1px solid var(--dh-outline-variant);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.dh-card-low {
+  background-color: var(--dh-surface-container-low);
+}
+
+.dh-col-4 {
+  grid-column: span 4;
+}
+
+@media (max-width: 1024px) {
+  .dh-col-4 {
+    grid-column: span 12;
+  }
+}
+
+/* ── Typography Utilities ── */
+.dh-card h2 {
+  font-family: var(--dh-font-headline);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--dh-primary);
+  margin: 0;
+}
+
+.dh-card h3 {
+  font-family: var(--dh-font-headline);
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.dh-label-tiny {
+  display: block;
+  font-size: 0.625rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dh-outline);
+  margin-bottom: 0.25rem;
+}
+
+.dh-text-sm {
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--dh-font-body);
+  color: var(--dh-on-surface);
+  margin: 0;
+  word-break: break-word;
+}
+
+.dh-text-xs {
+  font-size: 0.75rem;
+  color: var(--dh-on-surface-variant);
+  margin: 0;
+}
+
+/* ── Card 1: Student Profile ── */
+.dh-profile-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.dh-avatar-wrapper {
+  position: relative;
+  width: 9rem;
+  height: 9rem;
+  margin: 0 auto 1.5rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 4px solid #fff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: block;
+}
+
+.dh-avatar-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background-color: #f9f9f9;
+}
+
+.dh-avatar-wrapper:hover {
+  box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.18);
+  transform: translateY(-2px);
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.dh-info-group {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dh-info-group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.dh-info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* ── Card 2: Announcements ── */
+.dh-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.dh-header-center {
+  justify-content: center;
+}
+
+.dh-badge {
+  background-color: var(--dh-secondary-fixed);
+  color: var(--dh-on-secondary-fixed);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+}
+
+.dh-announcement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.dh-announcement-item {
+  background-color: var(--dh-surface-container-lowest);
+  padding: 1.25rem;
+  border-radius: var(--dh-radius-md);
+  border-left: 4px solid var(--dh-secondary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.dh-announcement-item:hover {
+  transform: translateX(4px);
+}
+
+.dh-announcement-item.dh-primary {
+  border-left-color: var(--dh-primary);
+}
+
+.dh-announcement-item.dh-muted {
+  border-left-color: var(--dh-outline);
+  opacity: 0.8;
+}
+
+.dh-item-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.dh-announcement-content {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dh-view-all {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--dh-outline-variant);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--dh-primary);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+
+.dh-view-all:hover {
+  text-decoration: underline;
+}
+
+.dh-empty-state {
+  text-align: center;
+  color: var(--dh-outline);
+  font-size: 0.875rem;
+  padding: 2rem 0;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.dh-empty-state .material-symbols-outlined {
+  font-size: 2.5rem;
+  opacity: 0.4;
+}
+
+/* ── Card 3: Laboratory Policies ── */
+.dh-policy-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex-grow: 1;
+  margin: 0;
+  padding: 0;
+}
+
+.dh-policy-item {
+  display: flex;
+  gap: 1rem;
+}
+
+.dh-policy-number {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--dh-surface-container);
+  color: var(--dh-primary);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.625rem;
+  font-weight: 800;
+  transition: all 0.2s ease;
+}
+
+.dh-policy-item:hover .dh-policy-number {
+  background-color: var(--dh-primary);
+  color: white;
+}
+
+.dh-warning-footer {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: var(--dh-tertiary-fixed-bg);
+  border: 1px solid rgba(78, 27, 0, 0.1);
+  border-radius: var(--dh-radius-md);
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.dh-warning-footer p {
+  font-size: 0.625rem;
+  color: var(--dh-on-tertiary-fixed-variant);
+  font-style: italic;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* ── Material Symbols ── */
+.dashboard-home-container .material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  vertical-align: middle;
+}
+
+.dh-icon-small {
+  font-size: 1.125rem;
+}
+
+/* ── Responsive fine-tuning ── */
+@media (max-width: 1280px) {
+  .dashboard-home-container {
+    padding: 1.5rem;
+  }
+
+  .dashboard-home-grid {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-home-container {
+    padding: 1rem;
+  }
+
+  .dashboard-home-grid {
+    gap: 1rem;
+  }
+
+  .dh-avatar-wrapper {
+    width: 7rem;
+    height: 7rem;
+  }
+
+  .dh-info-row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -52,9 +52,58 @@ if (!empty($user['profile_image'])) {
     }
 }
 
+// ── Remaining Sessions Query ──
+$remainingSessions = 30; // default
+$sessionStmt = $conn->prepare(
+    'SELECT COUNT(*) AS total_sessions FROM sit_in_records WHERE user_id = ?'
+);
+$sessionStmt->bind_param('i', $userId);
+$sessionStmt->execute();
+$sessionResult = $sessionStmt->get_result();
+if ($sessionRow = $sessionResult->fetch_assoc()) {
+    $remainingSessions = max(0, 30 - (int) $sessionRow['total_sessions']);
+}
+$sessionStmt->close();
+
+// ── Fetch Announcements ──
+$announcements = [];
+$annQuery = $conn->query(
+    "SELECT a.content, a.created_at, au.display_name
+     FROM announcements a
+     JOIN admin_users au ON a.admin_id = au.id
+     ORDER BY a.created_at DESC
+     LIMIT 10"
+);
+if ($annQuery) {
+    while ($row = $annQuery->fetch_assoc()) {
+        $announcements[] = $row;
+    }
+}
+
+// Count new announcements (last 7 days)
+$newAnnCount = 0;
+foreach ($announcements as $ann) {
+    if (strtotime($ann['created_at']) >= strtotime('-7 days')) {
+        $newAnnCount++;
+    }
+}
+
 function esc($value)
 {
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+}
+
+// Year level label helper
+function yearLabel($level) {
+    $n = (int) $level;
+    if ($n <= 0) return 'N/A';
+    $suffix = 'th';
+    if (($n % 100) < 11 || ($n % 100) > 13) {
+        if (($n % 10) === 1) $suffix = 'st';
+        elseif (($n % 10) === 2) $suffix = 'nd';
+        elseif (($n % 10) === 3) $suffix = 'rd';
+    }
+    return $n . $suffix . ' Year';
 }
 ?>
 <!DOCTYPE html>
@@ -66,6 +115,13 @@ function esc($value)
     <title>Dashboard</title>
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/dashboard.css">
+    <link rel="stylesheet" href="./css/dashboard_home.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
 </head>
 
 <body class="dashboard-body">
@@ -77,27 +133,162 @@ function esc($value)
             <li><a href="dashboard.php">Home</a></li>
             <li><a href="edit_profile.php">Edit Profile</a></li>
             <li><a href="reservations.php">Reservations</a></li>
-            <li><a href="dashboard.php?logout=1" class="logout-btn">Log out</a></li>
+            <li><a href="dashboard.php?logout=1" class="logout-btn">Logout</a></li>
         </ul>
     </nav>
 
-    <main class="dashboard-container single-panel-layout">
-        <section class="student-panel">
-            <div class="panel-header">Student Information</div>
-            <div class="student-content">
-                <a href="edit_profile.php" class="avatar-link" title="Click to upload or change profile picture">
-                    <img src="./<?= esc($avatarPath) ?>" alt="Student avatar" class="student-avatar">
-                </a>
+    <main class="dashboard-home-container">
+        <div class="dashboard-home-grid">
+            <!-- Card 1: Student Information -->
+            <section class="dh-col-4">
+                <div class="dh-card">
+                    <div class="dh-header-flex dh-header-center">
+                        <h2>
+                            Student Information
+                        </h2>
+                    </div>
+                    <div class="dh-profile-header">
+                        <a href="edit_profile.php" class="dh-avatar-wrapper" title="Click to upload or change profile picture">
+                            <img src="./<?= esc($avatarPath) ?>" alt="Student avatar">
+                        </a>
+                        <h2><?= esc($user['first_name'] . ' ' . $user['last_name']) ?></h2>
+                        <p class="dh-text-xs" style="margin-top: 0.5rem; font-weight: 500">
+                            ID: <?= esc($user['id_number']) ?>
+                        </p>
+                    </div>
+                    <div class="dh-info-group">
+                        <span class="dh-label-tiny">Course &amp; Department</span>
+                        <p class="dh-text-sm"><?= esc($user['course']) ?> - College of Computer Studies</p>
+                    </div>
+                    <div class="dh-info-row">
+                        <div class="dh-info-group">
+                            <span class="dh-label-tiny">Year Level</span>
+                            <p class="dh-text-sm"><?= esc(yearLabel($user['course_level'])) ?></p>
+                        </div>
+                        <div class="dh-info-group">
+                            <span class="dh-label-tiny">Remaining Sessions</span>
+                            <p class="dh-text-sm"><?= $remainingSessions ?></p>
+                        </div>
+                    </div>
+                    <div class="dh-info-group">
+                        <span class="dh-label-tiny">Email Address</span>
+                        <p class="dh-text-sm"><?= esc($user['email']) ?></p>
+                    </div>
+                    <div class="dh-info-group" style="border: none; margin-bottom: 0">
+                        <span class="dh-label-tiny">Home Address</span>
+                        <p class="dh-text-sm"><?= esc($user['address']) ?></p>
+                    </div>
+                </div>
+            </section>
 
-                <div class="student-item"><strong>Name:</strong>
-                    <?= esc($user['first_name'] . ' ' . $user['last_name']) ?></div>
-                <div class="student-item"><strong>Course:</strong> <?= esc($user['course']) ?></div>
-                <div class="student-item"><strong>Year:</strong> <?= esc($user['course_level']) ?></div>
-                <div class="student-item"><strong>Email:</strong> <?= esc($user['email']) ?></div>
-                <div class="student-item"><strong>Address:</strong> <?= esc($user['address']) ?></div>
-                <div class="student-item"><strong>ID Number:</strong> <?= esc($user['id_number']) ?></div>
-            </div>
-        </section>
+            <!-- Card 2: Announcement Feed -->
+            <section class="dh-col-4">
+                <div class="dh-card dh-card-low">
+                    <div class="dh-header-flex dh-header-center">
+                        <h2 style="display: flex; align-items: center; gap: 0.5rem">
+                            <span class="material-symbols-outlined" style="color: var(--dh-secondary)">campaign</span>
+                            Announcements
+                        </h2>
+                        <?php if ($newAnnCount > 0): ?>
+                            <span class="dh-badge" style="position: absolute; right: 2rem;"><?= $newAnnCount ?> NEW</span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="dh-announcement-list">
+                        <?php if (empty($announcements)): ?>
+                            <div class="dh-empty-state">
+                                <span class="material-symbols-outlined">campaign</span>
+                                <p>No announcements yet.</p>
+                            </div>
+                        <?php else: ?>
+                            <?php
+                            $borderColors = ['dh-secondary', 'dh-primary', 'dh-muted'];
+                            foreach ($announcements as $idx => $ann):
+                                $colorClass = '';
+                                if ($idx === 0) $colorClass = '';
+                                elseif ($idx === 1) $colorClass = 'dh-primary';
+                                else $colorClass = 'dh-muted';
+
+                                $isNew = strtotime($ann['created_at']) >= strtotime('-7 days');
+                            ?>
+                                <article class="dh-announcement-item <?= $colorClass ?>">
+                                    <div class="dh-item-meta">
+                                        <span class="dh-label-tiny" style="color: <?= $idx === 0 ? 'var(--dh-secondary)' : ($idx === 1 ? 'var(--dh-primary)' : 'var(--dh-outline)') ?>; margin: 0">
+                                            <?= esc($ann['display_name']) ?>
+                                        </span>
+                                        <span class="dh-label-tiny" style="margin: 0">
+                                            <?= date('Y-M-d', strtotime($ann['created_at'])) ?>
+                                        </span>
+                                    </div>
+                                    <p class="dh-text-xs dh-announcement-content">
+                                        <?= nl2br(esc($ann['content'])) ?>
+                                    </p>
+                                </article>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Card 3: Laboratory Policies -->
+            <section class="dh-col-4">
+                <div class="dh-card">
+                    <div class="dh-header-flex dh-header-center">
+                        <h2>
+                            Rules and Regulations
+                        </h2>
+                    </div>
+                    <ol class="dh-policy-list">
+                        <li class="dh-policy-item">
+                            <span class="dh-policy-number">01</span>
+                            <div>
+                                <h3>Strict Silence Policy</h3>
+                                <p class="dh-text-xs">
+                                    Maintain absolute silence. Group discussions should be held
+                                    in designated collaboration hubs only.
+                                </p>
+                            </div>
+                        </li>
+                        <li class="dh-policy-item">
+                            <span class="dh-policy-number">02</span>
+                            <div>
+                                <h3>Equipment Handling</h3>
+                                <p class="dh-text-xs">
+                                    Report hardware malfunctions. Do not attempt to repair or
+                                    dismantle peripheral devices.
+                                </p>
+                            </div>
+                        </li>
+                        <li class="dh-policy-item">
+                            <span class="dh-policy-number">03</span>
+                            <div>
+                                <h3>Consumption Prohibition</h3>
+                                <p class="dh-text-xs">
+                                    Food, drinks, and water bottles are strictly prohibited
+                                    inside the terminal area.
+                                </p>
+                            </div>
+                        </li>
+                        <li class="dh-policy-item">
+                            <span class="dh-policy-number">04</span>
+                            <div>
+                                <h3>Data Management</h3>
+                                <p class="dh-text-xs">
+                                    Local drives are wiped weekly. Use cloud storage or external
+                                    drives for project files.
+                                </p>
+                            </div>
+                        </li>
+                    </ol>
+                    <div class="dh-warning-footer">
+                        <span class="material-symbols-outlined dh-icon-small" style="color: var(--dh-tertiary)">gavel</span>
+                        <p>
+                            Non-compliance with policies may result in temporary suspension
+                            of laboratory privileges.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
 
     <?php if ($showLoginSuccess): ?>
