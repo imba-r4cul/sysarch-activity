@@ -143,7 +143,8 @@ function yearLabel($level) {
             <section class="dh-col-4">
                 <div class="dh-card">
                     <div class="dh-header-flex dh-header-center">
-                        <h2>
+                        <h2 style="display: flex; align-items: center; gap: 0.5rem">
+                            <span class="material-symbols-outlined" style="color: var(--dh-primary)">person</span>
                             Student Information
                         </h2>
                     </div>
@@ -190,7 +191,7 @@ function yearLabel($level) {
                             Announcements
                         </h2>
                         <?php if ($newAnnCount > 0): ?>
-                            <span class="dh-badge" style="position: absolute; right: 2rem;"><?= $newAnnCount ?> NEW</span>
+                            <span class="dh-badge-overlap"><?= $newAnnCount ?> NEW</span>
                         <?php endif; ?>
                     </div>
                     <div class="dh-announcement-list">
@@ -233,7 +234,8 @@ function yearLabel($level) {
             <section class="dh-col-4">
                 <div class="dh-card">
                     <div class="dh-header-flex dh-header-center">
-                        <h2>
+                        <h2 style="display: flex; align-items: center; gap: 0.5rem">
+                            <span class="material-symbols-outlined" style="color: var(--dh-tertiary)">gavel</span>
                             Rules and Regulations
                         </h2>
                     </div>
