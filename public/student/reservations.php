@@ -1,9 +1,9 @@
 <?php
 session_start();
-require_once '../config/database.php';
+require_once '../../config/database.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: ../auth/index.php');
     exit;
 }
 
@@ -66,9 +66,9 @@ $stmt->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sit-in Reservation</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="icon" type="image/x-icon" href="./images/ccs.png">
+    <link rel="stylesheet" href="../assets/css/shared/global.css">
+    <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
+    <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
     <style>
         .reservation-page {
             max-width: 900px;
@@ -250,10 +250,10 @@ $stmt->close();
     <nav class="navbar dashboard-nav">
         <h1 class="navbar-title">College of Computer Studies Sit-in Monitoring System</h1>
         <ul class="navbar-links dashboard-links">
-            <li><a href="dashboard.php">Home</a></li>
+            <li><a href="student_dashboard.php">Home</a></li>
             <li><a href="edit_profile.php">Edit Profile</a></li>
             <li><a href="reservations.php">Reservations</a></li>
-            <li><a href="dashboard.php?logout=1" class="logout-btn">Log out</a></li>
+            <li><a href="student_dashboard.php?logout=1" class="logout-btn">Log out</a></li>
         </ul>
     </nav>
 

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config/database.php';
+require_once '../../config/database.php';
 
 $error = '';
 
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (password_verify($password, $admin_hashed_password)) {
                 $_SESSION['admin_id'] = $admin_id;
                 $_SESSION['admin_name'] = $admin_display_name;
-                header('Location: admin_dashboard.php');
+                header('Location: ../admin/admin_dashboard.php');
                 exit;
             } else {
                 $error = 'Invalid admin credentials.';
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = $user_id;
                 $_SESSION['id_number'] = $id_number;
                 $_SESSION['login_success_name'] = trim($first_name . ' ' . $last_name);
-                header('Location: dashboard.php');
+                header('Location: ../student/student_dashboard.php');
                 exit;
             } else {
                 $error = 'Incorrect password.';
@@ -79,8 +79,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - CCS</title>
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="icon" type="image/x-icon" href="./images/ccs.png">
+    <link rel="stylesheet" href="../assets/css/shared/global.css">
+    <link rel="stylesheet" href="../assets/css/auth/auth.css">
+    <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
 </head>
 
 <body class="bg-light">

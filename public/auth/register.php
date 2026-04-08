@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config/database.php';
+require_once '../../config/database.php';
 
 $error = '';
 
@@ -80,8 +80,9 @@ function old($field, $default = '')
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" type="image/x-icon" href="./images/ccs.png">
+    <link rel="stylesheet" href="../assets/css/shared/global.css">
+    <link rel="stylesheet" href="../assets/css/auth/auth.css">
+    <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
 </head>
 
 <body class="bg-light register-page">

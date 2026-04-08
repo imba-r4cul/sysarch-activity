@@ -1,17 +1,17 @@
 <?php
 session_start();
-require_once '../config/database.php';
-require_once 'helpers.php';
+require_once '../../config/database.php';
+require_once '../includes/helpers.php';
 
 if (!isset($_SESSION['admin_id'])) {
-    header('Location: index.php');
+    header('Location: ../auth/index.php');
     exit;
 }
 
 if (isset($_GET['logout'])) {
     session_unset();
     session_destroy();
-    header('Location: index.php');
+    header('Location: ../auth/index.php');
     exit;
 }
 
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_completed'])) {
     }
 
     if (!$isAjax) {
-        header('Location: current_sit_in.php');
+        header('Location: active_sessions.php');
         exit;
     }
 }
@@ -102,11 +102,11 @@ unset($_SESSION['current_sitin_flash']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Current Sit in</title>
-    <link rel="icon" type="image/x-icon" href="./images/ccs.png">
+    <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/admin_dashboard.css">
-    <link rel="stylesheet" href="css/current_sit_in.css">
+    <link rel="stylesheet" href="../assets/css/admin/admin_dashboard.css">
+    <link rel="stylesheet" href="../assets/css/admin/active_sessions.css">
 </head>
 
 <body>
@@ -116,9 +116,9 @@ unset($_SESSION['current_sitin_flash']);
             <li><a href="admin_dashboard.php">Home</a></li>
             <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
             <li><a href="admin_dashboard.php?view=students">Student Information</a></li>
-            <li><a href="current_sit_in.php" class="nav-active">Active Sessions</a></li>
+            <li><a href="active_sessions.php" class="nav-active">Active Sessions</a></li>
             <li><a href="sit_in_history.php">Sit-in History</a></li>
-            <li><a href="current_sit_in.php?logout=1" class="logout-link">Logout</a></li>
+            <li><a href="active_sessions.php?logout=1" class="logout-link">Logout</a></li>
         </ul>
     </nav>
 
@@ -310,7 +310,7 @@ unset($_SESSION['current_sitin_flash']);
             formData.append('mark_completed', '1');
             formData.append('record_id', recordId);
 
-            fetch('current_sit_in.php', {
+            fetch('active_sessions.php', {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'

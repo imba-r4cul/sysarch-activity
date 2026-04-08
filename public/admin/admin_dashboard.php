@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once '../config/database.php';
-require_once 'helpers.php';
+require_once '../../config/database.php';
+require_once '../includes/helpers.php';
 
 // Guard: admin only
 if (!isset($_SESSION['admin_id'])) {
@@ -12,7 +12,7 @@ if (!isset($_SESSION['admin_id'])) {
 if (isset($_GET['logout'])) {
     session_unset();
     session_destroy();
-    header('Location: index.php');
+    header('Location: ../auth/index.php');
     exit;
 }
 
@@ -356,14 +356,14 @@ if (isset($_GET['ajax_search'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="icon" type="image/x-icon" href="./images/ccs.png">
+    <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
     <link
         href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/student_info.css">
-    <link rel="stylesheet" href="css/admin_dashboard.css">
+    <link rel="stylesheet" href="../assets/css/admin/student_info.css">
+    <link rel="stylesheet" href="../assets/css/admin/admin_dashboard.css">
 </head>
 
 <body>
@@ -375,7 +375,7 @@ if (isset($_GET['ajax_search'])) {
             <li><a href="#" class="nav-active" id="nav-home" onclick="switchView('dashboard')">Home</a></li>
             <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
             <li><a href="#" id="nav-students" onclick="switchView('students')">Student Information</a></li>
-            <li><a href="current_sit_in.php">Active Sessions</a></li>
+            <li><a href="active_sessions.php">Active Sessions</a></li>
             <li><a href="sit_in_history.php">Sit-in History</a></li>
             <li><a href="admin_dashboard.php?logout=1" class="logout-link">Logout</a></li>
         </ul>

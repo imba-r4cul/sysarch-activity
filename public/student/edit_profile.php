@@ -1,9 +1,9 @@
 <?php
 session_start();
-require_once '../config/database.php';
+require_once '../../config/database.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: ../auth/index.php');
     exit;
 }
 
@@ -12,8 +12,8 @@ $success = $_SESSION['profile_success'] ?? '';
 unset($_SESSION['profile_success']);
 $error = '';
 
-$defaultProfileImage = 'images/edit-profile.png';
-$uploadsDir = __DIR__ . '/uploads/';
+$defaultProfileImage = '../assets/images/edit-profile.png';
+$uploadsDir = __DIR__ . '/../assets/uploads/';
 $maxUploadSize = 2 * 1024 * 1024;
 $allowedMimeTypes = [
     'image/jpeg' => 'jpg',
@@ -30,7 +30,7 @@ $stmt->close();
 if (!$user) {
     session_unset();
     session_destroy();
-    header('Location: index.php');
+    header('Location: ../auth/index.php');
     exit;
 }
 
@@ -143,7 +143,7 @@ if (!empty($user['profile_image'])) {
     $safeFileName = basename($user['profile_image']);
     $diskPath = $uploadsDir . $safeFileName;
     if (is_file($diskPath)) {
-        $profileImagePath = 'uploads/' . rawurlencode($safeFileName);
+        $profileImagePath = '../assets/uploads/' . rawurlencode($safeFileName);
     }
 }
 
@@ -159,11 +159,13 @@ function esc($value)
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="./css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/shared/global.css">
+    <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
     <!-- FontAwesome CDN for standard icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
+    <!-- Material Symbols for Close Icon -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
 
 <body class="dashboard-body">
 
@@ -171,10 +173,10 @@ function esc($value)
         <h1 class="navbar-title">College of Computer Studies Sit-in
             Monitoring System</h1>
         <ul class="navbar-links dashboard-links">
-            <li><a href="dashboard.php">Home</a></li>
+            <li><a href="student_dashboard.php">Home</a></li>
             <li><a href="edit_profile.php">Edit Profile</a></li>
             <li><a href="reservations.php">Reservations</a></li>
-            <li><a href="dashboard.php?logout=1" class="logout-btn">Log out</a></li>
+            <li><a href="student_dashboard.php?logout=1" class="logout-btn">Log out</a></li>
         </ul>
     </nav>
 
@@ -188,7 +190,7 @@ function esc($value)
                     <h2>Your Profile</h2>
                     <div class="profile-actions">
                         <button type="button" class="btn-secondary"
-                            onclick="window.location.href='dashboard.php'">Discard</button>
+                            onclick="window.location.href='student_dashboard.php'">Discard</button>
                         <button type="submit" class="btn-primary">
                             <i class="fa-solid fa-floppy-disk"></i> Save
                         </button>
@@ -222,8 +224,7 @@ function esc($value)
                             accept="image/jpeg,image/png,image/gif" hidden>
                         <button type="button" class="btn-primary-outline" id="upload-picture-btn">Upload
                             picture</button>
-                        <button type="submit" name="delete_picture" value="1" class="btn-danger-outline" formnovalidate
-                            onclick="return confirm('Delete your profile picture?');">Delete picture</button>
+                        <button type="button" class="btn-danger-outline" onclick="confirmDeletePicture()">Delete picture</button>
                     </div>
                     <p class="profile-picture-help">
                         <?= empty($user['profile_image']) ? 'No profile picture yet. Upload one now.' : 'Click Upload picture to replace your current profile picture.' ?>
@@ -284,6 +285,27 @@ function esc($value)
         </div>
     </main>
 
+    <!-- Hidden form for deleting profile picture -->
+    <form id="deletePictureForm" method="POST" action="edit_profile.php" style="display:none;">
+        <input type="hidden" name="delete_picture" value="1">
+    </form>
+
+    <!-- Confirmation Modal (Synced with Admin) -->
+    <div class="modal-overlay" id="confirmActionModal">
+        <div class="modal-box confirmation-box">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body">
+                <h3 id="confirmActionTitle">Confirm Action</h3>
+                <p id="confirmActionMessage">Are you sure?</p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn btn-cancel" onclick="closeModal('confirmActionModal')">Cancel</button>
+                <button type="button" class="modal-btn btn-confirm" id="confirmActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const uploadBtn = document.getElementById('upload-picture-btn');
         const profileImageInput = document.getElementById('profile_image');
@@ -322,6 +344,36 @@ function esc($value)
                 successMessage.style.display = 'none';
             }, 3000);
         }
+
+        // Modal Logic
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function confirmDeletePicture() {
+            document.getElementById('confirmActionTitle').textContent = 'Delete Profile Picture';
+            document.getElementById('confirmActionMessage').textContent = 'Are you sure you want to delete your profile picture? This action cannot be undone.';
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.onclick = function() {
+                document.getElementById('deletePictureForm').submit();
+            };
+            
+            openModal('confirmActionModal');
+        }
+
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function (e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
     </script>
 </body>
 

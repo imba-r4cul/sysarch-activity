@@ -1,17 +1,17 @@
 <?php
 session_start();
-require_once '../config/database.php';
-require_once 'helpers.php';
+require_once '../../config/database.php';
+require_once '../includes/helpers.php';
 
 if (!isset($_SESSION['admin_id'])) {
-    header('Location: index.php');
+    header('Location: ../auth/index.php');
     exit;
 }
 
 if (isset($_GET['logout'])) {
     session_unset();
     session_destroy();
-    header('Location: index.php');
+    header('Location: ../auth/index.php');
     exit;
 }
 
@@ -59,11 +59,11 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sit-in History</title>
-    <link rel="icon" type="image/x-icon" href="./images/ccs.png">
+    <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/admin_dashboard.css">
-    <link rel="stylesheet" href="css/sit_in_history.css">
+    <link rel="stylesheet" href="../assets/css/admin/admin_dashboard.css">
+    <link rel="stylesheet" href="../assets/css/student/sit_in_history.css">
 </head>
 
 <body>
@@ -73,7 +73,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
             <li><a href="admin_dashboard.php">Home</a></li>
             <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
             <li><a href="admin_dashboard.php?view=students">Student Information</a></li>
-            <li><a href="current_sit_in.php">Active Sessions</a></li>
+            <li><a href="active_sessions.php">Active Sessions</a></li>
             <li><a href="sit_in_history.php" class="nav-active">Sit-in History</a></li>
             <li><a href="sit_in_history.php?logout=1" class="logout-link">Logout</a></li>
         </ul>

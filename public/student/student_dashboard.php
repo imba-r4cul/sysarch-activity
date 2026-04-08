@@ -1,16 +1,16 @@
 <?php
 session_start();
-require_once '../config/database.php';
+require_once '../../config/database.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: ../auth/index.php');
     exit;
 }
 
 if (isset($_GET['logout'])) {
     session_unset();
     session_destroy();
-    header('Location: index.php');
+    header('Location: ../auth/index.php');
     exit;
 }
 
@@ -31,7 +31,7 @@ $stmt->close();
 if (!$user) {
     session_unset();
     session_destroy();
-    header('Location: index.php');
+    header('Location: ../auth/index.php');
     exit;
 }
 
@@ -41,14 +41,14 @@ $successName = $showLoginSuccess
     : trim($user['first_name'] . ' ' . $user['last_name']);
 unset($_SESSION['login_success_name']);
 
-$defaultProfileImage = 'images/edit-profile.png';
+$defaultProfileImage = '../assets/images/edit-profile.png';
 $avatarPath = $defaultProfileImage;
 
 if (!empty($user['profile_image'])) {
     $safeFileName = basename($user['profile_image']);
-    $diskPath = __DIR__ . '/uploads/' . $safeFileName;
+    $diskPath = __DIR__ . '/../assets/uploads/' . $safeFileName;
     if (is_file($diskPath)) {
-        $avatarPath = 'uploads/' . rawurlencode($safeFileName);
+        $avatarPath = '../assets/uploads/' . rawurlencode($safeFileName);
     }
 }
 
@@ -112,16 +112,12 @@ function yearLabel($level) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/dashboard.css">
-    <link rel="stylesheet" href="./css/dashboard_home.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
-        rel="stylesheet">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="../assets/css/shared/global.css">
+    <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
 </head>
 
 <body class="dashboard-body">
@@ -130,10 +126,10 @@ function yearLabel($level) {
         <h1 class="navbar-title">College of Computer Studies Sit-in
             Monitoring System</h1>
         <ul class="navbar-links dashboard-links">
-            <li><a href="dashboard.php">Home</a></li>
+            <li><a href="student_dashboard.php">Home</a></li>
             <li><a href="edit_profile.php">Edit Profile</a></li>
             <li><a href="reservations.php">Reservations</a></li>
-            <li><a href="dashboard.php?logout=1" class="logout-btn">Logout</a></li>
+            <li><a href="student_dashboard.php?logout=1" class="logout-btn">Logout</a></li>
         </ul>
     </nav>
 
