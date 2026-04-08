@@ -39,8 +39,18 @@ define('DB_PASS', 'your_password');
 - `db/`: The schema and the seeder script.
 - `index.php`: The "front door" that redirects you to the public index.
 
+## Accessing the App
+
+After setup, you can access the system through the following URLs:
+
+- **Student Dashboard**: `http://localhost/sysarch-activity/public/`
+- **Admin Dashboard**: `http://localhost/sysarch-activity/public/admin/`
+
+> [!NOTE]
+> These paths may vary based on your local deployment. You can also use the root URL `http://localhost/sysarch-activity/` which redirects you to the public portal.
+
 ## A couple of things to watch out for
 
 If the app can't connect to the database, the first thing I'd check is the `DB_NAME` in `config/database.php` matches what you created in phpMyAdmin. Sometimes XAMPP's MySQL port changes too, but usually it's fine.
 
-If you change any of the branding colors, check `notes.md` first. I've listed a few "protected" hex codes there that are used everywhere, so changing them might break the look of the dashboards.
+If you change any of the branding colors, check `notes.md` in the project root first. I've listed a few "protected" hex codes there that are used everywhere, so changing them might break the look of the dashboards.

@@ -64,6 +64,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $course = trim($_POST['course']);
         $course_lvl = (int) $_POST['course_level'];
         $address = trim($_POST['address']);
+
+        // Validate email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = 'Invalid email format.';
+        } else {
+            // Check for email uniqueness (excluding current user)
+            $checkEmailStmt = $conn->prepare('SELECT id FROM users WHERE email = ? AND id != ?');
+            $checkEmailStmt->bind_param('si', $email, $userId);
+            $checkEmailStmt->execute();
+            if ($checkEmailStmt->get_result()->num_rows > 0) {
+                $error = 'Email is already taken by another user.';
+            }
+            $checkEmailStmt->close();
+        }
         $profileImageFileName = !empty($user['profile_image']) ? basename($user['profile_image']) : null;
         $newlyUploadedFile = '';
 
