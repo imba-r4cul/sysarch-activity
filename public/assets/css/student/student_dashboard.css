@@ -18,10 +18,12 @@
     background: #dc3545 !important;
     /* Consistent with index.php buttons */
     color: #fff !important;
-    padding: 5px 18px;
-    border-radius: 4px;
-    font-weight: 500;
-    font-size: 14px;
+    padding: 5px 18px !important;
+    border-radius: 4px !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    display: inline-block !important;
 }
 
 .logout-btn:hover {

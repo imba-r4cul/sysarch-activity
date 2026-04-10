@@ -115,7 +115,11 @@ function yearLabel($level) {
     <title>Student Dashboard</title>
     <link rel="stylesheet" href="../assets/css/shared/global.css">
     <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
+    <!-- FontAwesome CDN for standard icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Material Symbols for Close Icon -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
 </head>
@@ -130,7 +134,7 @@ function yearLabel($level) {
             <li><a href="edit_profile.php">Edit Profile</a></li>
             <li><a href="reservations.php">Reservations</a></li>
             <li><a href="sit_in_history.php">Sit-in History</a></li>   
-            <li><a href="student_dashboard.php?logout=1" class="logout-btn">Logout</a></li>
+            <li><a href="student_dashboard.php?logout=1" class="logout-btn">Log out</a></li>
         </ul>
     </nav>
 

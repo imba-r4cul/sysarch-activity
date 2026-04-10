@@ -248,7 +248,8 @@ $stmt->close();
 <body class="dashboard-body">
 
     <nav class="navbar dashboard-nav">
-        <h1 class="navbar-title">College of Computer Studies Sit-in Monitoring System</h1>
+        <h1 class="navbar-title">College of Computer Studies Sit-in
+            Monitoring System</h1>
         <ul class="navbar-links dashboard-links">
             <li><a href="student_dashboard.php">Home</a></li>
             <li><a href="edit_profile.php">Edit Profile</a></li>

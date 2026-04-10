@@ -19,6 +19,7 @@ body {
 .navbar-title {
     color: white;
     font-size: 20px;
+    margin: 0.67em 0; /* Default h1 margin so it never jumps if h1 is reset */
 }
 
 .navbar-links {

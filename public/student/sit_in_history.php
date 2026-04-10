@@ -65,22 +65,29 @@ if ($stmt) {
     <link rel="stylesheet" href="../assets/css/shared/global.css">
     <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
     <link rel="stylesheet" href="../assets/css/student/sit_in_history_student.css">
+    <!-- FontAwesome CDN for standard icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Material Symbols for Close Icon -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 </head>
 
 <body class="dashboard-body">
     <nav class="navbar dashboard-nav">
-        <h1 class="navbar-title">College of Computer Studies Sit-in Monitoring System</h1>
+        <h1 class="navbar-title">College of Computer Studies Sit-in
+            Monitoring System</h1>
         <ul class="navbar-links dashboard-links">
             <li><a href="student_dashboard.php">Home</a></li>
             <li><a href="edit_profile.php">Edit Profile</a></li>
             <li><a href="reservations.php">Reservations</a></li>
             <li><a href="sit_in_history.php">Sit-in History</a></li>
-            <li><a href="sit_in_history.php?logout=1" class="logout-btn">Logout</a></li>
+            <li><a href="student_dashboard.php?logout=1" class="logout-btn">Log out</a></li>
         </ul>
     </nav>
 
     <main style="padding: 2rem 4rem;">
-        <header class="history-header" style="justify-content: flex-start; margin-bottom: 2rem;">
+        <header class="history-header" style="justify-content: flex-start; margin-bottom: 15px;">
             <div>
                 <h1>Sit-in Records History</h1>
             </div>
