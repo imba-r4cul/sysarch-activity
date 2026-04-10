@@ -39,13 +39,27 @@ body {
     color: #fff;
     text-decoration: none;
     font-size: 18px;
+    font-weight: 500;
     padding: 8px 10px;
     border-radius: 6px;
     border: none;
     background: none;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.2;
+    box-sizing: border-box;
     font-family: "Manrope", sans-serif;
-    transition: all 0.2s;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.navbar-links li a:focus {
+    outline: none;
+}
+
+.navbar-links li a:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.35);
+    outline-offset: 2px;
 }
 
 .navbar-links li a:hover,
