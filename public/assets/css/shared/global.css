@@ -31,6 +31,9 @@ body {
 }
 
 .navbar-links li a,
+.navbar-links li a:visited,
+.navbar-links li a:active,
+.navbar-links li a:focus,
 .navbar-links li button {
     color: #fff;
     text-decoration: none;

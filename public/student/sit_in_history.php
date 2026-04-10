@@ -3,7 +3,7 @@ session_start();
 require_once '../../config/database.php';
 require_once '../includes/helpers.php';
 
-if (!isset($_SESSION['admin_id'])) {
+if (!isset($_SESSION['user_id'])) {
     header('Location: ../auth/index.php');
     exit;
 }
@@ -15,8 +15,8 @@ if (isset($_GET['logout'])) {
     exit;
 }
 
+$userId = (int) $_SESSION['user_id'];
 $historyRecords = [];
-$totalRecords = 0;
 
 $sql = "
     SELECT
@@ -36,21 +36,21 @@ $sql = "
             WHERE x.user_id = sr.user_id AND x.id <= sr.id
         ) AS session_no
     FROM sit_in_records sr
-    WHERE sr.status <> 'Active'
+    WHERE sr.status <> 'Active' AND sr.user_id = ?
     ORDER BY sr.time_in DESC
 ";
 
-$result = $conn->query($sql);
-if ($result) {
+$stmt = $conn->prepare($sql);
+if ($stmt) {
+    $stmt->bind_param('i', $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
         $historyRecords[] = $row;
     }
+    $stmt->close();
 }
 
-$totalResult = $conn->query("SELECT COUNT(*) AS total FROM sit_in_records WHERE status <> 'Active'");
-if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
-    $totalRecords = (int) ($totalRow['total'] ?? 0);
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -62,99 +62,29 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/admin/admin_dashboard.css">
-    <link rel="stylesheet" href="../assets/css/admin/sit_in_history_admin.css">
+    <link rel="stylesheet" href="../assets/css/shared/global.css">
+    <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
+    <link rel="stylesheet" href="../assets/css/student/sit_in_history_student.css">
 </head>
 
-<body>
-    <nav class="admin-nav">
-        <span class="brand">CCS Sit-in Monitoring System (ADMIN DASHBOARD)</span>
-        <ul>
-            <li><a href="admin_dashboard.php">Home</a></li>
-            <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
-            <li><a href="admin_dashboard.php?view=students">Student Information</a></li>
-            <li><a href="active_sessions.php">Active Sessions</a></li>
-            <li><a href="sit_in_history.php" class="nav-active">Sit-in History</a></li>
-            <li><a href="sit_in_history.php?logout=1" class="logout-link">Logout</a></li>
+<body class="dashboard-body">
+    <nav class="navbar dashboard-nav">
+        <h1 class="navbar-title">College of Computer Studies Sit-in Monitoring System</h1>
+        <ul class="navbar-links dashboard-links">
+            <li><a href="student_dashboard.php">Home</a></li>
+            <li><a href="edit_profile.php">Edit Profile</a></li>
+            <li><a href="reservations.php">Reservations</a></li>
+            <li><a href="sit_in_history.php">Sit-in History</a></li>
+            <li><a href="sit_in_history.php?logout=1" class="logout-btn">Logout</a></li>
         </ul>
     </nav>
 
-    <?php include 'search_student_modal.php'; ?>
-    <?php include 'sitin_form_modal.php'; ?>
-
-    <script>
-        function openModal(id) {
-            const modal = document.getElementById(id);
-            if (modal) modal.classList.add('active');
-        }
-        function closeModal(id) {
-            const modal = document.getElementById(id);
-            if (modal) modal.classList.remove('active');
-        }
-    </script>
-
-    <main>
-        <header class="history-header">
+    <main style="padding: 2rem 4rem;">
+        <header class="history-header" style="justify-content: flex-start; margin-bottom: 2rem;">
             <div>
                 <h1>Sit-in Records History</h1>
             </div>
-            <div class="stats-container">
-                <div class="stat-card">
-                    <span class="stat-label">Total Records</span>
-                    <span class="stat-value primary" id="totalRecordsValue"><?= number_format($totalRecords) ?></span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Filtered Results</span>
-                    <span class="stat-value" id="filteredRecordsValue"><?= number_format(count($historyRecords)) ?></span>
-                </div>
-            </div>
         </header>
-
-        <section class="search-section">
-            <div class="search-wrapper">
-                <span class="material-symbols-outlined search-icon">search</span>
-                <input class="search-input" id="historySearchInput" placeholder="Search by SIT ID, Student ID, or Name..." type="text" aria-label="Search sit-in history">
-            </div>
-            <button class="filter-button" type="button" id="toggleFilterBtn">
-                <span class="material-symbols-outlined">filter_list</span>
-                <span>Filters</span>
-            </button>
-        </section>
-
-        <section class="filters-panel" id="filtersPanel" hidden>
-            <div class="filter-field">
-                <label for="historyEntriesPerPage">Show entries</label>
-                <select id="historyEntriesPerPage">
-                    <option value="5" selected>5</option>
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                </select>
-            </div>
-            <div class="filter-field">
-                <label for="labFilter">Lab</label>
-                <select id="labFilter">
-                    <option value="all">All Labs</option>
-                    <?php
-                    $labs = [];
-                    foreach ($historyRecords as $record) {
-                        $lab = trim((string) ($record['lab'] ?? ''));
-                        if ($lab !== '') {
-                            $labs[$lab] = true;
-                        }
-                    }
-                    $labNames = array_keys($labs);
-                    sort($labNames, SORT_NATURAL | SORT_FLAG_CASE);
-                    foreach ($labNames as $labName):
-                    ?>
-                        <option value="<?= esc(strtolower($labName)) ?>"><?= esc($labName) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="filter-actions">
-                <button type="button" class="clear-btn" id="clearFiltersBtn">Clear</button>
-            </div>
-        </section>
 
         <section class="table-container">
             <div class="scrollable-table">
@@ -187,14 +117,6 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                             <?php foreach ($historyRecords as $idx => $record):
                                 $style = $avatarStyles[$idx % count($avatarStyles)];
                                 $displayName = trim(($record['first_name'] ?? '') . ' ' . ($record['last_name'] ?? ''));
-                                $searchBlob = strtolower(trim(
-                                    ($record['id'] ?? '') . ' ' .
-                                    ($record['id_number'] ?? '') . ' ' .
-                                    $displayName . ' ' .
-                                    ($record['purpose'] ?? '') . ' ' .
-                                    ($record['lab'] ?? '') . ' ' .
-                                    ($record['status'] ?? '')
-                                ));
                                 $status = (string) ($record['status'] ?? 'Unknown');
                                 $statusClass = 'status-progress';
                                 if (strcasecmp($status, 'Completed') === 0) {
@@ -203,11 +125,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                                     $statusClass = 'status-ended';
                                 }
                             ?>
-                                <tr
-                                    class="data-row"
-                                    data-search="<?= esc($searchBlob) ?>"
-                                    data-status="<?= esc(strtolower($status)) ?>"
-                                    data-lab="<?= esc(strtolower((string) ($record['lab'] ?? ''))) ?>">
+                                <tr class="data-row">
                                     <td class="sit-id-col text-center"><?= esc($record['id']) ?></td>
                                     <td><?= esc($record['id_number']) ?></td>
                                     <td>
@@ -233,9 +151,6 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
-                            <tr id="historyNoDataRow" style="display:none;">
-                                <td colspan="9" class="no-data">No sit-in history available</td>
-                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -264,75 +179,49 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
 
     <script>
         (function () {
-            const searchInput = document.getElementById('historySearchInput');
-            const entriesPerPage = document.getElementById('historyEntriesPerPage');
-            const labFilter = document.getElementById('labFilter');
-            const clearFiltersBtn = document.getElementById('clearFiltersBtn');
             const tableBody = document.getElementById('historyTableBody');
-            const noDataRow = document.getElementById('historyNoDataRow');
             const info = document.getElementById('historyInfo');
-            const filteredValue = document.getElementById('filteredRecordsValue');
             const pageBtn = document.getElementById('historyCurrentPageBtn');
             const firstBtn = document.getElementById('historyFirstBtn');
             const prevBtn = document.getElementById('historyPrevBtn');
             const nextBtn = document.getElementById('historyNextBtn');
             const lastBtn = document.getElementById('historyLastBtn');
-            const toggleFilterBtn = document.getElementById('toggleFilterBtn');
-            const filtersPanel = document.getElementById('filtersPanel');
 
             if (!tableBody) return;
 
             const allRows = Array.from(tableBody.querySelectorAll('tr.data-row'));
-            const numberFormatter = new Intl.NumberFormat();
-
-            let filteredRows = allRows.slice();
             let currentPage = 1;
-
-            function getPageSize() {
-                const size = entriesPerPage ? parseInt(entriesPerPage.value, 10) : 10;
-                return Number.isNaN(size) || size <= 0 ? 10 : size;
-            }
+            const pageSize = 5;
 
             function getPageCount() {
-                return Math.max(1, Math.ceil(filteredRows.length / getPageSize()));
+                return Math.max(1, Math.ceil(allRows.length / pageSize));
             }
 
             function buildPageModel(totalPages, page) {
                 if (totalPages <= 5) {
                     return Array.from({ length: totalPages }, (_, i) => i + 1);
                 }
-
                 if (page <= 3) {
                     return [1, 2, 3, '...', totalPages];
                 }
-
                 if (page >= totalPages - 2) {
                     return [1, '...', totalPages - 2, totalPages - 1, totalPages];
                 }
-
                 return [1, '...', page - 1, page, page + 1, '...', totalPages];
-            }
-
-            function updateStats() {
-                if (filteredValue) {
-                    filteredValue.textContent = numberFormatter.format(filteredRows.length);
-                }
             }
 
             function updateInfo(start, end) {
                 if (!info) return;
-
-                if (filteredRows.length === 0) {
+                if (allRows.length === 0) {
                     info.textContent = 'Showing 0 to 0 of 0 records';
                     return;
                 }
-
-                info.textContent = 'Showing ' + start + ' to ' + end + ' of ' + filteredRows.length + ' records';
+                info.textContent = 'Showing ' + start + ' to ' + end + ' of ' + allRows.length + ' records';
             }
 
             function renderPageButtons() {
                 const totalPages = getPageCount();
-                const hasRows = filteredRows.length > 0;
+                const hasRows = allRows.length > 0;
 
                 if (pageBtn) pageBtn.textContent = String(totalPages === 0 ? 0 : currentPage);
                 if (firstBtn) firstBtn.disabled = !hasRows || currentPage <= 1;
@@ -346,61 +235,20 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                     row.style.display = 'none';
                 });
 
-                if (filteredRows.length === 0) {
-                    if (noDataRow) noDataRow.style.display = '';
+                if (allRows.length === 0) {
                     updateInfo(0, 0);
                     renderPageButtons();
                     return;
                 }
 
-                if (noDataRow) noDataRow.style.display = 'none';
-
-                const pageSize = getPageSize();
                 const startIndex = (currentPage - 1) * pageSize;
-                const endIndex = Math.min(startIndex + pageSize, filteredRows.length);
-                filteredRows.slice(startIndex, endIndex).forEach((row) => {
+                const endIndex = Math.min(startIndex + pageSize, allRows.length);
+                allRows.slice(startIndex, endIndex).forEach((row) => {
                     row.style.display = '';
                 });
 
                 updateInfo(startIndex + 1, endIndex);
                 renderPageButtons();
-            }
-
-            function applyFilters() {
-                const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
-                const wantedLab = labFilter ? labFilter.value : 'all';
-
-                filteredRows = allRows.filter((row) => {
-                    const blob = row.dataset.search || '';
-                    const lab = row.dataset.lab || '';
-
-                    const queryPass = query === '' || blob.includes(query);
-                    const labPass = wantedLab === 'all' || lab === wantedLab;
-
-                    return queryPass && labPass;
-                });
-
-                currentPage = 1;
-                updateStats();
-                renderRows();
-            }
-
-            if (searchInput) searchInput.addEventListener('input', applyFilters);
-            if (entriesPerPage) {
-                entriesPerPage.addEventListener('change', function () {
-                    currentPage = 1;
-                    renderRows();
-                });
-            }
-            if (labFilter) labFilter.addEventListener('change', applyFilters);
-
-            if (clearFiltersBtn) {
-                clearFiltersBtn.addEventListener('click', function () {
-                    if (searchInput) searchInput.value = '';
-                    if (entriesPerPage) entriesPerPage.value = '5';
-                    if (labFilter) labFilter.value = 'all';
-                    applyFilters();
-                });
             }
 
             if (firstBtn) {
@@ -436,13 +284,6 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                 });
             }
 
-            if (toggleFilterBtn && filtersPanel) {
-                toggleFilterBtn.addEventListener('click', function () {
-                    filtersPanel.hidden = !filtersPanel.hidden;
-                });
-            }
-
-            updateStats();
             renderRows();
         })();
     </script>
