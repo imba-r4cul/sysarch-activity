@@ -52,12 +52,14 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 17px;
+    font-family: 'Manrope', sans-serif;
 }
 
 .login-form label {
     font-size: 16px;
     color: #333;
     margin-top: 6px;
+    font-family: 'Manrope', sans-serif;
 }
 
 .form-options {
@@ -95,6 +97,7 @@
     align-self: center;
     transition: box-shadow 0.15s;
     cursor: pointer;
+    font-family: 'Manrope', sans-serif;
 }
 
 .login-form button:hover {
@@ -201,6 +204,7 @@
     margin: 0 0 6px;
     font-size: 22px;
     color: #1a1a2e;
+    font-family: 'Manrope', sans-serif;
 }
 
 .signup-form-area .subtitle {
@@ -229,6 +233,7 @@
     font-size: 13px;
     font-weight: 600;
     color: #444;
+    font-family: 'Manrope', sans-serif;
 }
 
 .field-group input,
@@ -243,6 +248,7 @@
         border-color 0.2s,
         box-shadow 0.2s;
     outline: none;
+    font-family: 'Manrope', sans-serif;
 }
 
 .field-group input:focus,
@@ -272,6 +278,7 @@
     transition:
         box-shadow 0.2s;
     letter-spacing: 0.5px;
+    font-family: 'Manrope', sans-serif;
 }
 
 .signup-submit-btn:hover {

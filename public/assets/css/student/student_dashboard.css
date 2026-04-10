@@ -10,7 +10,7 @@
 }
 
 .dashboard-links a {
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 18px;
 }
 
@@ -248,6 +248,7 @@
     color: #333;
     background-color: #fcfcfc;
     transition: border-color 0.2s;
+    font-family: 'Manrope', sans-serif;
 }
 
 .form-group input:focus,
@@ -285,7 +286,7 @@
 
   /* Typography */
   --dh-font-headline: "Manrope", sans-serif;
-  --dh-font-body: "Inter", sans-serif;
+  --dh-font-body: "Manrope", sans-serif;
 
   /* Spacing & Radii */
   --dh-radius-lg: 1rem;

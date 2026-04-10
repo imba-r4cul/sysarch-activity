@@ -4,7 +4,7 @@
 
         body {
             margin: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Manrope', sans-serif;
             background: #eff1f3;
             min-height: 100vh;
             overflow-x: hidden;
@@ -22,7 +22,7 @@
             justify-content: space-between;
             padding: 5px 25px;
             min-height: 66px;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Manrope', sans-serif;
         }
 
         .admin-nav .brand {
