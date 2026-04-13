@@ -133,7 +133,7 @@ function yearLabel($level) {
             <li><a href="student_dashboard.php">Home</a></li>
             <li><a href="edit_profile.php">Edit Profile</a></li>
             <li><a href="reservations.php">Reservations</a></li>
-            <li><a href="sit_in_history.php">Sit-in History</a></li>   
+            <li><a href="sit_in_history_student.php">Sit-in History</a></li>
             <li><a href="student_dashboard.php?logout=1" class="logout-btn">Log out</a></li>
         </ul>
     </nav>

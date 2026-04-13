@@ -74,8 +74,8 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
             <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
             <li><a href="admin_dashboard.php?view=students">Student Information</a></li>
             <li><a href="active_sessions.php">Active Sessions</a></li>
-            <li><a href="sit_in_history.php" class="nav-active">Sit-in History</a></li>
-            <li><a href="sit_in_history.php?logout=1" class="logout-link">Logout</a></li>
+            <li><a href="sit_in_history_admin.php" class="nav-active">Sit-in History</a></li>
+            <li><a href="sit_in_history_admin.php?logout=1" class="logout-link">Logout</a></li>
         </ul>
     </nav>
 
