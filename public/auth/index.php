@@ -80,22 +80,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - CCS</title>
     <link rel="stylesheet" href="../assets/css/shared/global.css">
+    <link rel="stylesheet" href="../assets/css/shared/navbar.css">
     <link rel="stylesheet" href="../assets/css/auth/auth.css">
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
 </head>
 
 <body class="bg-light">
 
-    <nav class="navbar">
-        <h1 class="navbar-title">College of Computer Studies Sit-in
-            Monitoring System</h1>
-        <ul class="navbar-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#community">Community</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#login">Login</a></li>
-            <li><a href="register.php">Register</a></li>
-        </ul>
+    <nav class="academic-ledger-navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <h1 class="brand-title">College of Computer Studies Sit-in Monitoring System</h1>
+            </div>
+            <div class="nav-links">
+                <a class="nav-link active" href="#home">Home</a>
+                <a class="nav-link" href="#community">Community</a>
+                <a class="nav-link" href="#about">About</a>
+                <a class="nav-link" href="#login">Login</a>
+                <a class="nav-link" href="register.php">Register</a>
+            </div>
+        </div>
     </nav>
 
     <div class="main-container">

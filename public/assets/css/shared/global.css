@@ -7,65 +7,7 @@ body {
     background-color: #eff1f3;
 }
 
-/* NAVBAR SHARED */
-.navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #18539a;
-    padding: 5px 25px;
-}
 
-.navbar-title {
-    color: white;
-    font-size: 20px;
-    margin: 0.67em 0; /* Default h1 margin so it never jumps if h1 is reset */
-}
-
-.navbar-links {
-    list-style: none;
-    display: flex;
-    gap: 5px;
-    margin: 0;
-    padding: 0;
-    font-size: 18px;
-}
-
-.navbar-links li a,
-.navbar-links li a:visited,
-.navbar-links li a:active,
-.navbar-links li a:focus,
-.navbar-links li button {
-    color: #fff;
-    text-decoration: none;
-    font-size: 18px;
-    font-weight: 500;
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    line-height: 1.2;
-    box-sizing: border-box;
-    font-family: "Manrope", sans-serif;
-    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.navbar-links li a:focus {
-    outline: none;
-}
-
-.navbar-links li a:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.35);
-    outline-offset: 2px;
-}
-
-.navbar-links li a:hover,
-.navbar-links li button:hover {
-    background: rgba(255, 255, 255, 0.12);
-}
 
 /* SUCCESS MODAL SHARED */
 .login-success-overlay {

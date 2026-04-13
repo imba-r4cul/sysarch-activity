@@ -114,6 +114,7 @@ function yearLabel($level) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
     <link rel="stylesheet" href="../assets/css/shared/global.css">
+    <link rel="stylesheet" href="../assets/css/shared/navbar.css">
     <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
     <!-- FontAwesome CDN for standard icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -126,16 +127,19 @@ function yearLabel($level) {
 
 <body class="dashboard-body">
 
-    <nav class="navbar dashboard-nav">
-        <h1 class="navbar-title">College of Computer Studies Sit-in
-            Monitoring System</h1>
-        <ul class="navbar-links dashboard-links">
-            <li><a href="student_dashboard.php">Home</a></li>
-            <li><a href="edit_profile.php">Edit Profile</a></li>
-            <li><a href="reservations.php">Reservations</a></li>
-            <li><a href="sit_in_history_student.php">Sit-in History</a></li>
-            <li><a href="student_dashboard.php?logout=1" class="logout-btn">Log out</a></li>
-        </ul>
+    <nav class="academic-ledger-navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <h1 class="brand-title">College of Computer Studies Sit-in Monitoring System</h1>
+            </div>
+            <div class="nav-links">
+                <a class="nav-link active" href="student_dashboard.php">Home</a>
+                <a class="nav-link" href="edit_profile.php">Edit Profile</a>
+                <a class="nav-link" href="reservations.php">Reservations</a>
+                <a class="nav-link" href="sit_in_history_student.php">Sit-in History</a>
+                <a class="nav-logout" href="student_dashboard.php?logout=1">Log out</a>
+            </div>
+        </div>
     </nav>
 
     <main class="dashboard-home-container">

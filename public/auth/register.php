@@ -81,21 +81,26 @@ function old($field, $default = '')
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <link rel="stylesheet" href="../assets/css/shared/global.css">
+    <link rel="stylesheet" href="../assets/css/shared/navbar.css">
     <link rel="stylesheet" href="../assets/css/auth/auth.css">
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
 </head>
 
 <body class="bg-light register-page">
 
-    <nav class="navbar">
-        <h1 class="navbar-title">College of Computer Studies Sit-in Monitoring System</h1>
-        <ul class="navbar-links">
-            <li><a href="index.php">Home</a></li>
-            <li><a href="#community">Community</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="index.php">Login</a></li>
-            <li><a href="register.php">Register</a></li>
-        </ul>
+    <nav class="academic-ledger-navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <h1 class="brand-title">College of Computer Studies Sit-in Monitoring System</h1>
+            </div>
+            <div class="nav-links">
+                <a class="nav-link" href="index.php">Home</a>
+                <a class="nav-link" href="#community">Community</a>
+                <a class="nav-link" href="#about">About</a>
+                <a class="nav-link" href="index.php">Login</a>
+                <a class="nav-link active" href="register.php">Register</a>
+            </div>
+        </div>
     </nav>
 
     <div class="signup-wrapper">

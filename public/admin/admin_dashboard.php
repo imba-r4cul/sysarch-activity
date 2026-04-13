@@ -363,22 +363,27 @@ if (isset($_GET['ajax_search'])) {
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/admin/student_info.css">
+    <link rel="stylesheet" href="../assets/css/shared/navbar.css">
     <link rel="stylesheet" href="../assets/css/admin/admin_dashboard.css">
 </head>
 
 <body>
 
     <!-- ─── Navbar ─── -->
-    <nav class="admin-nav">
-        <span class="brand">CCS Sit-in Monitoring System (ADMIN DASHBOARD)</span>
-        <ul>
-            <li><a href="#" class="nav-active" id="nav-home" onclick="switchView('dashboard')">Home</a></li>
-            <li><button type="button" onclick="openModal('searchModal')">Search</button></li>
-            <li><a href="#" id="nav-students" onclick="switchView('students')">Student Information</a></li>
-            <li><a href="active_sessions.php">Active Sessions</a></li>
-            <li><a href="sit_in_history_admin.php">Sit-in History</a></li>
-            <li><a href="admin_dashboard.php?logout=1" class="logout-link">Logout</a></li>
-        </ul>
+    <nav class="academic-ledger-navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <h1 class="brand-title">CCS Sit-in Monitoring System (ADMIN DASHBOARD)</h1>
+            </div>
+            <div class="nav-links">
+                <a class="nav-link active" href="#" id="nav-home" onclick="switchView('dashboard')">Home</a>
+                <button class="nav-link" type="button" onclick="openModal('searchModal')">Search</button>
+                <a class="nav-link" href="#" id="nav-students" onclick="switchView('students')">Student Information</a>
+                <a class="nav-link" href="active_sessions.php">Active Sessions</a>
+                <a class="nav-link" href="sit_in_history_admin.php">Sit-in History</a>
+                <a class="nav-logout" href="admin_dashboard.php?logout=1">Logout</a>
+            </div>
+        </div>
     </nav>
 
     <!-- ─── Dashboard Content ─── -->

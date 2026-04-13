@@ -1,0 +1,115 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&display=swap");
+
+:root {
+  --primary-blue: #004085;
+  --hover-blue: #0056b3;
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.8);
+  --logout-red: #dc3545;
+  --logout-hover: #c82333;
+  --font-family: "Manrope", sans-serif;
+}
+
+.academic-ledger-navbar {
+  width: 100%;
+  background: var(--primary-blue);
+  padding: 15px 25px; /* consistent with auth page */
+  display: flex;
+  align-items: center;
+  font-family: var(--font-family);
+  box-sizing: border-box;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 250ms ease;
+  position: relative;
+  padding: 8px 4px;
+  display: inline-block;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: 4px;
+  right: 4px;
+  height: 2px;
+  background-color: #ffffff;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 250ms ease;
+}
+
+.nav-link:hover {
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+.nav-link.active {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.nav-link.active::after {
+  transform: scaleX(1);
+}
+
+/* button reset for admin Search */
+button.nav-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family);
+}
+
+.nav-logout {
+  text-decoration: none;
+  background-color: var(--logout-red);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 8px 20px;
+  border-radius: 6px;
+  transition: all 200ms ease;
+  margin-left: 8px;
+}
+
+.nav-logout:hover {
+  background-color: var(--logout-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.nav-logout:active {
+  transform: translateY(0);
+}
