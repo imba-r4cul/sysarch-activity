@@ -129,12 +129,11 @@
 
 /* REGISTER SCREEN */
 .signup-wrapper {
-    min-height: 0;
-    height: calc(100vh - 66px);
+    min-height: calc(100vh - 66px);
     display: flex;
     justify-content: center;
-    align-items: center;
-    padding: clamp(12px, 2.2vh, 22px) 20px;
+    align-items: flex-start;
+    padding: 20px 20px 28px;
     box-sizing: border-box;
 }
 
@@ -145,30 +144,30 @@
         0 8px 32px rgba(24, 83, 154, 0.12),
         0 1.5px 6px rgba(0, 0, 0, 0.04);
     width: 100%;
-    max-width: 920px;
-    max-height: 100%;
-    overflow: hidden;
+    max-width: 840px;
     display: flex;
     flex-direction: row;
+    overflow: hidden;
 }
 
 .signup-sidebar {
     background: linear-gradient(160deg, #0b4b8f 0%, #18539a 40%, #2471c9 100%);
     color: #fff;
-    padding: 48px 36px;
+    padding: 32px 28px;
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-width: 260px;
-    max-width: 300px;
+    min-width: 240px;
+    max-width: 280px;
+    border-radius: 18px 0 0 18px;
     text-align: center;
     gap: 18px;
 }
 
 .signup-sidebar .login-logo {
-    width: min(100%, 300px);
+    width: min(100%, 220px);
     aspect-ratio: 1 / 1;
     background-image: url("../../images/signup-img-removebg.png");
     background-size: contain;
@@ -179,10 +178,10 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 26px;
+    bottom: 20px;
     margin-top: 0;
     color: #fff;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .signup-sidebar .login-link-sidebar a {
@@ -197,26 +196,26 @@
 
 .signup-form-area {
     flex: 1;
-    padding: 40px 44px;
+    padding: 32px 36px;
 }
 
 .signup-form-area h3 {
-    margin: 0 0 6px;
-    font-size: 22px;
+    margin: 0 0 4px;
+    font-size: 20px;
     color: #1a1a2e;
     font-family: 'Manrope', sans-serif;
 }
 
 .signup-form-area .subtitle {
     color: #777;
-    font-size: 14px;
-    margin-bottom: 24px;
+    font-size: 13px;
+    margin-bottom: 20px;
 }
 
 .signup-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px 22px;
+    gap: 12px 18px;
 }
 
 .signup-grid .full-width {
@@ -226,11 +225,11 @@
 .field-group {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
 }
 
 .field-group label {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     color: #444;
     font-family: 'Manrope', sans-serif;
@@ -238,10 +237,10 @@
 
 .field-group input,
 .field-group select {
-    padding: 10px 14px;
+    padding: 8px 12px;
     border: 1.5px solid #dde2ea;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 13.5px;
     color: #333;
     background: #f8f9fb;
     transition:
@@ -262,17 +261,17 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    margin-top: 22px;
-    gap: 14px;
+    margin-top: 20px;
+    gap: 12px;
 }
 
 .signup-submit-btn {
     background: linear-gradient(135deg, #0b4b8f, #2471c9);
     color: #fff;
     border: none;
-    padding: 11px 30px;
+    padding: 10px 24px;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     transition:
@@ -327,6 +326,7 @@
         min-width: 100%;
         padding: 28px 20px;
         flex-direction: row;
+        border-radius: 18px 18px 0 0;
         gap: 16px;
     }
 
