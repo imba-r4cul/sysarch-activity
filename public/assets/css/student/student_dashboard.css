@@ -572,6 +572,26 @@
   flex-grow: 1;
   margin: 0;
   padding: 0;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.dh-policy-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.dh-policy-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dh-policy-list::-webkit-scrollbar-thumb {
+  background-color: var(--dh-outline-variant);
+  border-radius: 20px;
+}
+
+.dh-policy-list::-webkit-scrollbar-thumb:hover {
+  background-color: var(--dh-outline);
 }
 
 .dh-policy-item {

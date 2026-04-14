@@ -248,40 +248,88 @@ function yearLabel($level) {
                         <li class="dh-policy-item">
                             <span class="dh-policy-number">01</span>
                             <div>
-                                <h3>Strict Silence Policy</h3>
                                 <p class="dh-text-xs">
-                                    Maintain absolute silence. Group discussions should be held
-                                    in designated collaboration hubs only.
+                                    Maintain silence, proper decorum, and discipline inside the laboratory. Mobile phones, walkmans and other personal pieces of equipment must be switched off.
                                 </p>
                             </div>
                         </li>
                         <li class="dh-policy-item">
                             <span class="dh-policy-number">02</span>
                             <div>
-                                <h3>Equipment Handling</h3>
                                 <p class="dh-text-xs">
-                                    Report hardware malfunctions. Do not attempt to repair or
-                                    dismantle peripheral devices.
+                                    Games are not allowed inside the lab. This includes computer-related games, card games and other games that may disturb the operation of the lab.
                                 </p>
                             </div>
                         </li>
                         <li class="dh-policy-item">
                             <span class="dh-policy-number">03</span>
                             <div>
-                                <h3>Consumption Prohibition</h3>
                                 <p class="dh-text-xs">
-                                    Food, drinks, and water bottles are strictly prohibited
-                                    inside the terminal area.
+                                    Surfing the Internet is allowed only with the permission of the instructor. Downloading and installing of software are strictly prohibited.
                                 </p>
                             </div>
                         </li>
                         <li class="dh-policy-item">
                             <span class="dh-policy-number">04</span>
                             <div>
-                                <h3>Data Management</h3>
                                 <p class="dh-text-xs">
-                                    Local drives are wiped weekly. Use cloud storage or external
-                                    drives for project files.
+                                    Getting inside the laboratory requires the student to log in the logbook. No sitting-in without the permission of the instructor.
+                                </p>
+                            </div>
+                        </li>
+                        <li class="dh-policy-item">
+                            <span class="dh-policy-number">05</span>
+                            <div>
+                                <p class="dh-text-xs">
+                                    Students are not allowed to transfer from one laboratory to another without permission.
+                                </p>
+                            </div>
+                        </li>
+                        <li class="dh-policy-item">
+                            <span class="dh-policy-number">06</span>
+                            <div>
+                                <p class="dh-text-xs">
+                                    Deleting and changing of computer settings is strictly prohibited.
+                                </p>
+                            </div>
+                        </li>
+                        <li class="dh-policy-item">
+                            <span class="dh-policy-number">07</span>
+                            <div>
+                                <p class="dh-text-xs">
+                                    Bringing of foods, drinks, and other forms of refreshments inside the laboratory is not allowed.
+                                </p>
+                            </div>
+                        </li>
+                        <li class="dh-policy-item">
+                            <span class="dh-policy-number">08</span>
+                            <div>
+                                <p class="dh-text-xs">
+                                    Students must clean up after using the laboratory. Chair and tables should be arranged properly before leaving.
+                                </p>
+                            </div>
+                        </li>
+                        <li class="dh-policy-item">
+                            <span class="dh-policy-number">09</span>
+                            <div>
+                                <p class="dh-text-xs">
+                                    Students who damage equipment will be held responsible for the repair or replacement of the damaged item.
+                                </p>
+                            </div>
+                        </li>
+                        <li class="dh-policy-item">
+                            <span class="dh-policy-number">10</span>
+                            <div>
+                                <p class="dh-text-xs">
+                                    Only authorized personnel are allowed to use the printer and other peripherals.
+                                </p>
+                            </div>
+                        </li>
+                        <li class="dh-policy-item">
+                            <span class="dh-policy-number">11</span>
+                            <div>
+                                <p class="dh-text-xs">
+                                    Any violation of the rules and regulations will be subject to disciplinary action in accordance with the University's student handbook.
                                 </p>
                             </div>
                         </li>
