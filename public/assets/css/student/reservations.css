@@ -1,0 +1,340 @@
+/* reservations.css - Enhanced Student Sit-in Reservations (UI/UX Pro Max) */
+
+:root {
+    --primary-blue: #004085;
+    --primary-gradient: linear-gradient(135deg, #004085, #1e62a8);
+    --secondary-gradient: linear-gradient(160deg, #1e40af 0%, #3b82f6 100%);
+    --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 8px -1px rgba(0, 0, 0, 0.04);
+    --card-shadow-hover: 0 10px 30px -4px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.06);
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --transition-standard: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reservation-page {
+    max-width: 1200px; /* Wider for better bento grid feel */
+    margin: 40px auto;
+    padding: 0 24px;
+}
+
+.reservation-page h1 {
+    text-align: left;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--primary-blue);
+    margin-bottom: 32px;
+    letter-spacing: -0.025em;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Bento Grid Container */
+.bento-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-top: 24px;
+}
+
+@media (min-width: 1024px) {
+    .bento-grid {
+        grid-template-columns: 380px 1fr;
+        align-items: start;
+    }
+}
+
+.res-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    transition: var(--transition-standard);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    height: 100%;
+}
+
+.res-card:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.res-card-header {
+    background: #fff;
+    color: #1e293b;
+    padding: 24px 24px 12px;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.res-card-header::before {
+    content: '';
+    width: 6px;
+    height: 24px;
+    background: var(--primary-blue);
+    border-radius: 3px;
+}
+
+.res-card-body {
+    padding: 24px;
+}
+
+/* Form Styles */
+.res-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.res-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.res-field label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.res-field input {
+    padding: 12px 16px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 15px;
+    background: #f8fafc;
+    outline: none;
+    transition: var(--transition-standard);
+    color: #1e293b;
+}
+
+.res-field input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 4px rgba(11, 75, 143, 0.1);
+    background: #fff;
+}
+
+.res-field input[readonly] {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+.res-submit-row {
+    margin-top: 32px;
+}
+
+.res-submit-btn {
+    width: 100%;
+    background: var(--primary-gradient);
+    color: #fff;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-standard);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.res-submit-btn:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 8px 16px rgba(11, 75, 143, 0.25);
+}
+
+.res-submit-btn:active {
+    transform: scale(0.98);
+}
+
+/* Message Styles */
+.res-msg {
+    padding: 16px 20px;
+    border-radius: 16px;
+    font-size: 15px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.res-msg.success {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.res-msg.error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+/* History Table Styles */
+.history-table-container {
+    padding: 0;
+    width: 100%;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.history-table th {
+    background: #f8fafc;
+    color: #64748b;
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.history-table td {
+    padding: 20px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    font-size: 15px;
+    transition: background 0.2s;
+}
+
+.history-table tr:hover td {
+    background: #f8fafc;
+}
+
+.history-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.status-pending {
+    background: #fffbeb;
+    color: #92400e;
+}
+.status-pending::before { background: #d97706; }
+
+.status-approved {
+    background: #f0fdf4;
+    color: #166534;
+}
+.status-approved::before { background: #22c55e; }
+
+.status-rejected {
+    background: #fef2f2;
+    color: #991b1b;
+}
+.status-rejected::before { background: #ef4444; }
+
+.no-history {
+    text-align: center;
+    color: #94a3b8;
+    padding: 64px 24px;
+}
+
+/* Micro-interactions & Polish */
+.required {
+    color: #ef4444;
+}
+
+.res-card-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.res-card-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.res-card-body::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 3px;
+}
+
+/* Responsive Overrides */
+@media (max-width: 1023px) {
+    .bento-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .reservation-page {
+        margin: 24px auto;
+        padding: 0 16px;
+    }
+
+    .res-card {
+        border-radius: 16px;
+    }
+
+    .history-table, 
+    .history-table thead, 
+    .history-table tbody, 
+    .history-table th, 
+    .history-table td, 
+    .history-table tr {
+        display: block;
+    }
+
+    .history-table thead {
+        display: none;
+    }
+
+    .history-table tr {
+        padding: 16px;
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 1px;
+    }
+
+    .history-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border: none;
+        font-size: 14px;
+        text-align: right;
+    }
+
+    .history-table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #64748b;
+        text-align: left;
+        margin-right: 12px;
+    }
+}

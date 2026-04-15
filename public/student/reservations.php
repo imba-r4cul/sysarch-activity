@@ -70,181 +70,8 @@ $stmt->close();
     <link rel="stylesheet" href="../assets/css/shared/global.css">
     <link rel="stylesheet" href="../assets/css/shared/navbar.css">
     <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
+    <link rel="stylesheet" href="../assets/css/student/reservations.css">
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
-    <style>
-        .reservation-page {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        .reservation-page h1 {
-            text-align: center;
-            font-size: 28px;
-            color: #1a1a2e;
-            margin-bottom: 24px;
-        }
-
-        .res-card {
-            background: #fff;
-            border-radius: 14px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-            overflow: hidden;
-            margin-bottom: 24px;
-        }
-
-        .res-card-header {
-            background: linear-gradient(135deg, #0b4b8f, #1a6fd4);
-            color: #fff;
-            padding: 12px 20px;
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .res-card-body {
-            padding: 24px;
-        }
-
-        .res-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px 24px;
-        }
-
-        .res-field {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .res-field label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #444;
-        }
-
-        .res-field input {
-            padding: 10px 14px;
-            border: 1.5px solid #dde2ea;
-            border-radius: 8px;
-            font-size: 14px;
-            background: #f8f9fb;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .res-field input:focus {
-            border-color: #4a90d9;
-            box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.12);
-            background: #fff;
-        }
-
-        .res-field input[readonly] {
-            background: #eee;
-            cursor: not-allowed;
-        }
-
-        .res-submit-row {
-            margin-top: 20px;
-        }
-
-        .res-submit-btn {
-            background: linear-gradient(135deg, #0b4b8f, #2471c9);
-            color: #fff;
-            border: none;
-            padding: 11px 36px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.2s;
-        }
-
-        .res-submit-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(11, 75, 143, 0.35);
-        }
-
-        .res-msg {
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            margin-bottom: 16px;
-        }
-
-        .res-msg.success {
-            background: #e8f8e8;
-            color: #27ae60;
-            border: 1px solid #c3e6cb;
-        }
-
-        .res-msg.error {
-            background: #fff0f0;
-            color: #c0392b;
-            border: 1px solid #f5c6cb;
-        }
-
-        /* History table */
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-
-        .history-table th {
-            background: #0b4b8f;
-            color: #fff;
-            padding: 10px 12px;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        .history-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #f0f0f0;
-            color: #333;
-        }
-
-        .history-table tr:hover td {
-            background: #f0f5ff;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-approved {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-rejected {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .no-history {
-            text-align: center;
-            color: #999;
-            padding: 30px;
-            font-size: 15px;
-        }
-
-        @media (max-width: 600px) {
-            .res-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 </head>
 
 <body class="dashboard-body">
@@ -265,93 +92,111 @@ $stmt->close();
     </nav>
 
     <div class="reservation-page">
-        <h1>Sit-in Reservation</h1>
+        <h1>
+            Sit-in Reservation
+        </h1>
 
         <?php if ($success): ?>
-            <div class="res-msg success"><?= esc($success) ?></div>
+            <div class="res-msg success" role="alert" aria-live="polite">
+                <span class="res-msg-icon">✓</span>
+                <?= esc($success) ?>
+            </div>
         <?php endif; ?>
         <?php if ($error): ?>
-            <div class="res-msg error"><?= esc($error) ?></div>
+            <div class="res-msg error" role="alert" aria-live="assertive">
+                <span class="res-msg-icon">✕</span>
+                <?= esc($error) ?>
+            </div>
         <?php endif; ?>
 
-        <!-- Create Reservation -->
-        <div class="res-card">
-            <div class="res-card-header">Create Reservation</div>
-            <div class="res-card-body">
-                <form method="POST" action="reservations.php">
-                    <div class="res-grid">
-                        <div class="res-field">
-                            <label>ID Number</label>
-                            <input type="text" value="<?= esc($studentId) ?>" readonly>
+        <div class="bento-grid">
+            <!-- Create Reservation -->
+            <div class="res-card">
+                <div class="res-card-header" id="form-header">Create Reservation</div>
+                <div class="res-card-body">
+                    <form method="POST" action="reservations.php" aria-labelledby="form-header">
+                        <div class="res-grid">
+                            <div class="res-field">
+                                <label for="id_number_display">ID Number</label>
+                                <input type="text" id="id_number_display" value="<?= esc($studentId) ?>" readonly aria-readonly="true">
+                            </div>
+                            <div class="res-field">
+                                <label for="student_name_display">Student Name</label>
+                                <input type="text" id="student_name_display" value="<?= esc($studentName) ?>" readonly aria-readonly="true">
+                            </div>
+                            <div class="res-field">
+                                <label for="purpose">Purpose <span class="required" aria-hidden="true">*</span></label>
+                                <input type="text" id="purpose" name="purpose" placeholder="e.g. C Programming" required aria-required="true">
+                            </div>
+                            <div class="res-field">
+                                <label for="lab">Lab <span class="required" aria-hidden="true">*</span></label>
+                                <input type="text" id="lab" name="lab" placeholder="e.g. 524" required aria-required="true">
+                            </div>
+                            <div class="res-field">
+                                <label for="reservation_date">Reservation Date <span class="required" aria-hidden="true">*</span></label>
+                                <input type="date" id="reservation_date" name="reservation_date" required aria-required="true">
+                            </div>
+                            <div class="res-field">
+                                <label for="reservation_time">Reservation Time <span class="required" aria-hidden="true">*</span></label>
+                                <input type="time" id="reservation_time" name="reservation_time" required aria-required="true">
+                            </div>
                         </div>
-                        <div class="res-field">
-                            <label>Student Name</label>
-                            <input type="text" value="<?= esc($studentName) ?>" readonly>
+                        <div class="res-submit-row">
+                            <button type="submit" class="res-submit-btn">
+                                <span>Complete Reservation</span>
+                            </button>
                         </div>
-                        <div class="res-field">
-                            <label for="purpose">Purpose</label>
-                            <input type="text" id="purpose" name="purpose" placeholder="e.g. C Programming" required>
-                        </div>
-                        <div class="res-field">
-                            <label for="lab">Lab</label>
-                            <input type="text" id="lab" name="lab" placeholder="e.g. 524" required>
-                        </div>
-                        <div class="res-field">
-                            <label for="reservation_date">Reservation Date</label>
-                            <input type="date" id="reservation_date" name="reservation_date" required>
-                        </div>
-                        <div class="res-field">
-                            <label for="reservation_time">Reservation Time</label>
-                            <input type="time" id="reservation_time" name="reservation_time" required>
-                        </div>
-                    </div>
-                    <div class="res-submit-row">
-                        <button type="submit" class="res-submit-btn">Reserve</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
 
-        <!-- Reservation History -->
-        <div class="res-card">
-            <div class="res-card-header">My Reservation History</div>
-            <div class="res-card-body" style="padding: 0;">
-                <?php if (empty($reservations)): ?>
-                    <p class="no-history">You have no reservations yet.</p>
-                <?php else: ?>
-                    <div style="overflow-x: auto;">
-                        <table class="history-table">
-                            <thead>
-                                <tr>
-                                    <th>Purpose</th>
-                                    <th>Lab</th>
-                                    <th>Schedule</th>
-                                    <th>Status</th>
-                                    <th>Admin Note</th>
-                                    <th>Submitted</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($reservations as $res): ?>
+            <!-- Reservation History -->
+            <div class="res-card">
+                <div class="res-card-header" id="history-header">My Reservation History</div>
+                <div class="res-card-body" style="padding: 0;">
+                    <?php if (empty($reservations)): ?>
+                        <div class="no-history">
+                            <p>You have no reservations yet.</p>
+                        </div>
+                    <?php else: ?>
+                        <div class="history-table-container">
+                            <table class="history-table" aria-labelledby="history-header">
+                                <thead>
                                     <tr>
-                                        <td><?= esc($res['purpose']) ?></td>
-                                        <td><?= esc($res['lab']) ?></td>
-                                        <td><?= date('M d, Y h:i A', strtotime($res['reservation_date'] . ' ' . $res['reservation_time'])) ?>
-                                        </td>
-                                        <td>
-                                            <?php
-                                            $statusClass = 'status-' . esc(strtolower($res['status']));
-                                            ?>
-                                            <span class="status-badge <?= $statusClass ?>"><?= esc($res['status']) ?></span>
-                                        </td>
-                                        <td><?= esc($res['admin_note'] ?? '') ?></td>
-                                        <td><?= date('M d, Y h:i A', strtotime($res['created_at'])) ?></td>
+                                        <th scope="col">Purpose</th>
+                                        <th scope="col">Lab</th>
+                                        <th scope="col">Schedule</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Admin Note</th>
+                                        <th scope="col">Submitted</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php endif; ?>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($reservations as $res): ?>
+                                        <tr>
+                                            <td data-label="Purpose"><?= esc($res['purpose']) ?></td>
+                                            <td data-label="Lab"><?= esc($res['lab']) ?></td>
+                                            <td data-label="Schedule">
+                                                <strong><?= date('M d, Y', strtotime($res['reservation_date'])) ?></strong><br>
+                                                <small><?= date('h:i A', strtotime($res['reservation_time'])) ?></small>
+                                            </td>
+                                            <td data-label="Status">
+                                                <?php
+                                                $statusClass = 'status-' . esc(strtolower($res['status']));
+                                                ?>
+                                                <span class="status-badge <?= $statusClass ?>" role="status"><?= esc($res['status']) ?></span>
+                                            </td>
+                                            <td data-label="Admin Note"><?= esc($res['admin_note'] ?? '—') ?></td>
+                                            <td data-label="Submitted">
+                                                <small><?= date('M d, Y h:i A', strtotime($res['created_at'])) ?></small>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
