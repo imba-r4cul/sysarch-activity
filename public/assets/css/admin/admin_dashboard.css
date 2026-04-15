@@ -128,14 +128,26 @@
 
         .progress-section {
             margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .progress-section h4 {
-            margin: 0 0 12px;
+            margin: 0 0 16px;
             font-size: 14px;
             color: #666;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            align-self: flex-start;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
         .progress-item {
@@ -191,66 +203,113 @@
         }
 
         /* ─── Announcements ─── */
+        .announce-form {
+            display: flex;
+            flex-direction: column;
+        }
+        
         .announce-form textarea {
             width: 100%;
             border: 1.5px solid #dde2ea;
             border-radius: 8px;
-            padding: 10px 14px;
+            padding: 12px 16px;
             font-family: inherit;
             font-size: 14px;
             resize: vertical;
-            min-height: 70px;
+            min-height: 80px;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #fafbfc;
         }
 
         .announce-form textarea:focus {
-            border-color: #4a90d9;
+            border-color: #2471c9;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(36, 113, 201, 0.15);
+        }
+
+        .announce-form textarea::placeholder {
+            color: #9cb1c5;
         }
 
         .announce-form button {
-            margin-top: 10px;
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            align-self: flex-start;
+            margin-top: 12px;
+            background: linear-gradient(135deg, #0b4b8f, #2471c9);
             color: #fff;
             border: none;
-            padding: 9px 22px;
+            padding: 9px 24px;
             border-radius: 6px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.2s;
+            transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
         }
 
         .announce-form button:hover {
             transform: translateY(-1px);
-            box-shadow: 0 3px 10px rgba(39, 174, 96, 0.3);
+            box-shadow: 0 4px 12px rgba(36, 113, 201, 0.3);
         }
 
         .announce-list {
-            margin-top: 18px;
+            margin-top: 24px;
             max-height: 320px;
             overflow-y: auto;
+            padding-right: 8px; /* For scrollbar */
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .announce-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .announce-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .announce-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
         }
 
         .announce-item {
-            border-left: 3px solid #2471c9;
-            padding: 10px 14px;
-            margin-bottom: 10px;
+            border-left: 4px solid #2471c9;
+            padding: 14px 16px;
             background: #f8f9fb;
             border-radius: 0 8px 8px 0;
+            transition: background 0.2s, transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .announce-item:hover {
+            background: #f1f4f8;
+            transform: translateX(2px);
         }
 
         .announce-item .meta {
             font-size: 12px;
-            color: #888;
-            margin-bottom: 4px;
+            color: #64748b;
             font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .announce-item .meta .date {
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 11.5px;
         }
 
         .announce-item .text {
             font-size: 14px;
-            color: #333;
-            line-height: 1.5;
+            color: #334155;
+            line-height: 1.6;
         }
 
         /* ─── Modals ─── */

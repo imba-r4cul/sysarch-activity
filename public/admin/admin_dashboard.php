@@ -409,31 +409,13 @@ if (isset($_GET['ajax_search'])) {
 
                 <div class="progress-section">
                     <h4>Sit-in by Purpose</h4>
-                    <?php
-                    $barColors = ['bar-blue', 'bar-red', 'bar-green', 'bar-orange', 'bar-purple', 'bar-teal'];
-                    $maxVal = $totalSitIn > 0 ? $totalSitIn : 1;
-                    $i = 0;
-                    if (empty($purposes)): ?>
+                    <?php if (empty($purposes)): ?>
                         <p style="color:#999; font-size:14px; text-align:center;">No sit-in data yet.</p>
-                    <?php else:
-                        foreach ($purposes as $name => $count):
-                            $pct = round(($count / $maxVal) * 100);
-                            $color = $barColors[$i % count($barColors)];
-                            $i++;
-                            ?>
-                            <div class="progress-item">
-                                <div class="progress-label">
-                                    <span><?= esc($name) ?></span>
-                                    <span><?= $count ?></span>
-                                </div>
-                                <div class="progress-bar-track">
-                                    <div class="progress-bar-fill <?= $color ?>" style="width: <?= $pct ?>%"></div>
-                                </div>
-                            </div>
-                            <?php
-                        endforeach;
-                    endif;
-                    ?>
+                    <?php else: ?>
+                        <div class="chart-container">
+                            <canvas id="purposePieChart"></canvas>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -997,6 +979,55 @@ if (isset($_GET['ajax_search'])) {
             switchView('students');
         }
 
+    </script>
+    
+    <!-- Chart.js and Initialization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('purposePieChart');
+            if (ctx) {
+                const purposeData = <?= json_encode($purposes) ?>;
+                const labels = Object.keys(purposeData);
+                const data = Object.values(purposeData);
+                
+                // Colors matching the bar chart colors
+                const colors = ['#2471c9', '#e74c3c', '#27ae60', '#f39c12', '#8e44ad', '#1abc9c'];
+                
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: colors.slice(0, labels.length).concat(Array(Math.max(0, labels.length - colors.length)).fill('#95a5a6')),
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: { family: "'Manrope', sans-serif", size: 12 },
+                                    padding: 15
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                padding: 12,
+                                titleFont: { size: 14, family: "'Manrope', sans-serif" },
+                                bodyFont: { size: 13, family: "'Manrope', sans-serif" },
+                                displayColors: true
+                            }
+                        }
+                    }
+                });
+            }
+        });
     </script>
 
 </body>
