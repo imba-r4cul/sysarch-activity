@@ -28,6 +28,7 @@ $sql = "
         sr.purpose,
         sr.lab,
         sr.status,
+        sr.feedback,
         sr.time_in,
         sr.time_out,
         (
@@ -156,8 +157,13 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="filter-actions">
+            <div class="filter-actions" style="display: flex; gap: 8px; flex-grow: 1; align-items: flex-end;">
                 <button type="button" class="clear-btn" id="clearFiltersBtn">Clear</button>
+                <div style="flex-grow: 1;"></div>
+                <button type="button" class="view-feedbacks-btn" onclick="openModal('feedbacksModal')">
+                    <span class="material-symbols-outlined">chat_bubble</span>
+                    View Feedbacks
+                </button>
             </div>
         </section>
 
@@ -167,8 +173,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                     <thead>
                         <tr>
                             <th class="text-center">SIT ID NUMBER</th>
-                            <th>ID NUMBER</th>
-                            <th>NAME</th>
+                            <th class="text-center">ID NUMBER</th>
                             <th>PURPOSE</th>
                             <th>SIT LAB</th>
                             <th class="text-center">SESSION #</th>
@@ -186,7 +191,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                         ?>
                         <?php if (empty($historyRecords)): ?>
                             <tr id="historyNoDataRow">
-                                <td colspan="9" class="no-data">No sit-in history available</td>
+                                <td colspan="8" class="no-data">No sit-in history available</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($historyRecords as $idx => $record):
@@ -212,17 +217,13 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                                     class="data-row"
                                     data-search="<?= esc($searchBlob) ?>"
                                     data-status="<?= esc(strtolower($status)) ?>"
-                                    data-lab="<?= esc(strtolower((string) ($record['lab'] ?? ''))) ?>">
+                                    data-lab="<?= esc(strtolower((string) ($record['lab'] ?? ''))) ?>"
+                                    data-feedback="<?= esc($record['feedback'] ?? '') ?>"
+                                    data-id-number="<?= esc($record['id_number']) ?>"
+                                    data-name="<?= esc(strtoupper($displayName)) ?>"
+                                    data-lab-raw="<?= esc($record['lab']) ?>">
                                     <td class="sit-id-col text-center"><?= esc($record['id']) ?></td>
-                                    <td><?= esc($record['id_number']) ?></td>
-                                    <td>
-                                        <div class="name-cell">
-                                            <div class="avatar" style="background-color: <?= esc($style['bg']) ?>; color: <?= esc($style['fg']) ?>;">
-                                                <?= esc(studentInitials($record['first_name'], $record['last_name'])) ?>
-                                            </div>
-                                            <span class="student-name"><?= esc(strtoupper($displayName)) ?></span>
-                                        </div>
-                                    </td>
+                                    <td class="text-center"><?= esc($record['id_number']) ?></td>
                                     <td><?= esc($record['purpose']) ?></td>
                                     <td><span class="lab-badge"><?= esc($record['lab']) ?></span></td>
                                     <td class="text-center"><?= esc($record['session_no']) ?></td>
@@ -239,7 +240,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                                 </tr>
                             <?php endforeach; ?>
                             <tr id="historyNoDataRow" style="display:none;">
-                                <td colspan="9" class="no-data">No sit-in history available</td>
+                                <td colspan="8" class="no-data">No sit-in history available</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -266,6 +267,39 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
             </div>
         </section>
     </main>
+
+    <div id="feedbacksModal" class="modal-overlay" onclick="if(event.target===this) closeModal('feedbacksModal')">
+        <div class="modal-box" style="display:flex; flex-direction:column;">
+            <div class="modal-header">
+                <h2>Student Feedbacks</h2>
+                <button type="button" class="modal-close-btn" onclick="closeModal('feedbacksModal')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div style="padding: 16px 24px; border-bottom: 1px solid var(--surface-container-highest);">
+                <div class="filter-field" style="width: auto;">
+                    <label for="modalLabFilter">Filter by Lab</label>
+                    <select id="modalLabFilter" onchange="renderFeedbacksModal()">
+                        <option value="all">All Labs</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-body">
+                <table class="feedbacks-table">
+                    <thead>
+                        <tr>
+                            <th class="text-center">ID NUMBER</th>
+                            <th>NAME</th>
+                            <th>LAB</th>
+                            <th>FEEDBACK</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedbacksTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <script>
         (function () {
@@ -449,6 +483,72 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
 
             updateStats();
             renderRows();
+
+            window.renderFeedbacksModal = function() {
+                const tbody = document.getElementById('feedbacksTableBody');
+                const labFilter = document.getElementById('modalLabFilter').value;
+                tbody.innerHTML = '';
+                
+                let count = 0;
+                allRows.forEach(row => {
+                    const feedback = row.getAttribute('data-feedback');
+                    const lab = row.getAttribute('data-lab');
+                    if (feedback && feedback.trim() !== '') {
+                        if (labFilter === 'all' || lab === labFilter) {
+                            count++;
+                            const idNum = row.getAttribute('data-id-number');
+                            const name = row.getAttribute('data-name');
+                            const labRaw = row.getAttribute('data-lab-raw');
+                            
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td class="text-center">${idNum}</td>
+                                <td>${name}</td>
+                                <td><span class="lab-badge">${labRaw}</span></td>
+                                <td class="feedback-comment-col">${feedback}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        }
+                    }
+                });
+
+                if (count === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="no-data">No feedbacks matching this filter.</td></tr>`;
+                }
+            };
+
+            const observer = new MutationObserver(mutations => {
+                mutations.forEach(mutation => {
+                    if (mutation.target.classList.contains('active') && mutation.target.id === 'feedbacksModal') {
+                        const allLabs = new Set();
+                        allRows.forEach(row => {
+                            const f = row.getAttribute('data-feedback');
+                            if (f && f.trim() !== '') {
+                                const l = row.getAttribute('data-lab-raw');
+                                if (l) allLabs.add(l);
+                            }
+                        });
+                        const select = document.getElementById('modalLabFilter');
+                        const currentVal = select.value;
+                        select.innerHTML = '<option value="all">All Labs</option>';
+                        const sortedLabs = Array.from(allLabs).sort();
+                        sortedLabs.forEach(lab => {
+                            const opt = document.createElement('option');
+                            opt.value = lab.toLowerCase();
+                            opt.textContent = lab;
+                            select.appendChild(opt);
+                        });
+                        select.value = Array.from(select.options).some(o => o.value === currentVal) ? currentVal : 'all';
+                        
+                        renderFeedbacksModal();
+                    }
+                });
+            });
+            const fbModal = document.getElementById('feedbacksModal');
+            if (fbModal) {
+                observer.observe(fbModal, { attributes: true, attributeFilter: ['class'] });
+            }
+
         })();
     </script>
 </body>

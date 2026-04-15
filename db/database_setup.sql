@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS `sit_in_records` (
   `time_in` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `time_out` TIMESTAMP NULL DEFAULT NULL,
   `status` ENUM('Active', 'Completed') DEFAULT 'Active',
+  `feedback` TEXT NULL DEFAULT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,

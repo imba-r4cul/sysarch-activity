@@ -33,6 +33,7 @@ $sql = "
         sr.purpose,
         sr.lab,
         sr.status,
+        sr.feedback,
         sr.time_in,
         sr.time_out,
         (
@@ -89,14 +90,15 @@ if ($stmt) {
                     <thead>
                         <tr>
                             <th class="text-center">SIT ID NUMBER</th>
-                            <th>ID NUMBER</th>
-                            <th>NAME</th>
+                            <!-- <th>ID NUMBER</th> -->
+                            <!-- <th>NAME</th> -->
                             <th>PURPOSE</th>
                             <th>SIT LAB</th>
                             <th class="text-center">SESSION #</th>
                             <th>STATUS</th>
                             <th>STARTED AT</th>
                             <th>ENDED AT</th>
+                            <th>FEEDBACK</th>
                         </tr>
                     </thead>
                     <tbody id="historyTableBody">
@@ -124,15 +126,15 @@ if ($stmt) {
                             ?>
                                 <tr class="data-row">
                                     <td class="sit-id-col text-center"><?= esc($record['id']) ?></td>
-                                    <td><?= esc($record['id_number']) ?></td>
-                                    <td>
+                                    <!-- <td><?= esc($record['id_number']) ?></td> -->
+                                    <!-- <td>
                                         <div class="name-cell">
                                             <div class="avatar" style="background-color: <?= esc($style['bg']) ?>; color: <?= esc($style['fg']) ?>;">
                                                 <?= esc(studentInitials($record['first_name'], $record['last_name'])) ?>
                                             </div>
                                             <span class="student-name"><?= esc(strtoupper($displayName)) ?></span>
                                         </div>
-                                    </td>
+                                    </td> -->
                                     <td><?= esc($record['purpose']) ?></td>
                                     <td><span class="lab-badge"><?= esc($record['lab']) ?></span></td>
                                     <td class="text-center"><?= esc($record['session_no']) ?></td>
@@ -145,6 +147,45 @@ if ($stmt) {
                                     <td class="time-cell"><?= esc(formatDateTime($record['time_in'] ?? null)) ?></td>
                                     <td class="time-cell<?= empty($record['time_out']) ? ' muted' : '' ?>">
                                         <?= esc(formatDateTime($record['time_out'] ?? null)) ?>
+                                    </td>
+                                    <td class="feedback-cell">
+                                        <?php if (!empty($record['feedback'])): ?>
+                                            <div class="feedback-display" id="fb-display-<?= esc($record['id']) ?>">
+                                                <span class="feedback-text"><?= esc($record['feedback']) ?></span>
+                                                <button class="feedback-edit-btn" onclick="editFeedback(<?= esc($record['id']) ?>)" title="Edit Feedback" aria-label="Edit Feedback">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M12 20h9"></path>
+                                                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div class="feedback-edit" id="fb-edit-<?= esc($record['id']) ?>" style="display: none;">
+                                                <div class="feedback-input-wrapper">
+                                                    <label for="fb-text-<?= esc($record['id']) ?>" class="sr-only">How was the PC?</label>
+                                                    <textarea id="fb-text-<?= esc($record['id']) ?>" class="feedback-textarea" placeholder="How was the PC?" maxlength="300"><?= esc($record['feedback']) ?></textarea>
+                                                </div>
+                                                <button id="fb-btn-<?= esc($record['id']) ?>" class="feedback-submit-btn" onclick="submitFeedback(<?= esc($record['id']) ?>)">Update</button>
+                                                <div id="fb-err-<?= esc($record['id']) ?>" class="feedback-error"></div>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="feedback-edit" id="fb-edit-<?= esc($record['id']) ?>">
+                                                <div class="feedback-input-wrapper">
+                                                    <label for="fb-text-<?= esc($record['id']) ?>" class="sr-only">How was the PC?</label>
+                                                    <textarea id="fb-text-<?= esc($record['id']) ?>" class="feedback-textarea" placeholder="How was the PC?" maxlength="300"></textarea>
+                                                </div>
+                                                <button id="fb-btn-<?= esc($record['id']) ?>" class="feedback-submit-btn" onclick="submitFeedback(<?= esc($record['id']) ?>)">Submit</button>
+                                                <div id="fb-err-<?= esc($record['id']) ?>" class="feedback-error"></div>
+                                            </div>
+                                            <div class="feedback-display" id="fb-display-<?= esc($record['id']) ?>" style="display: none;">
+                                                <span class="feedback-text"></span>
+                                                <button class="feedback-edit-btn" onclick="editFeedback(<?= esc($record['id']) ?>)" title="Edit Feedback" aria-label="Edit Feedback">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M12 20h9"></path>
+                                                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -175,6 +216,59 @@ if ($stmt) {
     </main>
 
     <script>
+        function editFeedback(id) {
+            document.getElementById('fb-display-' + id).style.display = 'none';
+            document.getElementById('fb-edit-' + id).style.display = 'flex';
+            document.getElementById('fb-text-' + id).focus();
+        }
+
+        async function submitFeedback(id) {
+            const textarea = document.getElementById('fb-text-' + id);
+            const btn = document.getElementById('fb-btn-' + id);
+            const errDiv = document.getElementById('fb-err-' + id);
+            const displayDiv = document.getElementById('fb-display-' + id);
+            const editDiv = document.getElementById('fb-edit-' + id);
+            const textSpan = displayDiv.querySelector('.feedback-text');
+            const val = textarea.value.trim();
+
+            errDiv.textContent = '';
+            if (!val) {
+                errDiv.textContent = 'Feedback cannot be empty.';
+                return;
+            }
+
+            textarea.disabled = true;
+            btn.disabled = true;
+            const originalBtnText = btn.textContent;
+            btn.textContent = '...';
+
+            const formData = new FormData();
+            formData.append('sit_in_id', id);
+            formData.append('feedback', val);
+
+            try {
+                const res = await fetch('submit_feedback.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    textSpan.textContent = val;
+                    editDiv.style.display = 'none';
+                    displayDiv.style.display = 'flex';
+                } else {
+                    errDiv.textContent = data.error || 'Failed to submit feedback.';
+                }
+            } catch (e) {
+                errDiv.textContent = 'A network error occurred.';
+            } finally {
+                textarea.disabled = false;
+                btn.disabled = false;
+                btn.textContent = val ? 'Update' : 'Submit';
+            }
+        }
+
         (function () {
             const tableBody = document.getElementById('historyTableBody');
             const info = document.getElementById('historyInfo');
