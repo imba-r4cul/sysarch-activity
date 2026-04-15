@@ -5,6 +5,7 @@
  *
  * Usage: php db/seed_admin.php
  *        or visit http://localhost/sysarch_activity/db/seed_admin.php
+ *        or this if the above is not working http://localhost/sysarch-activity/db/seed_admin.php
  */
 require_once __DIR__ . '/../config/database.php';
 
