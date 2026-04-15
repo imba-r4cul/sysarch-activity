@@ -26,7 +26,5 @@ Thumbs.db
 /public/uploads/*
 !/public/uploads/.htaccess
 
-/.agents
 
-/SKILL.md
 
