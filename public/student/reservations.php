@@ -1,14 +1,28 @@
 <?php
 session_start();
 require_once '../../config/database.php';
+require_once '../includes/helpers.php';
+require_once '../includes/student_notifications.php';
+require_once '../includes/student_navbar.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../auth/index.php');
     exit;
 }
 
+if (isset($_GET['logout'])) {
+    session_unset();
+    session_destroy();
+    header('Location: ../auth/index.php');
+    exit;
+}
+
 $userId = (int) $_SESSION['user_id'];
 $idNumber = $_SESSION['id_number'] ?? '';
+
+$notificationFeatureEnabled = studentNotificationFeatureEnabled($conn);
+studentHandleNotificationAjax($conn, $userId, $notificationFeatureEnabled);
+$newAnnCount = studentFetchUnreadNotificationCount($conn, $userId, $notificationFeatureEnabled);
 
 // Fetch student info for pre-fill
 $stmt = $conn->prepare("SELECT id_number, first_name, last_name FROM users WHERE id = ?");
@@ -19,11 +33,6 @@ $stmt->close();
 
 $studentName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
 $studentId = $user['id_number'] ?? '';
-
-function esc($v)
-{
-    return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
-}
 
 // Handle reservation form
 $success = '';
@@ -66,7 +75,6 @@ $stmt->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sit-in Reservation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/shared/global.css">
     <link rel="stylesheet" href="../assets/css/shared/navbar.css">
     <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
@@ -75,21 +83,7 @@ $stmt->close();
 </head>
 
 <body class="dashboard-body">
-
-    <nav class="academic-ledger-navbar">
-        <div class="nav-container">
-            <div class="brand">
-                <h1 class="brand-title">College of Computer Studies Sit-in Monitoring System</h1>
-            </div>
-            <div class="nav-links">
-                <a class="nav-link" href="student_dashboard.php">Home</a>
-                <a class="nav-link" href="edit_profile.php">Edit Profile</a>
-                <a class="nav-link active" href="reservations.php">Reservations</a>
-                <a class="nav-link" href="sit_in_history_student.php">Sit-in History</a>
-                <a class="nav-logout" href="student_dashboard.php?logout=1">Log out</a>
-            </div>
-        </div>
-    </nav>
+    <?php renderStudentNavbar('reservations', $newAnnCount); ?>
 
     <div class="reservation-page">
         <h1>
@@ -200,6 +194,8 @@ $stmt->close();
             </div>
         </div>
     </div>
+
+    <?php renderStudentNotificationScript($notificationFeatureEnabled); ?>
 
 </body>
 

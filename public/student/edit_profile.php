@@ -1,8 +1,18 @@
 <?php
 session_start();
 require_once '../../config/database.php';
+require_once '../includes/helpers.php';
+require_once '../includes/student_notifications.php';
+require_once '../includes/student_navbar.php';
 
 if (!isset($_SESSION['user_id'])) {
+    header('Location: ../auth/index.php');
+    exit;
+}
+
+if (isset($_GET['logout'])) {
+    session_unset();
+    session_destroy();
     header('Location: ../auth/index.php');
     exit;
 }
@@ -11,6 +21,9 @@ $userId = (int) $_SESSION['user_id'];
 $success = $_SESSION['profile_success'] ?? '';
 unset($_SESSION['profile_success']);
 $error = '';
+
+$notificationFeatureEnabled = studentNotificationFeatureEnabled($conn);
+studentHandleNotificationAjax($conn, $userId, $notificationFeatureEnabled);
 
 $defaultProfileImage = '../assets/images/edit-profile.png';
 $uploadsDir = __DIR__ . '/../assets/uploads/';
@@ -33,6 +46,8 @@ if (!$user) {
     header('Location: ../auth/index.php');
     exit;
 }
+
+$newAnnCount = studentFetchUnreadNotificationCount($conn, $userId, $notificationFeatureEnabled);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete_picture'])) {
@@ -161,10 +176,6 @@ if (!empty($user['profile_image'])) {
     }
 }
 
-function esc($value)
-{
-    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -178,28 +189,11 @@ function esc($value)
     <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
     <!-- FontAwesome CDN for standard icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
 </head>
 
 <body class="dashboard-body">
-
-    <nav class="academic-ledger-navbar">
-        <div class="nav-container">
-            <div class="brand">
-                <h1 class="brand-title">College of Computer Studies Sit-in Monitoring System</h1>
-            </div>
-            <div class="nav-links">
-                <a class="nav-link" href="student_dashboard.php">Home</a>
-                <a class="nav-link active" href="edit_profile.php">Edit Profile</a>
-                <a class="nav-link" href="reservations.php">Reservations</a>
-                <a class="nav-link" href="sit_in_history_student.php">Sit-in History</a>
-                <a class="nav-logout" href="student_dashboard.php?logout=1">Log out</a>
-            </div>
-        </div>
-    </nav>
+    <?php renderStudentNavbar('profile', $newAnnCount); ?>
 
     <main class="dashboard-container">
         <div class="edit-profile-card">
@@ -396,6 +390,7 @@ function esc($value)
             });
         });
     </script>
+    <?php renderStudentNotificationScript($notificationFeatureEnabled); ?>
 </body>
 
 </html>

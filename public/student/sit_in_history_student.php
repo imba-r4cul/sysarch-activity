@@ -2,6 +2,8 @@
 session_start();
 require_once '../../config/database.php';
 require_once '../includes/helpers.php';
+require_once '../includes/student_notifications.php';
+require_once '../includes/student_navbar.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../auth/index.php');
@@ -16,6 +18,9 @@ if (isset($_GET['logout'])) {
 }
 
 $userId = (int) $_SESSION['user_id'];
+$notificationFeatureEnabled = studentNotificationFeatureEnabled($conn);
+studentHandleNotificationAjax($conn, $userId, $notificationFeatureEnabled);
+$newAnnCount = studentFetchUnreadNotificationCount($conn, $userId, $notificationFeatureEnabled);
 $historyRecords = [];
 
 $sql = "
@@ -60,35 +65,16 @@ if ($stmt) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sit-in History</title>
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/shared/global.css">
     <link rel="stylesheet" href="../assets/css/shared/navbar.css">
     <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
     <link rel="stylesheet" href="../assets/css/student/sit_in_history_student.css">
     <!-- FontAwesome CDN for standard icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <!-- Material Symbols for Close Icon -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 </head>
 
 <body class="dashboard-body">
-    <nav class="academic-ledger-navbar">
-        <div class="nav-container">
-            <div class="brand">
-                <h1 class="brand-title">College of Computer Studies Sit-in Monitoring System</h1>
-            </div>
-            <div class="nav-links">
-                <a class="nav-link" href="student_dashboard.php">Home</a>
-                <a class="nav-link" href="edit_profile.php">Edit Profile</a>
-                <a class="nav-link" href="reservations.php">Reservations</a>
-                <a class="nav-link active" href="sit_in_history_student.php">Sit-in History</a>
-                <a class="nav-logout" href="student_dashboard.php?logout=1">Log out</a>
-            </div>
-        </div>
-    </nav>
+    <?php renderStudentNavbar('history', $newAnnCount); ?>
 
     <main style="padding: 2rem 4rem;">
         <header class="history-header" style="justify-content: flex-start; margin-bottom: 15px;">
@@ -298,6 +284,7 @@ if ($stmt) {
             renderRows();
         })();
     </script>
+    <?php renderStudentNotificationScript($notificationFeatureEnabled); ?>
 </body>
 
 </html>
