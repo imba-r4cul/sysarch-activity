@@ -62,6 +62,20 @@ CREATE TABLE IF NOT EXISTS `announcements` (
   INDEX `idx_created_at` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Notification read tracking table (per user, per announcement)
+CREATE TABLE IF NOT EXISTS `notification_reads` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `announcement_id` INT NOT NULL,
+  `read_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_user_announcement` (`user_id`, `announcement_id`),
+  INDEX `idx_notification_reads_user_id` (`user_id`),
+  INDEX `idx_notification_reads_announcement_id` (`announcement_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`announcement_id`) REFERENCES `announcements` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Reservations table
 CREATE TABLE IF NOT EXISTS `reservations` (
   `id` INT NOT NULL AUTO_INCREMENT,
