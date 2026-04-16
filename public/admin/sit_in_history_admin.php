@@ -174,6 +174,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                         <tr>
                             <th class="text-center">SIT ID NUMBER</th>
                             <th class="text-center">ID NUMBER</th>
+                            <th>NAME</th>
                             <th>PURPOSE</th>
                             <th>SIT LAB</th>
                             <th class="text-center">SESSION #</th>
@@ -191,7 +192,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                         ?>
                         <?php if (empty($historyRecords)): ?>
                             <tr id="historyNoDataRow">
-                                <td colspan="8" class="no-data">No sit-in history available</td>
+                                <td colspan="9" class="no-data">No sit-in history available</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($historyRecords as $idx => $record):
@@ -224,6 +225,12 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                                     data-lab-raw="<?= esc($record['lab']) ?>">
                                     <td class="sit-id-col text-center"><?= esc($record['id']) ?></td>
                                     <td class="text-center"><?= esc($record['id_number']) ?></td>
+                                    <td class="name-cell">
+                                        <div class="avatar" style="background-color: <?= $style['bg'] ?>; color: <?= $style['fg'] ?>;">
+                                            <?= esc(strtoupper(substr($record['first_name'] ?? 'U', 0, 1) . substr($record['last_name'] ?? 'S', 0, 1))) ?>
+                                        </div>
+                                        <span class="student-name"><?= esc($record['last_name'] . ', ' . $record['first_name']) ?></span>
+                                    </td>
                                     <td><?= esc($record['purpose']) ?></td>
                                     <td><span class="lab-badge"><?= esc($record['lab']) ?></span></td>
                                     <td class="text-center"><?= esc($record['session_no']) ?></td>
@@ -240,7 +247,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                                 </tr>
                             <?php endforeach; ?>
                             <tr id="historyNoDataRow" style="display:none;">
-                                <td colspan="8" class="no-data">No sit-in history available</td>
+                                <td colspan="9" class="no-data">No sit-in history available</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>

@@ -35,6 +35,19 @@
         openModal('sitinModal');
     }
 
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, (ch) => {
+            switch (ch) {
+                case '&': return '&amp;';
+                case '<': return '&lt;';
+                case '>': return '&gt;';
+                case '"': return '&quot;';
+                case "'": return '&#39;';
+                default: return ch;
+            }
+        });
+    }
+
     function doSearch() {
         const q = document.getElementById('modalSearchInput').value.trim();
         const container = document.getElementById('searchResults');
@@ -44,7 +57,7 @@
         }
         container.innerHTML = '<p class="no-results">Searching...</p>';
 
-        fetch('admin_dashboard.php?ajax_search=1&q=' + encodeURIComponent(q))
+        fetch('student_information.php?ajax_search=1&q=' + encodeURIComponent(q))
             .then(r => r.json())
             .then(data => {
                 latestSearchData = data;
@@ -52,14 +65,18 @@
                     container.innerHTML = '<p class="no-results">No students found.</p>';
                     return;
                 }
+
                 let html = '<table class="search-results-table"><thead><tr><th>ID</th><th>Name</th><th>Course</th><th>Action</th></tr></thead><tbody>';
                 data.forEach((student, idx) => {
-                    html += '<tr><td>' + (student.id_number || '') + '</td><td>' + (student.first_name || '') + ' ' + (student.last_name || '') + '</td><td>' + (student.course || '') + '</td><td><button type="button" class="search-action-btn" onclick="selectStudentForSitIn(' + idx + ')">Use</button></td></tr>';
+                    const id = escapeHtml(student.id_number || '');
+                    const name = escapeHtml(((student.first_name || '') + ' ' + (student.last_name || '')).trim());
+                    const course = escapeHtml(student.course || '');
+                    html += '<tr><td>' + id + '</td><td>' + name + '</td><td>' + course + '</td><td><button type="button" class="search-action-btn" onclick="selectStudentForSitIn(' + idx + ')">Use</button></td></tr>';
                 });
                 html += '</tbody></table>';
                 container.innerHTML = html;
             })
-            .catch(err => {
+            .catch(() => {
                 container.innerHTML = '<p class="no-results">Error searching. Please try again.</p>';
             });
     }

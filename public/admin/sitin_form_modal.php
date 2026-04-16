@@ -77,7 +77,7 @@
                     return;
                 }
                 sitinTimeout = setTimeout(() => {
-                    fetch('admin_dashboard.php?ajax_search=1&q=' + encodeURIComponent(idNum))
+                    fetch('student_information.php?ajax_search=1&q=' + encodeURIComponent(idNum))
                         .then(r => r.json())
                         .then(data => {
                             const match = data.find(s => s.id_number === idNum);
