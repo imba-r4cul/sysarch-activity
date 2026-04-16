@@ -141,7 +141,6 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
         <div class="container">
             <header class="page-header">
                 <div>
-                    <h2 class="page-kicker">Institutional Insights</h2>
                     <h1 class="dashboard-title">Admin Dashboard</h1>
                 </div>
                 <div class="header-actions">
@@ -225,17 +224,14 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
                             </div>
 
                             <div class="scrollable-content">
-                                <div class="compose-block">
-                                    <div class="compose-label">New announcement</div>
+                                <div class="form-section">
+                                    <label class="form-label" for="announcement_content">New announcement</label>
                                     <form class="announce-form" method="POST" action="admin_dashboard.php">
-                                        <label class="sr-only" for="announcement_content">Announcement</label>
-                                        <textarea id="announcement_content" name="announcement_content" placeholder="Write a new announcement..." required></textarea>
-                                        <div class="compose-actions">
-                                            <button type="submit" class="compose-submit">
-                                                Submit
-                                                <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-                                            </button>
-                                        </div>
+                                        <textarea id="announcement_content" class="announcement-textarea" name="announcement_content" placeholder="Write a new announcement..." required></textarea>
+                                        <button type="submit" class="submit-btn" id="submitBtn">
+                                            Submit
+                                            <span class="material-symbols-outlined" aria-hidden="true">send</span>
+                                        </button>
                                     </form>
                                 </div>
 
@@ -243,15 +239,24 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
                                     <?php if (empty($announcements)): ?>
                                         <p class="empty-state">No announcements yet.</p>
                                     <?php else: ?>
-                                        <?php foreach ($announcements as $ann): ?>
-                                            <article class="announcement-item">
+                                        <?php foreach ($announcements as $ann): 
+                                            // Optional: Extract a short title like the first sentence if desired.
+                                            // For now we'll display the start of the content as title if we need it,
+                                            // or just show Admin in meta and full excerpt in body.
+                                            // code.html has a title, meta, and excerpt.
+                                            // Let's create a title from the first N words.
+                                            $words = explode(' ', trim($ann['content']));
+                                            $title = implode(' ', array_slice($words, 0, 5)) . (count($words) > 5 ? '...' : '');
+                                        ?>
+                                            <div class="announcement-card">
+                                                <h4><?= esc($title) ?></h4>
                                                 <div class="announcement-meta">
-                                                    <span class="meta-admin">Admin: <?= esc($ann['display_name']) ?></span>
-                                                    <span class="meta-sep" aria-hidden="true">•</span>
-                                                    <time class="meta-date" datetime="<?= esc($ann['created_at']) ?>"><?= date('M d, Y', strtotime($ann['created_at'])) ?></time>
+                                                    <span style="font-weight: 600">Admin: <?= esc($ann['display_name']) ?></span>
+                                                    <span class="meta-dot" aria-hidden="true"></span>
+                                                    <time datetime="<?= esc($ann['created_at']) ?>"><?= date('M d, Y', strtotime($ann['created_at'])) ?></time>
                                                 </div>
-                                                <div class="announcement-body"><?= nl2br(esc($ann['content'])) ?></div>
-                                            </article>
+                                                <p class="announcement-excerpt"><?= esc($ann['content']) ?></p>
+                                            </div>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </div>

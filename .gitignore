@@ -26,5 +26,5 @@ Thumbs.db
 /public/uploads/*
 !/public/uploads/.htaccess
 
-
+/stitch_students_information_redesign
 
