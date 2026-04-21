@@ -163,8 +163,13 @@ if ($stmt) {
                                                 <div class="feedback-input-wrapper">
                                                     <label for="fb-text-<?= esc($record['id']) ?>" class="sr-only">How was the PC?</label>
                                                     <textarea id="fb-text-<?= esc($record['id']) ?>" class="feedback-textarea" placeholder="How was the PC?" maxlength="300"><?= esc($record['feedback']) ?></textarea>
+                                                    <button id="fb-btn-<?= esc($record['id']) ?>" class="feedback-submit-icon-btn" onclick="submitFeedback(<?= esc($record['id']) ?>)" title="Update Feedback">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                                                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                                        </svg>
+                                                    </button>
                                                 </div>
-                                                <button id="fb-btn-<?= esc($record['id']) ?>" class="feedback-submit-btn" onclick="submitFeedback(<?= esc($record['id']) ?>)">Update</button>
                                                 <div id="fb-err-<?= esc($record['id']) ?>" class="feedback-error"></div>
                                             </div>
                                         <?php else: ?>
@@ -172,8 +177,13 @@ if ($stmt) {
                                                 <div class="feedback-input-wrapper">
                                                     <label for="fb-text-<?= esc($record['id']) ?>" class="sr-only">How was the PC?</label>
                                                     <textarea id="fb-text-<?= esc($record['id']) ?>" class="feedback-textarea" placeholder="How was the PC?" maxlength="300"></textarea>
+                                                    <button id="fb-btn-<?= esc($record['id']) ?>" class="feedback-submit-icon-btn" onclick="submitFeedback(<?= esc($record['id']) ?>)" title="Submit Feedback">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                                                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                                        </svg>
+                                                    </button>
                                                 </div>
-                                                <button id="fb-btn-<?= esc($record['id']) ?>" class="feedback-submit-btn" onclick="submitFeedback(<?= esc($record['id']) ?>)">Submit</button>
                                                 <div id="fb-err-<?= esc($record['id']) ?>" class="feedback-error"></div>
                                             </div>
                                             <div class="feedback-display" id="fb-display-<?= esc($record['id']) ?>" style="display: none;">
@@ -239,8 +249,7 @@ if ($stmt) {
 
             textarea.disabled = true;
             btn.disabled = true;
-            const originalBtnText = btn.textContent;
-            btn.textContent = '...';
+            btn.style.opacity = '0.5';
 
             const formData = new FormData();
             formData.append('sit_in_id', id);
@@ -265,7 +274,7 @@ if ($stmt) {
             } finally {
                 textarea.disabled = false;
                 btn.disabled = false;
-                btn.textContent = val ? 'Update' : 'Submit';
+                btn.style.opacity = '1';
             }
         }
 

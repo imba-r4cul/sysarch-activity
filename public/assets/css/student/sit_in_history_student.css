@@ -336,6 +336,7 @@ tr:hover td {
 }
 
 .feedback-input-wrapper {
+    position: relative;
     width: 100%;
 }
 
@@ -345,7 +346,7 @@ tr:hover td {
     min-height: 48px;
     font-family: var(--font-family, 'Manrope', sans-serif);
     font-size: 0.8125rem;
-    padding: 10px 12px;
+    padding: 10px 40px 10px 12px; /* Extra padding-right for icon */
     border-radius: 8px;
     border: 1px solid var(--outline-variant);
     background-color: #ffffff;
@@ -360,27 +361,38 @@ tr:hover td {
     box-shadow: 0 0 0 3px rgba(0, 64, 133, 0.1);
 }
 
-.feedback-submit-btn {
-    align-self: flex-end;
+.feedback-submit-icon-btn {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
     background-color: var(--primary);
     color: #fff;
     border: none;
     border-radius: 6px;
-    padding: 6px 14px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    transition: background-color 0.2s;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: background-color 0.2s, transform 0.1s, opacity 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-.feedback-submit-btn:hover {
+.feedback-submit-icon-btn:hover {
     background-color: var(--on-primary-fixed);
+    transform: translateY(-50%) scale(1.05);
 }
 
-.feedback-submit-btn:disabled {
-    opacity: 0.6;
+.feedback-submit-icon-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.feedback-submit-icon-btn:disabled {
+    background-color: var(--outline-variant);
     cursor: not-allowed;
+    transform: translateY(-50%);
 }
 
 .feedback-error {

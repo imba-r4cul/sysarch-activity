@@ -63,6 +63,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['announcement_content'
     exit;
 }
 
+// ── Handle delete announcement ──
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_announcement_id'])) {
+    $delId = (int) $_POST['delete_announcement_id'];
+    if ($delId > 0) {
+        $stmt = $conn->prepare("DELETE FROM announcements WHERE id = ?");
+        if ($stmt) {
+            $stmt->bind_param('i', $delId);
+            $stmt->execute();
+            $stmt->close();
+        }
+    }
+    header('Location: admin_dashboard.php');
+    exit;
+}
+
 // ── Handle sit-in submission ──
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sitin_id_number'])) {
     $sitinIdNumber = trim($_POST['sitin_id_number']);
@@ -95,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sitin_id_number'])) {
 
 // ── Fetch announcements ──
 $announcements = [];
-$r = $conn->query("SELECT a.content, a.created_at, au.display_name FROM announcements a JOIN admin_users au ON a.admin_id = au.id ORDER BY a.created_at DESC LIMIT 20");
+$r = $conn->query("SELECT a.id, a.content, a.created_at, au.display_name FROM announcements a JOIN admin_users au ON a.admin_id = au.id ORDER BY a.created_at DESC LIMIT 20");
 if ($r) {
     while ($row = $r->fetch_assoc()) {
         $announcements[] = $row;
@@ -248,7 +263,16 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
                                             $words = explode(' ', trim($ann['content']));
                                             $title = implode(' ', array_slice($words, 0, 5)) . (count($words) > 5 ? '...' : '');
                                         ?>
-                                            <div class="announcement-card">
+                                            <div class="announcement-card" id="ann-<?= (int)$ann['id'] ?>">
+                                                <button type="button" class="announcement-delete-btn" onclick="confirmDeleteAnnouncement(<?= (int)$ann['id'] ?>)" title="Delete Announcement">
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M3 6h18"></path>
+                                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                                                    </svg>
+                                                </button>
                                                 <h4><?= esc($title) ?></h4>
                                                 <div class="announcement-meta">
                                                     <span style="font-weight: 600">Admin: <?= esc($ann['display_name']) ?></span>
@@ -271,6 +295,26 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
     <?php include 'search_student_modal.php'; ?>
     <?php include 'sitin_form_modal.php'; ?>
 
+    <form id="deleteAnnouncementForm" method="POST" action="admin_dashboard.php" style="display:none;">
+        <input type="hidden" name="delete_announcement_id" id="delete_announcement_id" value="">
+    </form>
+
+    <div class="modal-overlay" id="confirmDeleteModal">
+        <div class="modal-box confirmation-box" style="max-width: 400px; text-align: center;">
+            <div class="modal-header" style="flex-direction: column; justify-content: center; align-items: center; border-bottom: none; padding: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 50px; color: #d32f2f;">warning</span>
+            </div>
+            <div class="modal-body" style="padding: 5px 15px 15px;">
+                <h3 style="margin: 0 0 5px; color: #333; font-size: 18px;">Delete Announcement</h3>
+                <p style="margin: 0; color: #666; font-size: 14px;">Are you sure you want to delete this announcement? This action cannot be undone.</p>
+            </div>
+            <div class="modal-actions" style="justify-content: center; background: #f9f9f9; padding: 12px;">
+                <button type="button" class="modal-btn btn-cancel" onclick="closeModal('confirmDeleteModal')">Cancel</button>
+                <button type="button" class="modal-btn btn-confirm" id="confirmDeleteBtn" style="background-color: #d32f2f; color: white;">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function openModal(id) {
             const el = document.getElementById(id);
@@ -280,6 +324,14 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
         function closeModal(id) {
             const el = document.getElementById(id);
             if (el) el.classList.remove('active');
+        }
+
+        function confirmDeleteAnnouncement(id) {
+            document.getElementById('delete_announcement_id').value = id;
+            document.getElementById('confirmDeleteBtn').onclick = function() {
+                document.getElementById('deleteAnnouncementForm').submit();
+            };
+            openModal('confirmDeleteModal');
         }
 
         // Close modal on overlay click

@@ -450,10 +450,35 @@ section {
   cursor: pointer;
   transition: background-color 0.2s;
   flex-shrink: 0;
+  position: relative;
 }
 
 .announcement-card:hover {
   background-color: var(--surface-container-high);
+}
+
+.announcement-delete-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  display: inline-flex;
+  color: var(--secondary);
+  z-index: 5;
+}
+
+.announcement-delete-btn:hover {
+  background-color: #ffdad6;
+}
+
+.announcement-delete-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 .announcement-card h4 {
