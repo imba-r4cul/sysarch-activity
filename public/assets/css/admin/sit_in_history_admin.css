@@ -22,6 +22,11 @@ body {
     font-family: Manrope, sans-serif;
     background-color: var(--surface);
     color: var(--on-surface);
+    display: block;
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 main {

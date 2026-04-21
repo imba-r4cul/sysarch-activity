@@ -119,7 +119,7 @@ unset($_SESSION['current_sitin_flash']);
             <div class="nav-links">
                 <a class="nav-link" href="admin_dashboard.php">Home</a>
                 <button class="nav-link" type="button" onclick="openModal('searchModal')">Search</button>
-                <a class="nav-link" href="admin_dashboard.php?view=students">Student Information</a>
+                <a class="nav-link" href="student_information.php">Student Information</a>
                 <a class="nav-link active" href="active_sessions.php">Active Sessions</a>
                 <a class="nav-link" href="sit_in_history_admin.php">Sit-in History</a>
                 <a class="nav-logout" href="active_sessions.php?logout=1">Logout</a>
