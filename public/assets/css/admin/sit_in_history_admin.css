@@ -474,5 +474,4 @@ tr:hover td {
     white-space: pre-wrap;
     max-width: 400px;
 }
-# f e e d b a c k s M o d a l   . m o d a l - b o d y   {   p a d d i n g :   0 ;   }  
- 
+#feedbacksModal .modal-body { padding: 0; }
