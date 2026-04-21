@@ -276,12 +276,10 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
     </main>
 
     <div id="feedbacksModal" class="modal-overlay" onclick="if(event.target===this) closeModal('feedbacksModal')">
-        <div class="modal-box" style="display:flex; flex-direction:column;">
+        <div class="modal-box">
             <div class="modal-header">
-                <h2>Student Feedbacks</h2>
-                <button type="button" class="modal-close-btn" onclick="closeModal('feedbacksModal')">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
+                <span>Student Feedbacks</span>
+                <button type="button" class="modal-close" onclick="closeModal('feedbacksModal')">&times;</button>
             </div>
             <div style="padding: 16px 24px; border-bottom: 1px solid var(--surface-container-highest);">
                 <div class="filter-field" style="width: auto;">
