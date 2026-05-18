@@ -15,8 +15,8 @@ if (isset($_GET['logout'])) {
     exit;
 }
 
-// Handle Export CSV
-if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+// Handle Export PDF (print-friendly)
+if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
     $search = $_GET['search'] ?? '';
     $lab = $_GET['lab'] ?? 'all';
     
@@ -52,28 +52,69 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     $stmt->execute();
     $result = $stmt->get_result();
     
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename=sit_in_history_report_' . date('Y-m-d') . '.csv');
-    $output = fopen('php://output', 'w');
-    
-    // Output headers
-    fputcsv($output, ['Record ID', 'ID Number', 'First Name', 'Last Name', 'Purpose', 'Lab', 'Status', 'Time In', 'Time Out', 'Feedback']);
-    
+    $rows = [];
     while ($row = $result->fetch_assoc()) {
-        fputcsv($output, [
-            $row['id'],
-            $row['id_number'],
-            $row['first_name'],
-            $row['last_name'],
-            $row['purpose'],
-            $row['lab'],
-            $row['status'],
-            $row['time_in'],
-            $row['time_out'],
-            $row['feedback']
-        ]);
+        $rows[] = $row;
     }
-    fclose($output);
+
+    $generatedAt = date('Y-m-d H:i');
+    $title = 'Sit-in Records History';
+    $labLabel = $lab === 'all' ? 'All Labs' : strtoupper($lab);
+
+    header('Content-Type: text/html; charset=utf-8');
+    echo '<!DOCTYPE html>';
+    echo '<html lang="en">';
+    echo '<head>';
+    echo '<meta charset="UTF-8">';
+    echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+    echo '<title>' . esc($title) . '</title>';
+    echo '<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">';
+    echo '<style>';
+    echo 'body{font-family:"Manrope",sans-serif;margin:32px;color:#111827;}';
+    echo '.header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:20px;}';
+    echo 'h1{margin:0;font-size:24px;font-weight:800;color:#004085;}';
+    echo '.meta{font-size:12px;color:#6b7280;}';
+    echo '.filters{margin:10px 0 20px;font-size:13px;color:#374151;}';
+    echo 'table{width:100%;border-collapse:collapse;font-size:12px;}';
+    echo 'th,td{padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:left;vertical-align:top;}';
+    echo 'th{background:#f3f4f6;text-transform:uppercase;letter-spacing:0.08em;font-size:10px;color:#6b7280;}';
+    echo '.status{font-weight:700;}';
+    echo '@media print{body{margin:16px;} .no-print{display:none;}}';
+    echo '</style>';
+    echo '</head>';
+    echo '<body>'; 
+    echo '<div class="header">';
+    echo '<h1>' . esc($title) . '</h1>';
+    echo '<div class="meta">Generated: ' . esc($generatedAt) . '</div>';
+    echo '</div>';
+    echo '<div class="filters">';
+    echo '<strong>Filters:</strong> Lab: ' . esc($labLabel) . ' &nbsp;|&nbsp; Search: ' . esc($search === '' ? 'All' : $search);
+    echo '</div>';
+    echo '<table>'; 
+    echo '<thead><tr>';
+    echo '<th>Record ID</th><th>ID Number</th><th>Name</th><th>Purpose</th><th>Lab</th><th>Status</th><th>Time In</th><th>Time Out</th><th>Feedback</th>';
+    echo '</tr></thead><tbody>';
+    if (count($rows) === 0) {
+        echo '<tr><td colspan="9">No records found.</td></tr>';
+    } else {
+        foreach ($rows as $row) {
+            $name = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
+            echo '<tr>';
+            echo '<td>' . esc($row['id']) . '</td>';
+            echo '<td>' . esc($row['id_number']) . '</td>';
+            echo '<td>' . esc($name) . '</td>';
+            echo '<td>' . esc($row['purpose']) . '</td>';
+            echo '<td>' . esc($row['lab']) . '</td>';
+            echo '<td class="status">' . esc($row['status']) . '</td>';
+            echo '<td>' . esc(formatDateTime($row['time_in'] ?? null)) . '</td>';
+            echo '<td>' . esc(formatDateTime($row['time_out'] ?? null)) . '</td>';
+            echo '<td>' . esc($row['feedback']) . '</td>';
+            echo '</tr>';
+        }
+    }
+    echo '</tbody></table>';
+    echo '<script>window.addEventListener("load",function(){window.print();});</script>';
+    echo '</body></html>';
     exit;
 }
 
@@ -226,9 +267,9 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
             <div class="filter-actions" style="display: flex; gap: 8px; flex-grow: 1; align-items: flex-end;">
                 <button type="button" class="clear-btn" id="clearFiltersBtn">Clear</button>
                 <div style="flex-grow: 1;"></div>
-                <button type="button" class="view-feedbacks-btn export-btn" id="exportCsvBtn" style="margin-right: 8px;">
+                <button type="button" class="view-feedbacks-btn export-btn" id="exportPdfBtn" style="margin-right: 8px;">
                     <span class="material-symbols-outlined">download</span>
-                    Export CSV
+                    Export PDF
                 </button>
                 <button type="button" class="view-feedbacks-btn" onclick="openModal('feedbacksModal')">
                     <span class="material-symbols-outlined">chat_bubble</span>
@@ -556,12 +597,13 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                 });
             }
             
-            const exportCsvBtn = document.getElementById('exportCsvBtn');
-            if (exportCsvBtn) {
-                exportCsvBtn.addEventListener('click', function () {
+            const exportPdfBtn = document.getElementById('exportPdfBtn');
+            if (exportPdfBtn) {
+                exportPdfBtn.addEventListener('click', function () {
                     const search = searchInput ? searchInput.value.trim() : '';
                     const lab = labFilter ? labFilter.value : 'all';
-                    window.location.href = `sit_in_history_admin.php?export=csv&search=${encodeURIComponent(search)}&lab=${encodeURIComponent(lab)}`;
+                    const url = `sit_in_history_admin.php?export=pdf&search=${encodeURIComponent(search)}&lab=${encodeURIComponent(lab)}`;
+                    window.open(url, '_blank', 'noopener');
                 });
             }
 

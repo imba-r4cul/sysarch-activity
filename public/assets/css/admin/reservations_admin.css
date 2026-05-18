@@ -1,5 +1,7 @@
 :root {
     --primary: #004085;
+    --primary-container: #002a5c;
+    --on-primary: #ffffff;
     --primary-fixed: #d7e2ff;
     --on-primary-fixed: #001b3f;
     --secondary: #b6171e;
@@ -16,6 +18,14 @@
     --status-rejected: #b6171e;
     --status-pending: #d97706;
     --outline-variant: #c2c6d4;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.material-symbols-outlined {
+    font-size: 20px;
 }
 
 body {
@@ -63,20 +73,39 @@ h1 {
 
 .stat-card {
     background-color: var(--surface-container-low);
-    padding: 16px 24px;
+    padding: 12px 18px; /* Slightly smaller padding */
     border-radius: 12px;
-    min-width: 160px;
+    min-width: 140px; /* Reduced min-width */
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    gap: 4px; /* Space between label and value row */
 }
 
+.stat-value-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+}
+
+.stat-icon {
+    font-size: 28px; /* Slightly smaller icon */
+    opacity: 0.8;
+}
+
+.stat-icon.warning { color: var(--status-pending); }
+.stat-icon.success { color: var(--status-approved); }
+.stat-icon.danger { color: var(--status-rejected); }
+
 .stat-label {
-    font-size: 10px;
+    font-size: 13px; /* Bigger text */
     font-weight: 700;
     color: var(--on-surface-variant);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
 }
 
 .stat-value {
@@ -348,10 +377,11 @@ tr:hover td {
     padding: 32px;
 }
 
-.action-buttons-cell {
-    display: flex;
+.action-buttons-wrapper {
+    display: inline-flex;
     gap: 8px;
     align-items: center;
+    justify-content: center;
 }
 
 .action-btn {
@@ -399,7 +429,54 @@ tr:hover td {
 }
 
 .modal-overlay.active {
-  display: flex;
+    display: flex;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid rgba(194, 198, 212, 0.15);
+}
+
+.modal-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.btn-cancel {
+    background-color: var(--surface-container-high);
+    color: var(--on-surface-variant);
+}
+
+.btn-cancel:hover {
+    background-color: var(--surface-container-highest);
+}
+
+.btn-confirm {
+    background-color: var(--primary);
+    color: white;
+}
+
+.btn-confirm:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+/* Modal Footer (Legacy support if needed) */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    background: var(--surface-container-low);
+    border-top: 1px solid rgba(194, 198, 212, 0.15);
 }
 
 .modal-box {
@@ -416,7 +493,7 @@ tr:hover td {
   animation: modalSlide 0.25s ease;
 }
 
-.modal-box form {
+.modal-box > form {
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -543,13 +620,33 @@ tr:hover td {
   color: var(--on-primary);
 }
 
+.modal-btn.approve {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+}
+
+.modal-btn.reject {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: #ffffff;
+}
+
 .modal-btn.submit:hover,
+.modal-btn.approve:hover,
+.modal-btn.reject:hover,
 .modal-btn.cancel:hover {
   transform: translateY(-1px);
 }
 
 .modal-btn.submit:hover {
   box-shadow: 0 12px 20px rgba(0, 42, 92, 0.14);
+}
+
+.modal-btn.approve:hover {
+  box-shadow: 0 12px 20px rgba(5, 150, 105, 0.14);
+}
+
+.modal-btn.reject:hover {
+  box-shadow: 0 12px 20px rgba(185, 28, 28, 0.14);
 }
 
 /* Search modal specifics */
@@ -632,37 +729,51 @@ tr:hover td {
   background: var(--primary-container);
 }
 
-/* Alert Banner */
+/* Alert Banner - Unified with Student Notifications */
 .alert-banner {
-    padding: 16px 24px;
-    border-radius: 12px;
-    margin-bottom: 20px;
+    padding: 16px 20px;
+    border-radius: 16px;
+    margin-bottom: 24px;
     display: flex;
     align-items: center;
     gap: 12px;
-    font-weight: 600;
+    font-size: 15px; /* Unified font size */
+    font-weight: 400; /* Regular weight for Manrope */
+    font-family: 'Manrope', sans-serif;
+    animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .alert-banner.success {
-    background-color: #ecfdf5;
-    color: #047857;
-    border: 1px solid #10b981;
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
 }
 
 .alert-banner.error {
-    background-color: #fef2f2;
-    color: #b91c1c;
-    border: 1px solid #ef4444;
+    background: #fff1f2;
+    color: #9f1239;
+    border: 1px solid #fecdd3;
 }
 
 .alert-banner-close {
     margin-left: auto;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 20px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.alert-banner-close:hover {
+    opacity: 1;
 }
 
 @media (max-width: 768px) {
-    .action-buttons-cell {
+    .action-buttons-wrapper {
         flex-direction: column;
         gap: 4px;
     }
@@ -726,4 +837,31 @@ tr:hover td {
     padding: 0 8px;
     color: var(--on-surface-variant);
     font-size: 12px;
+}
+
+.reservation-history-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    background: #fff;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 14px;
+    border: 1.5px solid var(--primary);
+    transition: all 0.2s;
+    margin-left: auto;
+}
+
+.reservation-history-btn .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.reservation-history-btn:hover {
+    background: var(--primary);
+    color: var(--on-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(0, 64, 133, 0.18);
 }

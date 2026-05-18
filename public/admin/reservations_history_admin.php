@@ -39,61 +39,21 @@ if ($r) {
     $rejectedCount = (int) $r->fetch_assoc()['c'];
 }
 
-// ── Handle Approve/Reject POST actions ──
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    $action = $_POST['action'];
-    $resId = (int)($_POST['reservation_id'] ?? 0);
-
-    if ($resId > 0) {
-        if ($action === 'approve') {
-            $stmt = $conn->prepare("UPDATE reservations SET status = 'Approved', admin_note = NULL WHERE id = ?");
-            if ($stmt) {
-                $stmt->bind_param('i', $resId);
-                if ($stmt->execute()) {
-                    $_SESSION['res_success'] = "Reservation Approved successfully!";
-                } else {
-                    $_SESSION['res_error'] = "Failed to approve reservation. Please try again.";
-                }
-                $stmt->close();
-            }
-        } elseif ($action === 'reject') {
-            $adminNote = trim($_POST['admin_note'] ?? '');
-            $stmt = $conn->prepare("UPDATE reservations SET status = 'Rejected', admin_note = ? WHERE id = ?");
-            if ($stmt) {
-                $stmt->bind_param('si', $adminNote, $resId);
-                if ($stmt->execute()) {
-                    $_SESSION['res_success'] = "Reservation Rejected successfully!";
-                } else {
-                    $_SESSION['res_error'] = "Failed to reject reservation. Please try again.";
-                }
-                $stmt->close();
-            }
-        }
-    }
-    header('Location: reservations_admin.php');
-    exit;
-}
-
-// ── Fetch reservations ──
+// ── Fetch reservations (Approved & Rejected only) ──
 $reservationsList = [];
 $q = "SELECT r.id, r.user_id, r.purpose, r.lab, r.pc_number, r.reservation_date, r.reservation_time, r.status, r.admin_note, r.created_at,
              u.id_number, u.first_name, u.last_name,
              (SELECT COUNT(*) + 1 FROM reservations r2 WHERE r2.id < r.id) as display_id
       FROM reservations r
       JOIN users u ON r.user_id = u.id
-      WHERE r.status = 'Pending'
-      ORDER BY r.created_at ASC";
+      WHERE r.status IN ('Approved', 'Rejected')
+      ORDER BY r.created_at DESC";
 $res = $conn->query($q);
 if ($res) {
     while ($row = $res->fetch_assoc()) {
         $reservationsList[] = $row;
     }
 }
-
-// Session message flashers
-$successMsg = $_SESSION['res_success'] ?? '';
-$errorMsg = $_SESSION['res_error'] ?? '';
-unset($_SESSION['res_success'], $_SESSION['res_error']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -101,7 +61,7 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservation Management</title>
+    <title>Reservation History</title>
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
@@ -125,7 +85,7 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
                 <a class="nav-link" href="active_sessions.php">Active Sessions</a>
                 <a class="nav-link" href="leaderboard.php">Leaderboard</a>
                 <a class="nav-link active" href="reservations_admin.php">Reservations</a>
-                <a class="nav-logout" href="reservations_admin.php?logout=1">Logout</a>
+                <a class="nav-logout" href="reservations_history_admin.php?logout=1">Logout</a>
             </div>
         </div>
     </nav>
@@ -147,16 +107,9 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
     <main>
         <header class="history-header">
             <div>
-                <h1>Reservation Management</h1>
+                <h1>Reservation History</h1>
             </div>
             <div class="stats-container">
-                <div class="stat-card">
-                    <span class="stat-label">Pending Approval</span>
-                    <div class="stat-value-row">
-                        <span class="stat-value warning"><?= number_format($pendingCount) ?></span>
-                        <span class="material-symbols-outlined stat-icon warning">pending_actions</span>
-                    </div>
-                </div>
                 <div class="stat-card">
                     <span class="stat-label">Approved</span>
                     <div class="stat-value-row">
@@ -171,24 +124,15 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
                         <span class="material-symbols-outlined stat-icon danger">cancel</span>
                     </div>
                 </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total History</span>
+                    <div class="stat-value-row">
+                        <span class="stat-value primary" style="color: var(--primary);"><?= number_format($approvedCount + $rejectedCount) ?></span>
+                        <span class="material-symbols-outlined stat-icon primary" style="color: var(--primary);">history</span>
+                    </div>
+                </div>
             </div>
         </header>
-
-        <?php if ($successMsg): ?>
-            <div class="alert-banner success" role="alert">
-                <span class="material-symbols-outlined">check_circle</span>
-                <span><?= esc($successMsg) ?></span>
-                <span class="material-symbols-outlined alert-banner-close" onclick="this.parentElement.remove()">close</span>
-            </div>
-        <?php endif; ?>
-
-        <?php if ($errorMsg): ?>
-            <div class="alert-banner error" role="alert">
-                <span class="material-symbols-outlined">error</span>
-                <span><?= esc($errorMsg) ?></span>
-                <span class="material-symbols-outlined alert-banner-close" onclick="this.parentElement.remove()">close</span>
-            </div>
-        <?php endif; ?>
 
         <section class="search-section">
             <div class="search-wrapper">
@@ -231,11 +175,19 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
                     <?php endforeach; ?>
                 </select>
             </div>
+            <div class="filter-field">
+                <label for="statusFilter">Status</label>
+                <select id="statusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
             <div class="filter-actions" style="display: flex; gap: 8px; flex-grow: 1; align-items: flex-end;">
                 <button type="button" class="clear-btn" id="clearFiltersBtn">Clear</button>
-                <a class="reservation-history-btn" href="reservations_history_admin.php">
-                    <span class="material-symbols-outlined">history</span>
-                    Reservation History
+                <a class="reservation-history-btn" href="reservations_admin.php">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Back to Reservations
                 </a>
             </div>
         </section>
@@ -254,7 +206,6 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
                             <th>PURPOSE</th>
                             <th>STATUS</th>
                             <th>REASON / NOTE</th>
-                            <th class="text-center">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody id="reservationsTableBody">
@@ -266,7 +217,7 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
                         ?>
                         <?php if (empty($reservationsList)): ?>
                             <tr id="resNoDataRow">
-                                <td colspan="10" class="no-data">No reservations found</td>
+                                <td colspan="9" class="no-data">No history records found</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($reservationsList as $idx => $record):
@@ -280,11 +231,9 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
                                     ($record['lab'] ?? '') . ' ' .
                                     ($record['status'] ?? '')
                                 ));
-                                $status = (string) ($record['status'] ?? 'Pending');
-                                $statusClass = 'status-pending';
-                                if ($status === 'Approved' || $status === 'Completed') {
-                                    $statusClass = 'status-approved';
-                                } elseif ($status === 'Rejected') {
+                                $status = (string) ($record['status'] ?? 'Approved');
+                                $statusClass = 'status-approved';
+                                if ($status === 'Rejected') {
                                     $statusClass = 'status-rejected';
                                 }
                                 $timeStr = date("h:i A", strtotime($record['reservation_time']));
@@ -321,22 +270,6 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
                                             <?= $record['admin_note'] ? esc($record['admin_note']) : '-' ?>
                                         </span>
                                     </td>
-                                    <td class="action-buttons-cell text-center">
-                                        <?php if ($status === 'Pending'): ?>
-                                            <div class="action-buttons-wrapper">
-                                                <!-- Approve Trigger -->
-                                                <button class="action-btn approve" type="button" title="Approve Reservation" onclick="openApproveModal(<?= $record['id'] ?>, '<?= esc(addslashes($displayName)) ?>')">
-                                                    <span class="material-symbols-outlined" style="font-size: 18px;">check</span>
-                                                </button>
-                                                <!-- Reject Trigger -->
-                                                <button class="action-btn reject" type="button" title="Reject Reservation" onclick="openRejectModal(<?= $record['id'] ?>, '<?= esc(addslashes($displayName)) ?>')">
-                                                    <span class="material-symbols-outlined" style="font-size: 18px;">close</span>
-                                                </button>
-                                            </div>
-                                        <?php else: ?>
-                                            <span style="font-size: 12px; color: var(--on-surface-variant); opacity: 0.6;">No Action</span>
-                                        <?php endif; ?>
-                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -365,81 +298,14 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
         </section>
     </main>
 
-    <!-- ─── Reject Note Modal ─── -->
-    <div class="modal-overlay" id="rejectModal">
-        <div class="modal-box" style="max-width: 440px;">
-            <div class="modal-header">
-                <span>Reject Reservation</span>
-                <button class="modal-close" type="button" onclick="closeModal('rejectModal')">×</button>
-            </div>
-            <form method="POST" action="reservations_admin.php" id="rejectForm" style="margin: 0; padding: 0;">
-                <input type="hidden" name="action" value="reject">
-                <input type="hidden" name="reservation_id" id="rejectReservationId">
-                <div class="modal-body" style="padding: 24px;">
-                    <div style="margin-bottom: 16px; font-size: 14px; color: var(--on-surface-variant);">
-                        Rejecting reservation for: <strong id="rejectStudentName" style="color: var(--on-surface);"></strong>
-                    </div>
-                    <div class="modal-input-field" style="margin-bottom: 0;">
-                        <label for="rejectNote">Reason / Note (Optional)</label>
-                        <textarea name="admin_note" id="rejectNote" placeholder="e.g. Lab closed for maintenance, please select another time."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="modal-btn cancel" type="button" onclick="closeModal('rejectModal')">Cancel</button>
-                    <button class="modal-btn reject" type="submit">Reject</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Approve Confirmation Modal -->
-    <div class="modal-overlay" id="approveModal">
-        <div class="modal-box" style="max-width: 440px;">
-            <div class="modal-header">
-                <span>Confirm Approval</span>
-                <button class="modal-close" type="button" onclick="closeModal('approveModal')">×</button>
-            </div>
-            <div class="modal-body" style="padding: 24px; text-align: center;">
-                <div style="background: #10b981; color: white; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-                    <span class="material-symbols-outlined" style="font-size: 36px;">check_circle</span>
-                </div>
-                <h3 style="margin: 0 0 8px; color: var(--on-surface);">Approve Reservation?</h3>
-                <p style="margin: 0; color: var(--on-surface-variant); font-size: 14px;">
-                    Are you sure you want to approve the reservation for <strong id="approveStudentName"></strong>?
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn cancel" type="button" onclick="closeModal('approveModal')">Cancel</button>
-                <form method="POST" action="reservations_admin.php" id="approveForm" style="margin: 0; padding: 0; display: inline-block; flex: 0;">
-                    <input type="hidden" name="action" value="approve">
-                    <input type="hidden" name="reservation_id" id="approveReservationId">
-                    <button class="modal-btn approve" type="submit">Confirm</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Client-side Javascript Filtering & Pagination -->
     <script>
-        function openRejectModal(id, studentName) {
-            document.getElementById('rejectReservationId').value = id;
-            document.getElementById('rejectStudentName').textContent = studentName;
-            document.getElementById('rejectNote').value = '';
-            openModal('rejectModal');
-        }
-
-        function openApproveModal(id, studentName) {
-            document.getElementById('approveReservationId').value = id;
-            document.getElementById('approveStudentName').textContent = studentName;
-            openModal('approveModal');
-        }
-
         (function () {
             const searchInput = document.getElementById('reservationSearchInput');
             const toggleFilterBtn = document.getElementById('toggleFilterBtn');
             const filtersPanel = document.getElementById('filtersPanel');
             const entriesPerPage = document.getElementById('resEntriesPerPage');
             const labFilter = document.getElementById('labFilter');
+            const statusFilter = document.getElementById('statusFilter');
             const clearFiltersBtn = document.getElementById('clearFiltersBtn');
 
             const tableBody = document.getElementById('reservationsTableBody');
@@ -452,10 +318,6 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
             const prevBtn = document.getElementById('prevPageBtn');
             const nextBtn = document.getElementById('nextPageBtn');
             const lastBtn = document.getElementById('lastPageBtn');
-
-            const filteredValuePending = document.querySelector('.stats-container .stat-card:nth-child(1) .stat-value');
-            const filteredValueApproved = document.querySelector('.stats-container .stat-card:nth-child(2) .stat-value');
-            const filteredValueRejected = document.querySelector('.stats-container .stat-card:nth-child(3) .stat-value');
 
             let filteredRows = allRows.slice();
             let currentPage = 1;
@@ -517,15 +379,18 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
             function applyFilters() {
                 const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
                 const wantedLab = labFilter ? labFilter.value : 'all';
+                const wantedStatus = statusFilter ? statusFilter.value : 'all';
 
                 filteredRows = allRows.filter((row) => {
                     const blob = row.dataset.search || '';
                     const lab = row.dataset.lab || '';
+                    const status = row.dataset.status || '';
 
                     const queryPass = query === '' || blob.includes(query);
                     const labPass = wantedLab === 'all' || lab === wantedLab;
+                    const statusPass = wantedStatus === 'all' || status === wantedStatus;
 
-                    return queryPass && labPass;
+                    return queryPass && labPass && statusPass;
                 });
 
                 currentPage = 1;
@@ -540,12 +405,14 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
                 });
             }
             if (labFilter) labFilter.addEventListener('change', applyFilters);
+            if (statusFilter) statusFilter.addEventListener('change', applyFilters);
 
             if (clearFiltersBtn) {
                 clearFiltersBtn.addEventListener('click', function () {
                     if (searchInput) searchInput.value = '';
                     if (entriesPerPage) entriesPerPage.value = '5';
                     if (labFilter) labFilter.value = 'all';
+                    if (statusFilter) statusFilter.value = 'all';
                     applyFilters();
                 });
             }
@@ -560,7 +427,7 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
             if (prevBtn) {
                 prevBtn.addEventListener('click', function () {
                     if (currentPage > 1) {
-                        currentPage -= 1;
+                        currentPage--;
                         renderRows();
                     }
                 });
@@ -570,7 +437,7 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
                 nextBtn.addEventListener('click', function () {
                     const totalPages = getPageCount();
                     if (currentPage < totalPages) {
-                        currentPage += 1;
+                        currentPage++;
                         renderRows();
                     }
                 });
@@ -585,24 +452,19 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
 
             if (toggleFilterBtn && filtersPanel) {
                 toggleFilterBtn.addEventListener('click', function () {
-                    filtersPanel.hidden = !filtersPanel.hidden;
+                    const isHidden = filtersPanel.hasAttribute('hidden');
+                    if (isHidden) {
+                        filtersPanel.removeAttribute('hidden');
+                        this.classList.add('active');
+                    } else {
+                        filtersPanel.setAttribute('hidden', '');
+                        this.classList.remove('active');
+                    }
                 });
             }
 
-            renderRows();
-
-            // Auto-dismiss alerts after 3 seconds
-            const alertBanners = document.querySelectorAll('.alert-banner');
-            alertBanners.forEach(banner => {
-                setTimeout(() => {
-                    banner.style.transition = 'opacity 0.6s ease, transform 0.6s ease, margin-top 0.6s ease, padding 0.6s ease';
-                    banner.style.opacity = '0';
-                    banner.style.transform = 'translateY(-10px)';
-                    banner.style.marginTop = '-50px'; // Collapse space
-                    banner.style.padding = '0';
-                    setTimeout(() => banner.remove(), 600);
-                }, 3000);
-            });
+            // Initial render
+            applyFilters();
         })();
     </script>
 </body>

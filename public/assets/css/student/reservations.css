@@ -201,9 +201,9 @@
 }
 
 .res-msg.error {
-    background: #fef2f2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
+    background: #fff1f2;
+    color: #9f1239;
+    border: 1px solid #fecdd3;
 }
 
 /* History Table Styles */
@@ -276,9 +276,13 @@
 }
 .status-approved::before { background: #22c55e; }
 
+.status-completed { background: #dcfce7; color: #22c55e; border-color: #86efac; }
+.status-completed::before { background: #22c55e; }
+
 .status-rejected {
     background: #fef2f2;
     color: #991b1b;
+    border: 1px solid #fecdd3;
 }
 .status-rejected::before { background: #ef4444; }
 

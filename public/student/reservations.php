@@ -69,10 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($purpose) || empty($lab) || empty($pc_number) || empty($date) || empty($time)) {
         $error = 'Please fill in all fields and select an available PC.';
     } else {
-        $stmt = $conn->prepare("INSERT INTO reservations (user_id, id_number, student_name, purpose, lab, pc_number, reservation_date, reservation_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param('issssiss', $userId, $studentId, $studentName, $purpose, $lab, $pc_number, $date, $time);
+        $stmt = $conn->prepare("INSERT INTO reservations (user_id, purpose, lab, pc_number, reservation_date, reservation_time) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param('ississ', $userId, $purpose, $lab, $pc_number, $date, $time);
         if ($stmt->execute()) {
-            $success = 'Reservation submitted successfully!';
+            $success = 'Reservation submitted successfully! Please wait for admin approval.';
         } else {
             $error = 'Failed to submit reservation. Please try again.';
         }
@@ -167,7 +167,14 @@ $stmt->close();
                                 </div>
                                 <div class="res-field">
                                     <label for="purpose">Purpose</label>
-                                    <input type="text" id="purpose" name="purpose" placeholder="e.g. C Programming" required aria-required="true">
+                                    <select id="purpose" name="purpose" required aria-required="true">
+                                        <option value="" disabled selected>Select purpose</option>
+                                        <option value="Python">Python</option>
+                                        <option value="C#">C#</option>
+                                        <option value="PHP">PHP</option>
+                                        <option value="Java">Java</option>
+                                        <option value="C++">C++</option>
+                                    </select>
                                 </div>
                             </div>
 
@@ -330,6 +337,19 @@ $stmt->close();
             if (labSelect.value && dateInput.value) {
                 fetchAndRenderPCs();
             }
+
+            // Auto-dismiss notification after 3 seconds
+            const alerts = document.querySelectorAll('.res-msg');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.transition = 'opacity 0.6s ease, transform 0.6s ease, margin-top 0.6s ease, padding 0.6s ease';
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-10px)';
+                    alert.style.marginTop = '-60px'; // Collapse space
+                    alert.style.padding = '0';
+                    setTimeout(() => alert.remove(), 600);
+                }, 3000);
+            });
         });
     </script>
 </body>

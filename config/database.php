@@ -11,4 +11,41 @@ if ($conn->connect_error) {
     die('Database connection failed: ' . $conn->connect_error);
 }
 
+// Global hook to auto-process reservations
+function auto_process_reservations($conn) {
+    // 1. Auto-Reject Pending reservations past their scheduled time
+    $conn->query("
+        UPDATE reservations 
+        SET status = 'Rejected', admin_note = 'Reservation expired: Past scheduled time' 
+        WHERE status = 'Pending' 
+          AND STR_TO_DATE(CONCAT(reservation_date, ' ', reservation_time), '%Y-%m-%d %H:%i') <= NOW()
+    ");
+    
+    // 2. Auto-Start Approved reservations past their scheduled time
+    $res = $conn->query("
+        SELECT r.id, r.user_id, r.purpose, r.lab, u.id_number, u.first_name, u.last_name 
+        FROM reservations r 
+        JOIN users u ON r.user_id = u.id 
+        WHERE r.status = 'Approved' 
+          AND STR_TO_DATE(CONCAT(r.reservation_date, ' ', r.reservation_time), '%Y-%m-%d %H:%i') <= NOW()
+    ");
+    
+    if ($res && $res->num_rows > 0) {
+        $ins = $conn->prepare("INSERT INTO sit_in_records (user_id, id_number, first_name, last_name, purpose, lab, status, time_in) VALUES (?, ?, ?, ?, ?, ?, 'Active', NOW())");
+        $upd = $conn->prepare("UPDATE reservations SET status = 'Completed', admin_note = 'Session auto-started' WHERE id = ?");
+        
+        while ($row = $res->fetch_assoc()) {
+            if ($ins && $upd) {
+                $ins->bind_param('isssss', $row['user_id'], $row['id_number'], $row['first_name'], $row['last_name'], $row['purpose'], $row['lab']);
+                if ($ins->execute()) {
+                    $upd->bind_param('i', $row['id']);
+                    $upd->execute();
+                }
+            }
+        }
+        if ($ins) $ins->close();
+        if ($upd) $upd->close();
+    }
+}
+auto_process_reservations($conn);
 ?>
