@@ -452,10 +452,27 @@ tr:hover td {
     color: var(--primary);
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
+    transition: background-color 0.2s, color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
 .view-feedbacks-btn:hover {
+    background-color: var(--primary);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 64, 133, 0.15);
+}
+
+.view-feedbacks-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.view-feedbacks-btn.export-btn {
+    background-color: var(--primary-fixed);
+    color: var(--on-primary-fixed);
+    border-color: var(--primary);
+}
+
+.view-feedbacks-btn.export-btn:hover {
     background-color: var(--primary);
     color: #fff;
 }

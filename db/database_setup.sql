@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `address` varchar(255) NOT NULL,
   `profile_image` varchar(255) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
+  `earned_points` int(11) DEFAULT 0,
+  `tasks_completed` int(11) DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_number` (`id_number`),
   UNIQUE KEY `email` (`email`)
@@ -20,6 +22,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 -- Migration for existing databases:
 -- ALTER TABLE `users` ADD COLUMN `profile_image` varchar(255) DEFAULT NULL AFTER `address`;
+-- ALTER TABLE `users` ADD COLUMN `earned_points` INT DEFAULT 0, ADD COLUMN `tasks_completed` INT DEFAULT 0;
 
 -- Admin users table (for admin login)
 CREATE TABLE IF NOT EXISTS `admin_users` (
@@ -83,6 +86,7 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   `user_id` INT NOT NULL,
   `purpose` VARCHAR(255) NOT NULL,
   `lab` VARCHAR(100) NOT NULL,
+  `pc_number` INT DEFAULT NULL,
   `reservation_date` DATE NOT NULL,
   `reservation_time` TIME NOT NULL,
   `status` ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',

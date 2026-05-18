@@ -15,6 +15,68 @@ if (isset($_GET['logout'])) {
     exit;
 }
 
+// Handle Export CSV
+if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+    $search = $_GET['search'] ?? '';
+    $lab = $_GET['lab'] ?? 'all';
+    
+    $whereClauses = ["sr.status <> 'Active'"];
+    $params = [];
+    $types = '';
+    
+    if ($lab !== 'all') {
+        $whereClauses[] = "LOWER(sr.lab) = ?";
+        $params[] = strtolower($lab);
+        $types .= 's';
+    }
+    
+    if ($search !== '') {
+        $searchTerm = "%{$search}%";
+        $whereClauses[] = "(sr.id_number LIKE ? OR sr.first_name LIKE ? OR sr.last_name LIKE ? OR sr.purpose LIKE ?)";
+        $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm, $searchTerm]);
+        $types .= 'ssss';
+    }
+    
+    $whereSql = implode(' AND ', $whereClauses);
+    $sql = "
+        SELECT sr.id, sr.id_number, sr.first_name, sr.last_name, sr.purpose, sr.lab, sr.status, sr.time_in, sr.time_out, sr.feedback
+        FROM sit_in_records sr
+        WHERE $whereSql
+        ORDER BY sr.time_in DESC
+    ";
+    
+    $stmt = $conn->prepare($sql);
+    if ($types !== '') {
+        $stmt->bind_param($types, ...$params);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename=sit_in_history_report_' . date('Y-m-d') . '.csv');
+    $output = fopen('php://output', 'w');
+    
+    // Output headers
+    fputcsv($output, ['Record ID', 'ID Number', 'First Name', 'Last Name', 'Purpose', 'Lab', 'Status', 'Time In', 'Time Out', 'Feedback']);
+    
+    while ($row = $result->fetch_assoc()) {
+        fputcsv($output, [
+            $row['id'],
+            $row['id_number'],
+            $row['first_name'],
+            $row['last_name'],
+            $row['purpose'],
+            $row['lab'],
+            $row['status'],
+            $row['time_in'],
+            $row['time_out'],
+            $row['feedback']
+        ]);
+    }
+    fclose($output);
+    exit;
+}
+
 $historyRecords = [];
 $totalRecords = 0;
 
@@ -72,7 +134,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
     <nav class="academic-ledger-navbar">
         <div class="nav-container">
             <div class="brand">
-                <h1 class="brand-title">CCS Sit-in Monitoring System (ADMIN DASHBOARD)</h1>
+                <h1 class="brand-title">CCS Sit-in Monitoring System (ADMIN)</h1>
             </div>
             <div class="nav-links">
                 <a class="nav-link" href="admin_dashboard.php">Home</a>
@@ -80,6 +142,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                 <a class="nav-link" href="student_information.php">Student Information</a>
                 <a class="nav-link" href="active_sessions.php">Active Sessions</a>
                 <a class="nav-link active" href="sit_in_history_admin.php">Sit-in History</a>
+                <a class="nav-link" href="leaderboard.php">Leaderboard</a>
                 <a class="nav-logout" href="sit_in_history_admin.php?logout=1">Logout</a>
             </div>
         </div>
@@ -160,6 +223,10 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
             <div class="filter-actions" style="display: flex; gap: 8px; flex-grow: 1; align-items: flex-end;">
                 <button type="button" class="clear-btn" id="clearFiltersBtn">Clear</button>
                 <div style="flex-grow: 1;"></div>
+                <button type="button" class="view-feedbacks-btn export-btn" id="exportCsvBtn" style="margin-right: 8px;">
+                    <span class="material-symbols-outlined">download</span>
+                    Export CSV
+                </button>
                 <button type="button" class="view-feedbacks-btn" onclick="openModal('feedbacksModal')">
                     <span class="material-symbols-outlined">chat_bubble</span>
                     View Feedbacks
@@ -483,6 +550,15 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
             if (toggleFilterBtn && filtersPanel) {
                 toggleFilterBtn.addEventListener('click', function () {
                     filtersPanel.hidden = !filtersPanel.hidden;
+                });
+            }
+            
+            const exportCsvBtn = document.getElementById('exportCsvBtn');
+            if (exportCsvBtn) {
+                exportCsvBtn.addEventListener('click', function () {
+                    const search = searchInput ? searchInput.value.trim() : '';
+                    const lab = labFilter ? labFilter.value : 'all';
+                    window.location.href = `sit_in_history_admin.php?export=csv&search=${encodeURIComponent(search)}&lab=${encodeURIComponent(lab)}`;
                 });
             }
 

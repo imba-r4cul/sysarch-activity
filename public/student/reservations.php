@@ -24,6 +24,28 @@ $notificationFeatureEnabled = studentNotificationFeatureEnabled($conn);
 studentHandleNotificationAjax($conn, $userId, $notificationFeatureEnabled);
 $newAnnCount = studentFetchUnreadNotificationCount($conn, $userId, $notificationFeatureEnabled);
 
+// Handle AJAX request for occupied PCs
+if (isset($_GET['action']) && $_GET['action'] === 'get_occupied_pcs') {
+    $lab = $_GET['lab'] ?? '';
+    $date = $_GET['date'] ?? '';
+    
+    $occupied = [];
+    if (!empty($lab) && !empty($date)) {
+        $stmt = $conn->prepare("SELECT pc_number FROM reservations WHERE lab = ? AND reservation_date = ? AND status IN ('Pending', 'Approved') AND pc_number IS NOT NULL");
+        $stmt->bind_param('ss', $lab, $date);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        while ($row = $res->fetch_assoc()) {
+            $occupied[] = (int) $row['pc_number'];
+        }
+        $stmt->close();
+    }
+    
+    header('Content-Type: application/json');
+    echo json_encode(['occupied' => $occupied]);
+    exit;
+}
+
 // Fetch student info for pre-fill
 $stmt = $conn->prepare("SELECT id_number, first_name, last_name FROM users WHERE id = ?");
 $stmt->bind_param('i', $userId);
@@ -40,14 +62,15 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $purpose = trim($_POST['purpose'] ?? '');
     $lab = trim($_POST['lab'] ?? '');
+    $pc_number = isset($_POST['pc_number']) ? (int)$_POST['pc_number'] : null;
     $date = trim($_POST['reservation_date'] ?? '');
     $time = trim($_POST['reservation_time'] ?? '');
 
-    if (empty($purpose) || empty($lab) || empty($date) || empty($time)) {
-        $error = 'Please fill in all fields.';
+    if (empty($purpose) || empty($lab) || empty($pc_number) || empty($date) || empty($time)) {
+        $error = 'Please fill in all fields and select an available PC.';
     } else {
-        $stmt = $conn->prepare("INSERT INTO reservations (user_id, id_number, student_name, purpose, lab, reservation_date, reservation_time) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param('issssss', $userId, $studentId, $studentName, $purpose, $lab, $date, $time);
+        $stmt = $conn->prepare("INSERT INTO reservations (user_id, id_number, student_name, purpose, lab, pc_number, reservation_date, reservation_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param('issssiss', $userId, $studentId, $studentName, $purpose, $lab, $pc_number, $date, $time);
         if ($stmt->execute()) {
             $success = 'Reservation submitted successfully!';
         } else {
@@ -59,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Fetch history
 $reservations = [];
-$stmt = $conn->prepare("SELECT purpose, lab, reservation_date, reservation_time, status, admin_note, created_at FROM reservations WHERE user_id = ? ORDER BY created_at DESC");
+$stmt = $conn->prepare("SELECT purpose, lab, pc_number, reservation_date, reservation_time, status, admin_note, created_at FROM reservations WHERE user_id = ? ORDER BY created_at DESC");
 $stmt->bind_param('i', $userId);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -124,7 +147,15 @@ $stmt->close();
                             </div>
                             <div class="res-field">
                                 <label for="lab">Lab <span class="required" aria-hidden="true">*</span></label>
-                                <input type="text" id="lab" name="lab" placeholder="e.g. 524" required aria-required="true">
+                                <select id="lab" name="lab" required aria-required="true">
+                                    <option value="" disabled selected>Select lab</option>
+                                    <option value="524">524</option>
+                                    <option value="526">526</option>
+                                    <option value="528">528</option>
+                                    <option value="530">530</option>
+                                    <option value="542">542</option>
+                                    <option value="544">544</option>
+                                </select>
                             </div>
                             <div class="res-field">
                                 <label for="reservation_date">Reservation Date <span class="required" aria-hidden="true">*</span></label>
@@ -135,6 +166,24 @@ $stmt->close();
                                 <input type="time" id="reservation_time" name="reservation_time" required aria-required="true">
                             </div>
                         </div>
+
+                        <!-- Interactive PC Grid -->
+                        <div class="res-field pc-grid-container" id="pcGridContainer" style="display: none; margin-top: 1.5rem;">
+                            <label>Select a PC <span class="required" aria-hidden="true">*</span></label>
+                            <p class="pc-instructions dh-text-xs dh-muted">Choose an available computer for your session.</p>
+                            
+                            <div class="pc-grid-legend">
+                                <div class="legend-item"><div class="pc-box available"></div> Available</div>
+                                <div class="legend-item"><div class="pc-box selected"></div> Selected</div>
+                                <div class="legend-item"><div class="pc-box occupied"></div> Occupied</div>
+                            </div>
+                            
+                            <div class="pc-grid" id="pcGrid">
+                                <!-- PCs will be injected via JS -->
+                            </div>
+                            <input type="hidden" id="pc_number" name="pc_number" required>
+                        </div>
+                        
                         <div class="res-submit-row">
                             <button type="submit" class="res-submit-btn">
                                 <span>Complete Reservation</span>
@@ -158,7 +207,7 @@ $stmt->close();
                                 <thead>
                                     <tr>
                                         <th scope="col">Purpose</th>
-                                        <th scope="col">Lab</th>
+                                        <th scope="col">Lab / PC</th>
                                         <th scope="col">Schedule</th>
                                         <th scope="col">Status</th>
                                         <th scope="col">Admin Note</th>
@@ -169,7 +218,7 @@ $stmt->close();
                                     <?php foreach ($reservations as $res): ?>
                                         <tr>
                                             <td data-label="Purpose"><?= esc($res['purpose']) ?></td>
-                                            <td data-label="Lab"><?= esc($res['lab']) ?></td>
+                                            <td data-label="Lab / PC">Lab <?= esc($res['lab']) ?> - PC <?= esc($res['pc_number'] ?? 'N/A') ?></td>
                                             <td data-label="Schedule">
                                                 <strong><?= date('M d, Y', strtotime($res['reservation_date'])) ?></strong><br>
                                                 <small><?= date('h:i A', strtotime($res['reservation_time'])) ?></small>
@@ -196,7 +245,78 @@ $stmt->close();
     </div>
 
     <?php renderStudentNotificationScript($notificationFeatureEnabled); ?>
-
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const labSelect = document.getElementById('lab');
+            const dateInput = document.getElementById('reservation_date');
+            const pcGridContainer = document.getElementById('pcGridContainer');
+            const pcGrid = document.getElementById('pcGrid');
+            const pcNumberInput = document.getElementById('pc_number');
+            const totalPCs = 30; // Assuming 30 PCs per lab
+            
+            function fetchAndRenderPCs() {
+                const lab = labSelect.value;
+                const date = dateInput.value;
+                
+                if (lab && date) {
+                    pcGridContainer.style.display = 'block';
+                    pcGrid.innerHTML = '<div style="text-align:center; padding:20px; grid-column:1/-1;">Loading PCs...</div>';
+                    
+                    fetch(`reservations.php?action=get_occupied_pcs&lab=${encodeURIComponent(lab)}&date=${encodeURIComponent(date)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            const occupied = data.occupied || [];
+                            pcGrid.innerHTML = '';
+                            
+                            for (let i = 1; i <= totalPCs; i++) {
+                                const pcBox = document.createElement('div');
+                                pcBox.classList.add('pc-box');
+                                pcBox.textContent = `PC ${i}`;
+                                
+                                if (occupied.includes(i)) {
+                                    pcBox.classList.add('occupied');
+                                    pcBox.title = 'This PC is already reserved';
+                                } else {
+                                    pcBox.classList.add('available');
+                                    if (pcNumberInput.value == i) {
+                                        pcBox.classList.add('selected');
+                                    }
+                                    
+                                    pcBox.addEventListener('click', function() {
+                                        // Deselect others
+                                        document.querySelectorAll('.pc-box.selected').forEach(box => {
+                                            box.classList.remove('selected');
+                                        });
+                                        
+                                        // Select this one
+                                        this.classList.add('selected');
+                                        pcNumberInput.value = i;
+                                    });
+                                }
+                                
+                                pcGrid.appendChild(pcBox);
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Failed to fetch PCs', err);
+                            pcGrid.innerHTML = '<div style="color:red; grid-column:1/-1;">Error loading PCs. Please try again.</div>';
+                        });
+                } else {
+                    pcGridContainer.style.display = 'none';
+                    pcNumberInput.value = ''; // Clear selection
+                }
+            }
+            
+            labSelect.addEventListener('change', fetchAndRenderPCs);
+            dateInput.addEventListener('change', fetchAndRenderPCs);
+            
+            // Initial check if values are pre-filled (e.g. after form error)
+            if (labSelect.value && dateInput.value) {
+                fetchAndRenderPCs();
+            }
+        });
+    </script>
 </body>
 
 </html>

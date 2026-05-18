@@ -89,5 +89,17 @@
                 if (e.key === 'Enter') doSearch();
             });
         }
+
+        // Close any modal on clicking outside its box (overlay click)
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            if (!overlay.dataset.overlayListenerAttached) {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                    }
+                });
+                overlay.dataset.overlayListenerAttached = 'true';
+            }
+        });
     });
 </script>

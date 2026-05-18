@@ -139,7 +139,7 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
     <nav class="academic-ledger-navbar">
         <div class="nav-container">
             <div class="brand">
-                <h1 class="brand-title">CCS Sit-in Monitoring System (ADMIN DASHBOARD)</h1>
+                <h1 class="brand-title">CCS Sit-in Monitoring System (ADMIN)</h1>
             </div>
             <div class="nav-links">
                 <a class="nav-link active" href="admin_dashboard.php">Home</a>
@@ -147,6 +147,7 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
                 <a class="nav-link" href="student_information.php">Student Information</a>
                 <a class="nav-link" href="active_sessions.php">Active Sessions</a>
                 <a class="nav-link" href="sit_in_history_admin.php">Sit-in History</a>
+                <a class="nav-link" href="leaderboard.php">Leaderboard</a>
                 <a class="nav-logout" href="admin_dashboard.php?logout=1">Logout</a>
             </div>
         </div>
