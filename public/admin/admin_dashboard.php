@@ -142,12 +142,15 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
                 <h1 class="brand-title">CCS Sit-in Monitoring System (ADMIN)</h1>
             </div>
             <div class="nav-links">
+                <button class="nav-link search-icon-btn" type="button" onclick="openModal('searchModal')" aria-label="Search" title="Search Student" style="background: transparent; border: none; padding: 8px 4px; display: inline-block; cursor: pointer; line-height: 1; vertical-align: baseline;">
+                    <span class="material-symbols-outlined" style="font-size: 20px; vertical-align: -3px; display: inline-block;">search</span>
+                </button>
                 <a class="nav-link active" href="admin_dashboard.php">Home</a>
-                <button class="nav-link" type="button" onclick="openModal('searchModal')">Search</button>
                 <a class="nav-link" href="student_information.php">Student Information</a>
                 <a class="nav-link" href="active_sessions.php">Active Sessions</a>
                 <a class="nav-link" href="sit_in_history_admin.php">Sit-in History</a>
                 <a class="nav-link" href="leaderboard.php">Leaderboard</a>
+                <a class="nav-link" href="reservations_admin.php">Reservations</a>
                 <a class="nav-logout" href="admin_dashboard.php?logout=1">Logout</a>
             </div>
         </div>
@@ -376,11 +379,19 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: 'rgba(25, 28, 29, 0.92)',
-                            padding: 12,
-                            titleFont: { size: 13, family: "'Inter', sans-serif", weight: '600' },
-                            bodyFont: { size: 13, family: "'Inter', sans-serif" },
-                            displayColors: true
+                            backgroundColor: 'rgba(25, 28, 29, 0.95)',
+                            padding: {
+                                top: 8,
+                                bottom: 8,
+                                left: 12,
+                                right: 12
+                            },
+                            bodyFont: { size: 13, family: "'Inter', sans-serif", weight: '500' },
+                            displayColors: false,
+                            callbacks: {
+                                title: () => '',
+                                label: (context) => `${context.label}: ${context.raw}`
+                            }
                         }
                     }
                 }

@@ -17,31 +17,69 @@ if (isset($_GET['logout'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_completed'])) {
     $recordId = (int) ($_POST['record_id'] ?? 0);
+    $awardPoint = isset($_POST['award_point']) && $_POST['award_point'] === '1';
     $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    $success = false;
+    $errorMessage = '';
 
     if ($recordId > 0) {
-        $stmt = $conn->prepare("UPDATE sit_in_records SET status = 'Completed', time_out = NOW() WHERE id = ? AND status = 'Active'");
-        if ($stmt) {
+        $conn->begin_transaction();
+        try {
+            $stmt = $conn->prepare("UPDATE sit_in_records SET status = 'Completed', time_out = NOW() WHERE id = ? AND status = 'Active'");
+            if (!$stmt) {
+                throw new Exception('Database error.');
+            }
             $stmt->bind_param('i', $recordId);
             $stmt->execute();
-            $success = $stmt->affected_rows > 0;
+            if ($stmt->affected_rows === 0) {
+                $stmt->close();
+                throw new Exception('Record not found or already completed.');
+            }
             $stmt->close();
-            
-            if ($isAjax) {
-                header('Content-Type: application/json');
-                echo json_encode(['success' => $success]);
-                exit;
-            } else {
-                $_SESSION['current_sitin_flash'] = $success ? 'Sit-in record marked as completed.' : 'Record not found or already completed.';
+
+            if ($awardPoint) {
+                $userId = 0;
+                $userStmt = $conn->prepare('SELECT user_id FROM sit_in_records WHERE id = ?');
+                if (!$userStmt) {
+                    throw new Exception('Database error.');
+                }
+                $userStmt->bind_param('i', $recordId);
+                $userStmt->execute();
+                $userStmt->bind_result($userId);
+                $userStmt->fetch();
+                $userStmt->close();
+
+                if ($userId <= 0) {
+                    throw new Exception('Student not found for this record.');
+                }
+
+                $pointStmt = $conn->prepare('UPDATE users SET earned_points = earned_points + 1 WHERE id = ?');
+                if (!$pointStmt) {
+                    throw new Exception('Database error.');
+                }
+                $pointStmt->bind_param('i', $userId);
+                $pointStmt->execute();
+                if ($pointStmt->affected_rows === 0) {
+                    $pointStmt->close();
+                    throw new Exception('Unable to award point.');
+                }
+                $pointStmt->close();
             }
-        } else {
-            if ($isAjax) {
-                header('Content-Type: application/json');
-                echo json_encode(['success' => false, 'error' => 'Database error.']);
-                exit;
-            }
-            $_SESSION['current_sitin_flash'] = 'Database error. Please try again.';
+
+            $conn->commit();
+            $success = true;
+        } catch (Exception $e) {
+            $conn->rollback();
+            $errorMessage = $e->getMessage();
         }
+
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => $success, 'error' => $errorMessage]);
+            exit;
+        }
+
+        $_SESSION['current_sitin_flash'] = $success ? 'Sit-in record marked as completed.' : ($errorMessage ?: 'Unable to complete session.');
     } else {
         if ($isAjax) {
             header('Content-Type: application/json');
@@ -117,12 +155,15 @@ unset($_SESSION['current_sitin_flash']);
                 <h1 class="brand-title">CCS Sit-in Monitoring System (ADMIN)</h1>
             </div>
             <div class="nav-links">
+                <button class="nav-link search-icon-btn" type="button" onclick="openModal('searchModal')" aria-label="Search" title="Search Student" style="background: transparent; border: none; padding: 8px 4px; display: inline-block; cursor: pointer; line-height: 1; vertical-align: baseline;">
+                    <span class="material-symbols-outlined" style="font-size: 20px; vertical-align: -3px; display: inline-block;">search</span>
+                </button>
                 <a class="nav-link" href="admin_dashboard.php">Home</a>
-                <button class="nav-link" type="button" onclick="openModal('searchModal')">Search</button>
                 <a class="nav-link" href="student_information.php">Student Information</a>
                 <a class="nav-link active" href="active_sessions.php">Active Sessions</a>
                 <a class="nav-link" href="sit_in_history_admin.php">Sit-in History</a>
                 <a class="nav-link" href="leaderboard.php">Leaderboard</a>
+                <a class="nav-link" href="reservations_admin.php">Reservations</a>
                 <a class="nav-logout" href="active_sessions.php?logout=1">Logout</a>
             </div>
         </div>
@@ -229,7 +270,7 @@ unset($_SESSION['current_sitin_flash']);
                                 </td>
                                 <td class="text-right">
                                     <?php if (($record['status'] ?? '') === 'Active'): ?>
-                                        <button type="button" class="btn-end" onclick="confirmEndSession(<?= esc($record['id']) ?>, this.closest('tr'))">End</button>
+                                        <button type="button" class="btn-end" onclick="confirmEndSession(<?= esc($record['id']) ?>, <?= htmlspecialchars(json_encode($displayName), ENT_QUOTES, 'UTF-8') ?>, this.closest('tr'))">End</button>
                                     <?php else: ?>
                                         <span class="action-done">Done</span>
                                     <?php endif; ?>
@@ -279,17 +320,25 @@ unset($_SESSION['current_sitin_flash']);
     </main>
 
     <!-- ─── Confirmation Modal ─── -->
-    <div class="modal-overlay" id="confirmModal">
-        <div class="modal-box confirmation-box" style="max-width: 400px; text-align: center;">
-            <div class="modal-header" style="justify-content: center; border-bottom: none;">
+    <div class="modal-overlay" id="confirmModal" aria-hidden="true">
+        <div class="modal-box confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+            <div class="confirm-modal-header">
+                <h3 id="confirmModalTitle">Logout Student</h3>
+                <button type="button" class="confirm-modal-close" onclick="closeModal('confirmModal')" aria-label="Close">×</button>
             </div>
-            <div class="modal-body" style="padding: 10px 20px 25px;">
-                <h3 id="confirmModalTitle" style="margin: 0 0 10px; color: #333; font-size: 20px;">Confirm Action</h3>
-                <p id="confirmModalMessage" style="margin: 0; color: #666; font-size: 15px;">Are you sure?</p>
+            <div class="confirm-modal-body">
+                <p>You are about to log out <strong id="confirmStudentName">this student</strong>.</p>
+                <label class="award-pill" for="awardPointCheckbox">
+                    <input type="checkbox" id="awardPointCheckbox">
+                    <span class="award-pill-text">
+                        <span class="award-pill-title">Award 1 Point</span>
+                        <span class="award-pill-desc">Give this student a point for their session.</span>
+                    </span>
+                </label>
             </div>
-            <div class="modal-actions" style="justify-content: center; background: #f9f9f9; padding: 15px;">
-                <button type="button" class="modal-btn btn-cancel" onclick="closeModal('confirmModal')">Cancel</button>
-                <button type="button" class="modal-btn btn-confirm" id="confirmModalBtn" style="background-color: #d32f2f; color: white;">Confirm</button>
+            <div class="confirm-modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('confirmModal')">Cancel</button>
+                <button type="button" class="btn-danger" id="confirmModalBtn">Logout</button>
             </div>
         </div>
     </div>
@@ -297,24 +346,30 @@ unset($_SESSION['current_sitin_flash']);
     <script>
         let rowToTerminate = null;
 
-        function confirmEndSession(recordId, rowElement) {
+        function confirmEndSession(recordId, studentName, rowElement) {
             rowToTerminate = rowElement;
-            document.getElementById('confirmModalTitle').textContent = 'End Session';
-            document.getElementById('confirmModalMessage').textContent = 'Are you sure you want to end this sit-in session?';
+            const nameEl = document.getElementById('confirmStudentName');
+            if (nameEl) nameEl.textContent = studentName;
+
+            const awardBox = document.getElementById('awardPointCheckbox');
+            if (awardBox) awardBox.checked = false;
             
             const confirmBtn = document.getElementById('confirmModalBtn');
             confirmBtn.onclick = function() {
                 confirmBtn.disabled = true;
-                confirmBtn.textContent = 'Ending...';
+                confirmBtn.textContent = 'Logging out...';
                 endSessionAjax(recordId, confirmBtn);
             };
             openModal('confirmModal');
         }
 
         function endSessionAjax(recordId, confirmBtn) {
+            const awardBox = document.getElementById('awardPointCheckbox');
+            const shouldAward = awardBox ? awardBox.checked : false;
             const formData = new FormData();
             formData.append('mark_completed', '1');
             formData.append('record_id', recordId);
+            formData.append('award_point', shouldAward ? '1' : '0');
 
             fetch('active_sessions.php', {
                 method: 'POST',
@@ -327,7 +382,7 @@ unset($_SESSION['current_sitin_flash']);
             .then(data => {
                 closeModal('confirmModal');
                 confirmBtn.disabled = false;
-                confirmBtn.textContent = 'Confirm';
+                confirmBtn.textContent = 'Logout';
 
                 if (data.success) {
                     if (rowToTerminate) {
@@ -353,7 +408,7 @@ unset($_SESSION['current_sitin_flash']);
             .catch(err => {
                 console.error(err);
                 confirmBtn.disabled = false;
-                confirmBtn.textContent = 'Confirm';
+                confirmBtn.textContent = 'Logout';
                 alert('Network error occurred.');
             });
         }

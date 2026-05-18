@@ -16,23 +16,6 @@ if (isset($_GET['logout'])) {
     exit;
 }
 
-// Handle Add Points form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_id'])) {
-    $uid = (int)$_POST['user_id'];
-    $earned_points = (int)$_POST['earned_points'];
-    $tasks_completed = (int)$_POST['tasks_completed'];
-    
-    $stmt = $conn->prepare("UPDATE users SET earned_points = ?, tasks_completed = ? WHERE id = ?");
-    if ($stmt) {
-        $stmt->bind_param('iii', $earned_points, $tasks_completed, $uid);
-        $stmt->execute();
-        $stmt->close();
-    }
-    
-    header('Location: leaderboard.php?success=1');
-    exit;
-}
-
 // Fetch all students and calculate total hours
 $students = [];
 $sql = "
@@ -84,12 +67,15 @@ usort($students, function($a, $b) {
                 <h1 class="brand-title">CCS Sit-in Monitoring System (ADMIN)</h1>
             </div>
             <div class="nav-links">
+                <button class="nav-link search-icon-btn" type="button" onclick="openModal('searchModal')" aria-label="Search" title="Search Student" style="background: transparent; border: none; padding: 8px 4px; display: inline-block; cursor: pointer; line-height: 1; vertical-align: baseline;">
+                    <span class="material-symbols-outlined" style="font-size: 20px; vertical-align: -3px; display: inline-block;">search</span>
+                </button>
                 <a class="nav-link" href="admin_dashboard.php">Home</a>
-                <button class="nav-link" type="button" onclick="openModal('searchModal')">Search</button>
                 <a class="nav-link" href="student_information.php">Student Information</a>
                 <a class="nav-link" href="active_sessions.php">Active Sessions</a>
                 <a class="nav-link" href="sit_in_history_admin.php">Sit-in History</a>
                 <a class="nav-link active" href="leaderboard.php">Leaderboard</a>
+                <a class="nav-link" href="reservations_admin.php">Reservations</a>
                 <a class="nav-logout" href="leaderboard.php?logout=1">Logout</a>
             </div>
         </div>
@@ -104,12 +90,6 @@ usort($students, function($a, $b) {
                 </div>
             </header>
             
-            <?php if (isset($_GET['success'])): ?>
-                <div class="res-msg success" style="background:#ecfdf5;color:#065f46;padding:16px;border-radius:12px;margin-bottom:24px;">
-                    Points updated successfully!
-                </div>
-            <?php endif; ?>
-
             <div class="leaderboard-card">
                 <div class="leaderboard-header">
                     <h3>Top Students - 2nd Semester</h3>
@@ -127,13 +107,12 @@ usort($students, function($a, $b) {
                                 <th>Total Hours</th>
                                 <th>Tasks</th>
                                 <th>Score</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($students)): ?>
                                 <tr>
-                                    <td colspan="8" style="text-align:center; padding: 40px; color:#64748b;">No students found.</td>
+                                    <td colspan="7" style="text-align:center; padding: 40px; color:#64748b;">No students found.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php $rank = 1; foreach ($students as $student): ?>
@@ -157,17 +136,6 @@ usort($students, function($a, $b) {
                                         <td><?= number_format($student['total_hours'], 2) ?>h</td>
                                         <td><?= (int)$student['tasks_completed'] ?></td>
                                         <td><strong><?= number_format($student['score'], 1) ?></strong></td>
-                                        <td>
-                                            <button type="button" class="btn-add-points" 
-                                                    onclick="openPointsModal(
-                                                        <?= $student['id'] ?>, 
-                                                        '<?= esc($student['first_name'] . ' ' . $student['last_name']) ?>',
-                                                        <?= (int)$student['earned_points'] ?>,
-                                                        <?= (int)$student['tasks_completed'] ?>
-                                                    )">
-                                                + Points
-                                            </button>
-                                        </td>
                                     </tr>
                                 <?php $rank++; endforeach; ?>
                             <?php endif; ?>
@@ -178,35 +146,6 @@ usort($students, function($a, $b) {
         </div>
     </main>
 
-    <!-- Add Points Modal -->
-    <div class="modal-overlay" id="addPointsModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <span>Add Reward / Points</span>
-                <button type="button" class="modal-close" onclick="closeModal('addPointsModal')">×</button>
-            </div>
-            <form id="addPointsForm" method="POST" action="leaderboard.php">
-                <div class="modal-body">
-                    <p style="margin-bottom: 20px; color: var(--on-surface-variant);">Update points and completed tasks for <strong id="modalStudentName" style="color: var(--primary);"></strong>.</p>
-                    <input type="hidden" name="user_id" id="modalUserId">
-                    
-                    <div class="modal-field">
-                        <label for="earned_points">Earned Points</label>
-                        <input type="number" id="earned_points" name="earned_points" min="0" required>
-                    </div>
-                    
-                    <div class="modal-field">
-                        <label for="tasks_completed">Tasks Completed</label>
-                        <input type="number" id="tasks_completed" name="tasks_completed" min="0" required>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="modal-btn btn-cancel" onclick="closeModal('addPointsModal')">Cancel</button>
-                    <button type="submit" class="modal-btn btn-confirm">Save Updates</button>
-                </div>
-            </form>
-        </div>
-    </div>
     <?php include 'search_student_modal.php'; ?>
     <?php include 'sitin_form_modal.php'; ?>
 
@@ -214,15 +153,6 @@ usort($students, function($a, $b) {
         function openModal(id) {
             const el = document.getElementById(id);
             if (el) el.classList.add('active');
-        }
-
-        function openPointsModal(userId, name, currentPoints, currentTasks) {
-            document.getElementById('modalUserId').value = userId;
-            document.getElementById('modalStudentName').textContent = name;
-            document.getElementById('earned_points').value = currentPoints;
-            document.getElementById('tasks_completed').value = currentTasks;
-            
-            openModal('addPointsModal');
         }
 
         function closeModal(id) {

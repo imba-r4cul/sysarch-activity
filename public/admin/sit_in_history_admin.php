@@ -137,12 +137,15 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                 <h1 class="brand-title">CCS Sit-in Monitoring System (ADMIN)</h1>
             </div>
             <div class="nav-links">
+                <button class="nav-link search-icon-btn" type="button" onclick="openModal('searchModal')" aria-label="Search" title="Search Student" style="background: transparent; border: none; padding: 8px 4px; display: inline-block; cursor: pointer; line-height: 1; vertical-align: baseline;">
+                    <span class="material-symbols-outlined" style="font-size: 20px; vertical-align: -3px; display: inline-block;">search</span>
+                </button>
                 <a class="nav-link" href="admin_dashboard.php">Home</a>
-                <button class="nav-link" type="button" onclick="openModal('searchModal')">Search</button>
                 <a class="nav-link" href="student_information.php">Student Information</a>
                 <a class="nav-link" href="active_sessions.php">Active Sessions</a>
                 <a class="nav-link active" href="sit_in_history_admin.php">Sit-in History</a>
                 <a class="nav-link" href="leaderboard.php">Leaderboard</a>
+                <a class="nav-link" href="reservations_admin.php">Reservations</a>
                 <a class="nav-logout" href="sit_in_history_admin.php?logout=1">Logout</a>
             </div>
         </div>

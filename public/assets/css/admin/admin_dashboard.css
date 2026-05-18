@@ -313,16 +313,12 @@ section {
 }
 
 #purposePieChart {
-  position: relative;
-  z-index: 2;
   width: 100% !important;
   height: 100% !important;
 }
 
 .pie-center {
   position: absolute;
-  z-index: 1;
-  pointer-events: none;
   width: 5rem;
   height: 5rem;
   background-color: var(--surface-container-lowest);

@@ -111,3 +111,29 @@ button.nav-link {
 .nav-logout:active {
   transform: translateY(0);
 }
+
+/* Search Icon Button styling */
+.search-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  cursor: pointer;
+  color: var(--text-muted) !important;
+  transition: all 250ms ease;
+  vertical-align: middle;
+}
+
+.search-icon-btn:hover {
+  color: #ffffff !important;
+  background: transparent !important;
+  transform: translateY(-1px);
+}
+
+.search-icon-btn::after {
+  display: none !important;
+}
