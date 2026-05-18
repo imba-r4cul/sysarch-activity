@@ -274,9 +274,9 @@ if ($r) {
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/shared/navbar.css">
-    <link rel="stylesheet" href="../assets/css/admin/admin_dashboard.css">
-    <link rel="stylesheet" href="../assets/css/admin/student_information.css">
+    <link rel="stylesheet" href="../assets/css/shared/navbar.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/admin/admin_dashboard.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/admin/student_information.css?v=<?= time() ?>">
 </head>
 
 <body>

@@ -398,23 +398,23 @@ tr:hover td {
 }
 
 .action-btn.approve {
-    background-color: var(--status-approved);
+    background-color: #10b981;
 }
 
 .action-btn.approve:hover {
-    background-color: #047857;
+    background-color: #059669;
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(5, 150, 105, 0.2);
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.24);
 }
 
 .action-btn.reject {
-    background-color: var(--status-rejected);
+    background-color: #ef4444;
 }
 
 .action-btn.reject:hover {
-    background-color: #991b1b;
+    background-color: #dc2626;
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(182, 23, 30, 0.2);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.24);
 }
 
 /* Modals (Search + Reject) */

@@ -216,7 +216,7 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
                 <select id="labFilter">
                     <option value="all">All Labs</option>
                     <?php
-                    $labs = [];
+                    $labs = ['524' => true, '526' => true, '528' => true, '530' => true, '542' => true, '544' => true];
                     foreach ($reservationsList as $r) {
                         $lab = trim((string) ($r['lab'] ?? ''));
                         if ($lab !== '') {

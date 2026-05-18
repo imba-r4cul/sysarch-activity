@@ -7,17 +7,21 @@
         </div>
         <form method="POST" action="admin_dashboard.php">
             <div class="modal-body">
-                <div class="modal-input-field">
+                <div class="modal-field">
                     <label for="sitin_id_number">ID Number</label>
                     <input type="text" id="sitin_id_number" name="sitin_id_number" placeholder="Default" readonly
                         required>
                 </div>
-                <div class="modal-input-field">
+                <div class="modal-field">
                     <label for="sitin_student_name">Student Name</label>
                     <input type="text" id="sitin_student_name" name="sitin_student_name" placeholder="Default"
                         readonly required>
                 </div>
-                <div class="modal-input-field">
+                <div class="modal-field">
+                    <label for="sitin_sessions">Remaining Sessions</label>
+                    <input type="text" id="sitin_sessions" readonly value="30">
+                </div>
+                <div class="modal-field">
                     <label for="sitin_purpose">Purpose</label>
                     <select id="sitin_purpose" name="sitin_purpose" required>
                         <option value="" selected disabled>Select purpose</option>
@@ -28,26 +32,22 @@
                         <option value="C++">C++</option>
                     </select>
                 </div>
-                <div class="modal-input-field">
+                <div class="modal-field">
                     <label for="sitin_lab">Lab</label>
                     <select id="sitin_lab" name="sitin_lab" required>
                         <option value="" selected disabled>Select lab</option>
                         <option value="524">524</option>
-                        <option value="525">526</option>
-                        <option value="526">528</option>
-                        <option value="527">530</option>
-                        <option value="527">542</option>
-                        <option value="527">544</option>
+                        <option value="526">526</option>
+                        <option value="528">528</option>
+                        <option value="530">530</option>
+                        <option value="542">542</option>
+                        <option value="544">544</option>
                     </select>
                 </div>
-                <div class="modal-input-field">
-                    <label for="sitin_sessions">Remaining Sessions</label>
-                    <input type="text" id="sitin_sessions" readonly value="30">
-                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="modal-btn cancel" onclick="closeModal('sitinModal')">Close</button>
-                <button type="submit" class="modal-btn submit">Sit In</button>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn btn-cancel" onclick="closeModal('sitinModal')">Close</button>
+                <button type="submit" class="modal-btn btn-confirm">Sit In</button>
             </div>
         </form>
     </div>
