@@ -101,7 +101,7 @@ $stmt->close();
     <link rel="stylesheet" href="../assets/css/shared/global.css">
     <link rel="stylesheet" href="../assets/css/shared/navbar.css">
     <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
-    <link rel="stylesheet" href="../assets/css/student/reservations.css">
+    <link rel="stylesheet" href="../assets/css/student/reservations.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
 </head>
 
@@ -109,9 +109,15 @@ $stmt->close();
     <?php renderStudentNavbar('reservations', $newAnnCount); ?>
 
     <div class="reservation-page">
-        <h1>
-            Sit-in Reservation
-        </h1>
+        <div class="reservation-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+            <h1 style="margin: 0; display: flex; align-items: center; gap: 12px; font-size: 32px; font-weight: 800; color: var(--primary-blue);">
+                Sit-in Reservation
+            </h1>
+            <a href="reservation_history.php" class="history-link-btn" style="display: flex; align-items: center; gap: 8px; text-decoration: none; padding: 10px 20px; border-radius: 12px; background: #fff; color: var(--primary-blue); font-weight: 700; font-size: 14px; border: 1.5px solid var(--primary-blue); transition: all 0.2s;">
+                <span class="material-symbols-outlined" style="font-size: 20px;">history</span>
+                My Reservation History
+            </a>
+        </div>
 
         <?php if ($success): ?>
             <div class="res-msg success" role="alert" aria-live="polite">
@@ -126,62 +132,56 @@ $stmt->close();
             </div>
         <?php endif; ?>
 
-        <div class="bento-grid">
-            <!-- Create Reservation -->
-            <div class="res-card">
-                <div class="res-card-header" id="form-header">Create Reservation</div>
-                <div class="res-card-body">
-                    <form method="POST" action="reservations.php" aria-labelledby="form-header">
-                        <div class="res-grid">
-                            <div class="res-field">
-                                <label for="id_number_display">ID Number</label>
-                                <input type="text" id="id_number_display" value="<?= esc($studentId) ?>" readonly aria-readonly="true">
+        <form method="POST" action="reservations.php" id="reservationForm">
+            <div class="bento-grid">
+                <!-- Create Reservation Details (Left) -->
+                <div class="res-card">
+                    <div class="res-card-header" id="form-header">Create Reservation</div>
+                    <div class="res-card-body">
+                        <div class="res-form-rows">
+                            <!-- Row 1: ID Number & Student Name -->
+                            <div class="res-form-row">
+                                <div class="res-field">
+                                    <label for="id_number_display">ID Number</label>
+                                    <input type="text" id="id_number_display" value="<?= esc($studentId) ?>" readonly aria-readonly="true">
+                                </div>
+                                <div class="res-field">
+                                    <label for="student_name_display">Student Name</label>
+                                    <input type="text" id="student_name_display" value="<?= esc($studentName) ?>" readonly aria-readonly="true">
+                                </div>
                             </div>
-                            <div class="res-field">
-                                <label for="student_name_display">Student Name</label>
-                                <input type="text" id="student_name_display" value="<?= esc($studentName) ?>" readonly aria-readonly="true">
+                            
+                            <!-- Row 2: Lab & Purpose -->
+                            <div class="res-form-row">
+                                <div class="res-field">
+                                    <label for="lab">Lab</label>
+                                    <select id="lab" name="lab" required aria-required="true">
+                                        <option value="" disabled selected>Select lab</option>
+                                        <option value="524">524</option>
+                                        <option value="526">526</option>
+                                        <option value="528">528</option>
+                                        <option value="530">530</option>
+                                        <option value="542">542</option>
+                                        <option value="544">544</option>
+                                    </select>
+                                </div>
+                                <div class="res-field">
+                                    <label for="purpose">Purpose</label>
+                                    <input type="text" id="purpose" name="purpose" placeholder="e.g. C Programming" required aria-required="true">
+                                </div>
                             </div>
-                            <div class="res-field">
-                                <label for="purpose">Purpose <span class="required" aria-hidden="true">*</span></label>
-                                <input type="text" id="purpose" name="purpose" placeholder="e.g. C Programming" required aria-required="true">
-                            </div>
-                            <div class="res-field">
-                                <label for="lab">Lab <span class="required" aria-hidden="true">*</span></label>
-                                <select id="lab" name="lab" required aria-required="true">
-                                    <option value="" disabled selected>Select lab</option>
-                                    <option value="524">524</option>
-                                    <option value="526">526</option>
-                                    <option value="528">528</option>
-                                    <option value="530">530</option>
-                                    <option value="542">542</option>
-                                    <option value="544">544</option>
-                                </select>
-                            </div>
-                            <div class="res-field">
-                                <label for="reservation_date">Reservation Date <span class="required" aria-hidden="true">*</span></label>
-                                <input type="date" id="reservation_date" name="reservation_date" required aria-required="true">
-                            </div>
-                            <div class="res-field">
-                                <label for="reservation_time">Reservation Time <span class="required" aria-hidden="true">*</span></label>
-                                <input type="time" id="reservation_time" name="reservation_time" required aria-required="true">
-                            </div>
-                        </div>
 
-                        <!-- Interactive PC Grid -->
-                        <div class="res-field pc-grid-container" id="pcGridContainer" style="display: none; margin-top: 1.5rem;">
-                            <label>Select a PC <span class="required" aria-hidden="true">*</span></label>
-                            <p class="pc-instructions dh-text-xs dh-muted">Choose an available computer for your session.</p>
-                            
-                            <div class="pc-grid-legend">
-                                <div class="legend-item"><div class="pc-box available"></div> Available</div>
-                                <div class="legend-item"><div class="pc-box selected"></div> Selected</div>
-                                <div class="legend-item"><div class="pc-box occupied"></div> Occupied</div>
+                            <!-- Row 3: Reservation Date & Reservation Time -->
+                            <div class="res-form-row">
+                                <div class="res-field">
+                                    <label for="reservation_date">Reservation Date</label>
+                                    <input type="date" id="reservation_date" name="reservation_date" required aria-required="true">
+                                </div>
+                                <div class="res-field">
+                                    <label for="reservation_time">Reservation Time</label>
+                                    <input type="time" id="reservation_time" name="reservation_time" required aria-required="true">
+                                </div>
                             </div>
-                            
-                            <div class="pc-grid" id="pcGrid">
-                                <!-- PCs will be injected via JS -->
-                            </div>
-                            <input type="hidden" id="pc_number" name="pc_number" required>
                         </div>
                         
                         <div class="res-submit-row">
@@ -189,59 +189,58 @@ $stmt->close();
                                 <span>Complete Reservation</span>
                             </button>
                         </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Reservation History -->
-            <div class="res-card">
-                <div class="res-card-header" id="history-header">My Reservation History</div>
-                <div class="res-card-body" style="padding: 0;">
-                    <?php if (empty($reservations)): ?>
-                        <div class="no-history">
-                            <p>You have no reservations yet.</p>
+                <!-- Select a PC (Right) -->
+                <div class="res-card">
+                    <div class="res-card-header" id="pc-header">Select a PC</div>
+                    <div class="res-card-body" id="pcCardBody">
+                        
+                        <!-- PC Grid placeholder -->
+                        <div id="pcSelectionPlaceholder" class="no-history" style="padding: 64px 24px; text-align: center; color: #94a3b8; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 250px;">
+                            <span class="material-symbols-outlined" style="font-size: 56px; margin-bottom: 16px; opacity: 0.5;">desktop_windows</span>
+                            <p style="margin: 0; font-weight: 500; font-size: 15px;">Please select Lab to show available PCs.</p>
                         </div>
-                    <?php else: ?>
-                        <div class="history-table-container">
-                            <table class="history-table" aria-labelledby="history-header">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Purpose</th>
-                                        <th scope="col">Lab / PC</th>
-                                        <th scope="col">Schedule</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Admin Note</th>
-                                        <th scope="col">Submitted</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($reservations as $res): ?>
-                                        <tr>
-                                            <td data-label="Purpose"><?= esc($res['purpose']) ?></td>
-                                            <td data-label="Lab / PC">Lab <?= esc($res['lab']) ?> - PC <?= esc($res['pc_number'] ?? 'N/A') ?></td>
-                                            <td data-label="Schedule">
-                                                <strong><?= date('M d, Y', strtotime($res['reservation_date'])) ?></strong><br>
-                                                <small><?= date('h:i A', strtotime($res['reservation_time'])) ?></small>
-                                            </td>
-                                            <td data-label="Status">
-                                                <?php
-                                                $statusClass = 'status-' . esc(strtolower($res['status']));
-                                                ?>
-                                                <span class="status-badge <?= $statusClass ?>" role="status"><?= esc($res['status']) ?></span>
-                                            </td>
-                                            <td data-label="Admin Note"><?= esc($res['admin_note'] ?? '—') ?></td>
-                                            <td data-label="Submitted">
-                                                <small><?= date('M d, Y h:i A', strtotime($res['created_at'])) ?></small>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
+
+                        <!-- Interactive PC Grid (rendered dynamically) -->
+                        <div class="res-field pc-grid-container" id="pcGridContainer" style="display: none; border: none; padding: 0; background: transparent;">
+                            <p class="pc-instructions dh-text-xs dh-muted" style="margin-bottom: 16px;">Choose an available computer for your session.</p>
+                            
+                            <div class="pc-grid-legend" style="margin-bottom: 20px;">
+                                <div class="legend-item">
+                                    <div class="pc-box available">
+                                        <span class="material-symbols-outlined" style="font-size: 16px;">desktop_windows</span>
+                                        <span style="font-size: 8px; font-weight: 700; text-transform: uppercase; margin-top: -2px;">PC</span>
+                                    </div>
+                                    Available
+                                </div>
+                                <div class="legend-item">
+                                    <div class="pc-box selected">
+                                        <span class="material-symbols-outlined" style="font-size: 16px;">desktop_windows</span>
+                                        <span style="font-size: 8px; font-weight: 700; text-transform: uppercase; margin-top: -2px;">PC</span>
+                                    </div>
+                                    Selected
+                                </div>
+                                <div class="legend-item">
+                                    <div class="pc-box occupied">
+                                        <span class="material-symbols-outlined" style="font-size: 16px;">lock</span>
+                                        <span style="font-size: 8px; font-weight: 700; text-transform: uppercase; margin-top: -2px;">PC</span>
+                                    </div>
+                                    Occupied
+                                </div>
+                            </div>
+                            
+                            <div class="pc-grid" id="pcGrid">
+                                <!-- PCs will be injected via JS -->
+                            </div>
+                            <input type="hidden" id="pc_number" name="pc_number" required>
                         </div>
-                    <?php endif; ?>
+
+                    </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <?php renderStudentNotificationScript($notificationFeatureEnabled); ?>
@@ -251,6 +250,7 @@ $stmt->close();
             const labSelect = document.getElementById('lab');
             const dateInput = document.getElementById('reservation_date');
             const pcGridContainer = document.getElementById('pcGridContainer');
+            const pcSelectionPlaceholder = document.getElementById('pcSelectionPlaceholder');
             const pcGrid = document.getElementById('pcGrid');
             const pcNumberInput = document.getElementById('pc_number');
             const totalPCs = 30; // Assuming 30 PCs per lab
@@ -259,9 +259,10 @@ $stmt->close();
                 const lab = labSelect.value;
                 const date = dateInput.value;
                 
-                if (lab && date) {
+                if (lab) {
+                    pcSelectionPlaceholder.style.display = 'none';
                     pcGridContainer.style.display = 'block';
-                    pcGrid.innerHTML = '<div style="text-align:center; padding:20px; grid-column:1/-1;">Loading PCs...</div>';
+                    pcGrid.innerHTML = '<div style="text-align:center; padding:40px; grid-column:1/-1; color: #64748b;">Loading PCs...</div>';
                     
                     fetch(`reservations.php?action=get_occupied_pcs&lab=${encodeURIComponent(lab)}&date=${encodeURIComponent(date)}`)
                         .then(res => res.json())
@@ -272,20 +273,33 @@ $stmt->close();
                             for (let i = 1; i <= totalPCs; i++) {
                                 const pcBox = document.createElement('div');
                                 pcBox.classList.add('pc-box');
-                                pcBox.textContent = `PC ${i}`;
+                                
+                                const iconSpan = document.createElement('span');
+                                iconSpan.classList.add('material-symbols-outlined');
+                                iconSpan.style.fontSize = '22px';
+                                
+                                const labelSpan = document.createElement('span');
+                                labelSpan.textContent = `PC ${i}`;
+                                labelSpan.style.fontSize = '10px';
+                                labelSpan.style.fontWeight = '700';
+                                
+                                pcBox.appendChild(iconSpan);
+                                pcBox.appendChild(labelSpan);
                                 
                                 if (occupied.includes(i)) {
+                                    iconSpan.textContent = 'lock';
                                     pcBox.classList.add('occupied');
                                     pcBox.title = 'This PC is already reserved';
                                 } else {
+                                    iconSpan.textContent = 'desktop_windows';
                                     pcBox.classList.add('available');
                                     if (pcNumberInput.value == i) {
                                         pcBox.classList.add('selected');
                                     }
                                     
                                     pcBox.addEventListener('click', function() {
-                                        // Deselect others
-                                        document.querySelectorAll('.pc-box.selected').forEach(box => {
+                                        // Deselect others inside grid ONLY (don't touch legend!)
+                                        document.querySelectorAll('#pcGrid .pc-box.selected').forEach(box => {
                                             box.classList.remove('selected');
                                         });
                                         
@@ -303,6 +317,7 @@ $stmt->close();
                             pcGrid.innerHTML = '<div style="color:red; grid-column:1/-1;">Error loading PCs. Please try again.</div>';
                         });
                 } else {
+                    pcSelectionPlaceholder.style.display = 'flex';
                     pcGridContainer.style.display = 'none';
                     pcNumberInput.value = ''; // Clear selection
                 }
