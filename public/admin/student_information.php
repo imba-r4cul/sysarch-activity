@@ -293,7 +293,6 @@ if ($r) {
                 <a class="nav-link" href="admin_dashboard.php">Home</a>
                 <a class="nav-link active" href="student_information.php">Student Information</a>
                 <a class="nav-link" href="active_sessions.php">Active Sessions</a>
-                <a class="nav-link" href="sit_in_history_admin.php">Sit-in History</a>
                 <a class="nav-link" href="leaderboard.php">Leaderboard</a>
                 <a class="nav-link" href="reservations_admin.php">Reservations</a>
                 <a class="nav-logout" href="admin_dashboard.php?logout=1">Logout</a>

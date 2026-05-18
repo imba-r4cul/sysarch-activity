@@ -66,6 +66,11 @@ main {
 
 .header-section {
   margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .header-section h1 {
@@ -74,6 +79,32 @@ main {
   font-weight: 800;
   color: var(--primary);
   letter-spacing: -0.025em;
+}
+
+.sitin-history-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 14px;
+  border: 1.5px solid var(--primary);
+  transition: all 0.2s;
+}
+
+.sitin-history-btn .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.sitin-history-btn:hover {
+  background: var(--primary);
+  color: var(--on-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(0, 64, 133, 0.18);
 }
 
 .header-section p {

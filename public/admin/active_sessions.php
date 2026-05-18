@@ -161,7 +161,6 @@ unset($_SESSION['current_sitin_flash']);
                 <a class="nav-link" href="admin_dashboard.php">Home</a>
                 <a class="nav-link" href="student_information.php">Student Information</a>
                 <a class="nav-link active" href="active_sessions.php">Active Sessions</a>
-                <a class="nav-link" href="sit_in_history_admin.php">Sit-in History</a>
                 <a class="nav-link" href="leaderboard.php">Leaderboard</a>
                 <a class="nav-link" href="reservations_admin.php">Reservations</a>
                 <a class="nav-logout" href="active_sessions.php?logout=1">Logout</a>
@@ -186,6 +185,10 @@ unset($_SESSION['current_sitin_flash']);
     <main>
         <div class="header-section">
             <h1>Active Sessions</h1>
+            <a class="sitin-history-btn" href="sit_in_history_admin.php">
+                <span class="material-symbols-outlined" aria-hidden="true">history</span>
+                Sit-in History
+            </a>
         </div>
 
         <?php if ($flashMessage !== ''): ?>
