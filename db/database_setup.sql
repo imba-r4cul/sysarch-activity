@@ -35,6 +35,9 @@ CREATE TABLE IF NOT EXISTS `admin_users` (
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+INSERT IGNORE INTO `admin_users` (`id`, `username`, `password`, `display_name`) VALUES 
+(1, 'admin', '$2y$10$agiy52TxrO0eVGzq6RVUMOA/piGmx.UEiHUyldoVc/ruBxjElrgvi', 'Admin');
+
 -- Sit-in records table
 CREATE TABLE IF NOT EXISTS `sit_in_records` (
   `id` INT NOT NULL AUTO_INCREMENT,
