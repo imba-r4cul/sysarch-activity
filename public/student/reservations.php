@@ -106,7 +106,7 @@ $stmt->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sit-in Reservation</title>
     <link rel="stylesheet" href="../assets/css/shared/global.css">
-    <link rel="stylesheet" href="../assets/css/shared/navbar.css">
+    <link rel="stylesheet" href="../assets/css/shared/navbar.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
     <link rel="stylesheet" href="../assets/css/student/reservations.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">

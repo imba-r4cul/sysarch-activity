@@ -52,7 +52,7 @@ $labColors = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Software & Lab Availability</title>
     <link rel="stylesheet" href="../assets/css/shared/global.css">
-    <link rel="stylesheet" href="../assets/css/shared/navbar.css">
+    <link rel="stylesheet" href="../assets/css/shared/navbar.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
     <!-- Material Symbols Outlined -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet">

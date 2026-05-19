@@ -137,3 +137,183 @@ button.nav-link {
 .search-icon-btn::after {
   display: none !important;
 }
+
+/* --- Admin Profile Dropdown --- */
+.nav-profile-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-dropdown-btn {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  padding: 6px 14px 6px 6px !important;
+  border-radius: 50px !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+  outline: none !important;
+  font-family: var(--font-family) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  height: auto !important;
+  line-height: normal !important;
+  margin: 0 !important;
+}
+
+.profile-dropdown-btn:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  transform: translateY(-1px) !important;
+}
+
+.profile-dropdown-btn:active {
+  transform: translateY(0) !important;
+}
+
+.profile-dropdown-btn .avatar-circle {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  flex-shrink: 0 !important;
+}
+
+.profile-dropdown-btn .avatar-circle .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.profile-dropdown-btn .admin-name {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  color: #ffffff !important;
+  white-space: nowrap !important;
+  display: inline-block !important;
+}
+
+.profile-dropdown-btn .dropdown-arrow {
+  font-size: 18px !important;
+  opacity: 0.8 !important;
+  color: #ffffff !important;
+  transition: transform 0.25s ease !important;
+  display: inline-block !important;
+}
+
+.nav-profile-dropdown.active .profile-dropdown-btn .dropdown-arrow {
+  transform: rotate(180deg) !important;
+}
+
+/* Dropdown Menu */
+.profile-dropdown-menu {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  right: 0 !important;
+  width: 220px !important;
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  padding: 8px 0 !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateY(10px) !important;
+  transition: all 0.25s cubic-bezier(0.68, -0.55, 0.27, 1.55) !important;
+  z-index: 1000 !important;
+  box-sizing: border-box !important;
+}
+
+.profile-dropdown-menu.show {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+}
+
+/* Dark Mode Overrides for Dropdown Menu */
+body.dark-theme .profile-dropdown-menu {
+  background: #1e2128 !important;
+  border-color: #2d3139 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+.profile-dropdown-menu .dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+body.dark-theme .profile-dropdown-menu .dropdown-item {
+  color: #e0e2e8 !important;
+}
+
+.profile-dropdown-menu .dropdown-item:hover {
+  background: #f3f4f6;
+}
+
+body.dark-theme .profile-dropdown-menu .dropdown-item:hover {
+  background: #252830 !important;
+}
+
+.profile-dropdown-menu .dropdown-item .item-label-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-dropdown-menu .dropdown-item .item-label-group .material-symbols-outlined {
+  font-size: 18px;
+  color: #6b7280;
+}
+
+body.dark-theme .profile-dropdown-menu .dropdown-item .item-label-group .material-symbols-outlined {
+  color: #9ca3af !important;
+}
+
+.profile-dropdown-menu .dropdown-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  margin: 6px 0;
+}
+
+body.dark-theme .profile-dropdown-menu .dropdown-divider {
+  background: #2d3139 !important;
+}
+
+.profile-dropdown-menu .logout-item {
+  justify-content: flex-start;
+  gap: 8px;
+  color: var(--logout-red);
+}
+
+.profile-dropdown-menu .logout-item .material-symbols-outlined {
+  font-size: 18px;
+  color: var(--logout-red);
+}
+
+.profile-dropdown-menu .logout-item:hover {
+  background: #fef2f2;
+  color: var(--logout-hover);
+}
+
+body.dark-theme .profile-dropdown-menu .logout-item:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+  color: #ff8b8b !important;
+}
+
+body.dark-theme .profile-dropdown-menu .logout-item:hover .material-symbols-outlined {
+  color: #ff8b8b !important;
+}

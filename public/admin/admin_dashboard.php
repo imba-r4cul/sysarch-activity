@@ -133,8 +133,8 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/shared/global.css?v=<?= time() ?>">
-    <link rel="stylesheet" href="../assets/css/shared/navbar.css">
-    <link rel="stylesheet" href="../assets/css/admin/admin_dashboard.css">
+    <link rel="stylesheet" href="../assets/css/shared/navbar.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/admin/admin_dashboard.css?v=<?= time() ?>">
 </head>
 
 <body>
@@ -154,8 +154,30 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
                 <a class="nav-link" href="leaderboard.php">Leaderboard</a>
                 <a class="nav-link" href="reservations_admin.php">Reservations</a>
                 <a class="nav-link" href="software_upload.php">Software & Labs</a>
-                <?php renderDarkModeToggle(); ?>
-                <a class="nav-logout" href="admin_dashboard.php?logout=1">Logout</a>
+
+                <div class="nav-profile-dropdown">
+                    <button class="profile-dropdown-btn" id="profileDropdownBtn" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar-circle">
+                            <span class="material-symbols-outlined">person</span>
+                        </div>
+                        <span class="admin-name"><?= htmlspecialchars($_SESSION['admin_name'] ?? 'admin') ?></span>
+                        <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
+                    </button>
+                    <div class="profile-dropdown-menu" id="profileDropdownMenu">
+                        <div class="dropdown-item theme-switch-item">
+                            <div class="item-label-group">
+                                <span class="material-symbols-outlined">dark_mode</span>
+                                <span>Theme</span>
+                            </div>
+                            <?php renderDarkModeToggle(); ?>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item logout-item" href="?logout=1">
+                            <span class="material-symbols-outlined">logout</span>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>

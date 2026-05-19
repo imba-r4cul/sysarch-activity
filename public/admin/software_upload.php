@@ -321,14 +321,39 @@ if ($uniqueQuery) {
                 <h1 class="brand-title">CCS Sit-in Monitoring System (ADMIN)</h1>
             </div>
             <div class="nav-links">
+                <button class="nav-link search-icon-btn" type="button" onclick="openModal('searchModal')" aria-label="Search" title="Search Student" style="background: transparent; border: none; padding: 8px 4px; display: inline-block; cursor: pointer; line-height: 1; vertical-align: baseline;">
+                    <span class="material-symbols-outlined" style="font-size: 20px; vertical-align: -3px; display: inline-block;">search</span>
+                </button>
                 <a class="nav-link" href="admin_dashboard.php">Home</a>
                 <a class="nav-link" href="student_information.php">Student Information</a>
                 <a class="nav-link" href="active_sessions.php">Active Sessions</a>
                 <a class="nav-link" href="leaderboard.php">Leaderboard</a>
                 <a class="nav-link" href="reservations_admin.php">Reservations</a>
                 <a class="nav-link active" href="software_upload.php">Software & Labs</a>
-                <?php renderDarkModeToggle(); ?>
-                <a class="nav-logout" href="software_upload.php?logout=1">Logout</a>
+
+                <div class="nav-profile-dropdown">
+                    <button class="profile-dropdown-btn" id="profileDropdownBtn" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar-circle">
+                            <span class="material-symbols-outlined">person</span>
+                        </div>
+                        <span class="admin-name"><?= htmlspecialchars($_SESSION['admin_name'] ?? 'admin') ?></span>
+                        <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
+                    </button>
+                    <div class="profile-dropdown-menu" id="profileDropdownMenu">
+                        <div class="dropdown-item theme-switch-item">
+                            <div class="item-label-group">
+                                <span class="material-symbols-outlined">dark_mode</span>
+                                <span>Theme</span>
+                            </div>
+                            <?php renderDarkModeToggle(); ?>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item logout-item" href="?logout=1">
+                            <span class="material-symbols-outlined">logout</span>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -621,6 +646,8 @@ if ($uniqueQuery) {
             }, 3000);
         });
     </script>
+
+    <?php include 'search_student_modal.php'; ?>
 
     <?php renderDarkModeScript(); ?>
 

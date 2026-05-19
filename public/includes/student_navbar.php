@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/dark_mode.php';
 
 function studentNavLinkClass($activePage, $targetPage)
 {
@@ -9,8 +10,36 @@ function studentNavLinkClass($activePage, $targetPage)
 
 function renderStudentNavbar($activePage, $newAnnCount)
 {
+    global $conn;
     $safeCount = max(0, (int) $newAnnCount);
     $currentPage = basename((string) ($_SERVER['PHP_SELF'] ?? 'student_dashboard.php'));
+
+    $userId = $_SESSION['user_id'] ?? null;
+    $studentName = 'Student';
+    $avatarPath = '../assets/images/edit-profile.png';
+
+    if ($userId && isset($conn)) {
+        $stmt = $conn->prepare('SELECT first_name, last_name, profile_image FROM users WHERE id = ? LIMIT 1');
+        if ($stmt) {
+            $stmt->bind_param('i', $userId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($userRow = $result->fetch_assoc()) {
+                $studentName = trim(($userRow['first_name'] ?? '') . ' ' . ($userRow['last_name'] ?? ''));
+                if (empty($studentName)) {
+                    $studentName = 'Student';
+                }
+                if (!empty($userRow['profile_image'])) {
+                    $safeFileName = basename($userRow['profile_image']);
+                    $diskPath = dirname(__DIR__) . '/assets/uploads/' . $safeFileName;
+                    if (is_file($diskPath)) {
+                        $avatarPath = '../assets/uploads/' . rawurlencode($safeFileName);
+                    }
+                }
+            }
+            $stmt->close();
+        }
+    }
     ?>
     <nav class="academic-ledger-navbar">
         <div class="nav-container">
@@ -50,10 +79,34 @@ function renderStudentNavbar($activePage, $newAnnCount)
                 <a class="<?= esc(studentNavLinkClass($activePage, 'reservations')) ?>" href="reservations.php">Reservations</a>
                 <a class="<?= esc(studentNavLinkClass($activePage, 'software')) ?>" href="software_availability.php">Software & Labs</a>
                 <a class="<?= esc(studentNavLinkClass($activePage, 'history')) ?>" href="sit_in_history_student.php">Sit-in History</a>
-                <button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode" aria-label="Toggle dark mode">
-                    <span class="material-symbols-outlined" id="darkModeIcon">dark_mode</span>
-                </button>
-                <a class="nav-logout" href="<?= esc($currentPage) ?>?logout=1">Log out</a>
+
+                <div class="nav-profile-dropdown">
+                    <button class="profile-dropdown-btn" id="profileDropdownBtn" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar-circle">
+                            <?php if (!empty($avatarPath) && strpos($avatarPath, 'edit-profile.png') === false): ?>
+                                <img src="<?= esc($avatarPath) ?>" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                            <?php else: ?>
+                                <span class="material-symbols-outlined">person</span>
+                            <?php endif; ?>
+                        </div>
+                        <span class="admin-name"><?= htmlspecialchars($studentName) ?></span>
+                        <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
+                    </button>
+                    <div class="profile-dropdown-menu" id="profileDropdownMenu">
+                        <div class="dropdown-item theme-switch-item">
+                            <div class="item-label-group">
+                                <span class="material-symbols-outlined">dark_mode</span>
+                                <span>Theme</span>
+                            </div>
+                            <?php renderDarkModeToggle(); ?>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item logout-item" href="<?= esc($currentPage) ?>?logout=1">
+                            <span class="material-symbols-outlined">logout</span>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -294,31 +347,6 @@ function renderStudentNotificationScript($notificationFeatureEnabled)
             }
         })();
     </script>
-    <script>
-        (function() {
-            var toggle = document.getElementById('darkModeToggle');
-            var icon = document.getElementById('darkModeIcon');
-            if (!toggle || !icon) return;
-
-            function applyTheme(dark) {
-                if (dark) {
-                    document.body.classList.add('dark-theme');
-                    icon.textContent = 'light_mode';
-                } else {
-                    document.body.classList.remove('dark-theme');
-                    icon.textContent = 'dark_mode';
-                }
-            }
-
-            var savedTheme = localStorage.getItem('theme');
-            applyTheme(savedTheme === 'dark');
-
-            toggle.addEventListener('click', function() {
-                var isDark = document.body.classList.contains('dark-theme');
-                localStorage.setItem('theme', isDark ? 'light' : 'dark');
-                applyTheme(!isDark);
-            });
-        })();
-    </script>
+    <?php renderDarkModeScript(); ?>
     <?php
 }

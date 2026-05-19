@@ -79,8 +79,30 @@ usort($students, function($a, $b) {
                 <a class="nav-link active" href="leaderboard.php">Leaderboard</a>
                 <a class="nav-link" href="reservations_admin.php">Reservations</a>
                 <a class="nav-link" href="software_upload.php">Software & Labs</a>
-                <?php renderDarkModeToggle(); ?>
-                <a class="nav-logout" href="leaderboard.php?logout=1">Logout</a>
+
+                <div class="nav-profile-dropdown">
+                    <button class="profile-dropdown-btn" id="profileDropdownBtn" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar-circle">
+                            <span class="material-symbols-outlined">person</span>
+                        </div>
+                        <span class="admin-name"><?= htmlspecialchars($_SESSION['admin_name'] ?? 'admin') ?></span>
+                        <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
+                    </button>
+                    <div class="profile-dropdown-menu" id="profileDropdownMenu">
+                        <div class="dropdown-item theme-switch-item">
+                            <div class="item-label-group">
+                                <span class="material-symbols-outlined">dark_mode</span>
+                                <span>Theme</span>
+                            </div>
+                            <?php renderDarkModeToggle(); ?>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item logout-item" href="?logout=1">
+                            <span class="material-symbols-outlined">logout</span>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>

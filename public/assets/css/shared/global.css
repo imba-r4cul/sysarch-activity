@@ -240,33 +240,90 @@ body.dark-theme .no-data {
     color: #6b7080 !important;
 }
 
-/* ── Dark Mode Toggle Button ── */
+/* ── Dark Mode Toggle Button (Pill Switch) ── */
 .dark-mode-toggle {
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 8px !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: #ffffff !important;
+    position: relative !important;
+    width: 48px !important;
+    height: 24px !important;
+    background-color: #ececec !important; /* light gray track background */
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    border-radius: 20px !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06) !important;
+    transition: background-color 0.3s ease, border-color 0.3s ease !important;
     display: inline-flex !important;
     align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    transition: transform 0.2s ease, background-color 0.2s ease !important;
-    padding: 0 !important;
-    font-size: 0 !important;
-    line-height: 1 !important;
-    box-shadow: none !important;
     outline: none !important;
+    overflow: visible !important;
+    vertical-align: middle !important;
+    margin: 0 !important;
 }
+
 .dark-mode-toggle:hover {
-    background: rgba(255, 255, 255, 0.16) !important;
-    transform: translateY(-1px) !important;
+    background-color: #e2e8f0 !important;
+    transform: none !important;
 }
-.dark-mode-toggle .material-symbols-outlined {
-    font-size: 18px !important;
-    color: #ffffff !important;
-    display: inline-block !important;
+
+.dark-mode-toggle .switch-knob {
+    position: absolute !important;
+    left: 2px !important;
+    width: 18px !important;
+    height: 18px !important;
+    border-radius: 50% !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Light Mode Icons */
+.dark-mode-toggle .switch-knob .sun-icon {
+    font-size: 13px !important;
+    color: #9ca3af !important; /* light grey sun in dark mode */
+    font-weight: 800 !important;
+    position: absolute !important;
+    transition: opacity 0.25s ease, transform 0.25s ease !important;
+    opacity: 0 !important;
+    transform: scale(0) !important;
+}
+
+.dark-mode-toggle .switch-knob .moon-icon {
+    font-size: 13px !important;
+    color: #0f172a !important; /* dark slate moon in light mode */
+    font-weight: 800 !important;
+    position: absolute !important;
+    transition: opacity 0.25s ease, transform 0.25s ease !important;
+    opacity: 1 !important;
+    transform: scale(1) !important;
+}
+
+/* Dark Mode styles applied when dark-theme is active */
+body.dark-theme .dark-mode-toggle {
+    background-color: #ececec !important; /* Light grey track background in dark mode too */
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+body.dark-theme .dark-mode-toggle:hover {
+    background-color: #e2e8f0 !important;
+}
+
+body.dark-theme .dark-mode-toggle .switch-knob {
+    transform: translateX(26px) !important; /* perfect slide to right */
+    background-color: #ffffff !important; /* keep knob white/light grey */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+}
+
+body.dark-theme .dark-mode-toggle .switch-knob .sun-icon {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+}
+
+body.dark-theme .dark-mode-toggle .switch-knob .moon-icon {
+    opacity: 0 !important;
+    transform: scale(0) !important;
 }
 
 
