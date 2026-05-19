@@ -98,3 +98,22 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   INDEX `idx_user_id` (`user_id`),
   INDEX `idx_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- System settings table
+CREATE TABLE IF NOT EXISTS `system_settings` (
+  `setting_key` VARCHAR(100) NOT NULL,
+  `setting_value` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`setting_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT IGNORE INTO `system_settings` (`setting_key`, `setting_value`) VALUES ('reservations_enabled', '1');
+
+-- Lab software table
+CREATE TABLE IF NOT EXISTS `lab_software` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `lab` VARCHAR(100) NOT NULL,
+  `software_name` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_lab_software` (`lab`, `software_name`),
+  INDEX `idx_lab` (`lab`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
