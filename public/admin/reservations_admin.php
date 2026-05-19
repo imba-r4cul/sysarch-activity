@@ -2,6 +2,7 @@
 session_start();
 require_once '../../config/database.php';
 require_once '../includes/helpers.php';
+require_once '../includes/dark_mode.php';
 
 // Guard: admin only
 if (!isset($_SESSION['admin_id'])) {
@@ -37,6 +38,19 @@ if ($r) {
 $r = $conn->query("SELECT COUNT(*) AS c FROM reservations WHERE status='Rejected'");
 if ($r) {
     $rejectedCount = (int) $r->fetch_assoc()['c'];
+}
+
+// ── Handle toggle reservation system ──
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'toggle_reservations') {
+    $newVal = ($_POST['enabled'] ?? '1') === '1' ? '1' : '0';
+    $stmt = $conn->prepare("UPDATE system_settings SET setting_value = ? WHERE setting_key = 'reservations_enabled'");
+    if ($stmt) {
+        $stmt->bind_param('s', $newVal);
+        $stmt->execute();
+        $stmt->close();
+    }
+    header('Location: reservations_admin.php');
+    exit;
 }
 
 // ── Handle Approve/Reject POST actions ──
@@ -105,6 +119,7 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/shared/global.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/shared/navbar.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/admin/reservations_admin.css?v=<?= time() ?>">
 </head>
@@ -125,6 +140,8 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
                 <a class="nav-link" href="active_sessions.php">Active Sessions</a>
                 <a class="nav-link" href="leaderboard.php">Leaderboard</a>
                 <a class="nav-link active" href="reservations_admin.php">Reservations</a>
+                <a class="nav-link" href="software_upload.php">Software & Labs</a>
+                <?php renderDarkModeToggle(); ?>
                 <a class="nav-logout" href="reservations_admin.php?logout=1">Logout</a>
             </div>
         </div>
@@ -145,9 +162,26 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
     </script>
 
     <main>
-        <header class="history-header">
-            <div>
-                <h1>Reservation Management</h1>
+        <header class="history-header" style="align-items: center; margin-bottom: 25px;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <h1 style="margin-top: 0; margin-bottom: 0; line-height: 1.1;">Reservation Management</h1>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <?php
+                    $resEnabled = '1';
+                    $r = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'reservations_enabled'");
+                    if ($r && $row = $r->fetch_assoc()) { $resEnabled = $row['setting_value']; }
+                    ?>
+                    <form method="POST" style="display:flex;align-items:center;gap:10px;margin:0;">
+                        <input type="hidden" name="action" value="toggle_reservations">
+                        <input type="hidden" name="enabled" value="<?= $resEnabled === '1' ? '0' : '1' ?>">
+                        <span style="font-size:13px;font-weight:600;color:<?= $resEnabled === '1' ? '#2e7d32' : '#c62828' ?>;">
+                            Reservations: <?= $resEnabled === '1' ? 'Enabled' : 'Disabled' ?>
+                        </span>
+                        <button type="submit" style="position:relative;width:48px;height:26px;border-radius:13px;border:none;cursor:pointer;transition:all 0.3s;background:<?= $resEnabled === '1' ? '#4caf50' : '#ccc' ?>;" title="Toggle Reservations">
+                            <span style="position:absolute;top:3px;<?= $resEnabled === '1' ? 'left:25px' : 'left:3px' ?>;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);transition:all 0.3s;"></span>
+                        </button>
+                    </form>
+                </div>
             </div>
             <div class="stats-container">
                 <div class="stat-card">
@@ -605,6 +639,7 @@ unset($_SESSION['res_success'], $_SESSION['res_error']);
             });
         })();
     </script>
+<?php renderDarkModeScript(); ?>
 </body>
 
 </html>

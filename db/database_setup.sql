@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS `sit_in_records` (
   `last_name` VARCHAR(100) NOT NULL,
   `purpose` VARCHAR(255) NOT NULL,
   `lab` VARCHAR(100) NOT NULL,
+  `pc_number` INT NULL DEFAULT NULL,
   `time_in` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `time_out` TIMESTAMP NULL DEFAULT NULL,
   `status` ENUM('Active', 'Completed') DEFAULT 'Active',

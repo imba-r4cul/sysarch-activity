@@ -56,10 +56,17 @@ $stmt->close();
 $studentName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
 $studentId = $user['id_number'] ?? '';
 
+// Check if reservations are enabled
+$reservationsEnabled = true;
+$rCheck = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'reservations_enabled'");
+if ($rCheck && $rRow = $rCheck->fetch_assoc()) {
+    $reservationsEnabled = $rRow['setting_value'] === '1';
+}
+
 // Handle reservation form
 $success = '';
 $error = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $reservationsEnabled) {
     $purpose = trim($_POST['purpose'] ?? '');
     $lab = trim($_POST['lab'] ?? '');
     $pc_number = isset($_POST['pc_number']) ? (int)$_POST['pc_number'] : null;
@@ -131,6 +138,14 @@ $stmt->close();
                 <?= esc($error) ?>
             </div>
         <?php endif; ?>
+
+        <?php if (!$reservationsEnabled): ?>
+            <div style="background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%); border: 1.5px solid #fc8181; border-radius: 16px; padding: 2.5rem; text-align: center; margin-bottom: 2rem;">
+                <span class="material-symbols-outlined" style="font-size: 56px; color: #c53030; display: block; margin-bottom: 12px;">lock</span>
+                <h2 style="color: #c53030; font-size: 1.4rem; font-weight: 700; margin-bottom: 8px;">Reservations Temporarily Disabled</h2>
+                <p style="color: #742a2a; font-size: 14px; max-width: 480px; margin: 0 auto; line-height: 1.6;">Sit-in reservations have been temporarily disabled by the laboratory administrator. Please check back later or contact your instructor for assistance.</p>
+            </div>
+        <?php else: ?>
 
         <form method="POST" action="reservations.php" id="reservationForm">
             <div class="bento-grid">
@@ -248,6 +263,7 @@ $stmt->close();
                 </div>
             </div>
         </form>
+        <?php endif; ?>
     </div>
 
     <?php renderStudentNotificationScript($notificationFeatureEnabled); ?>

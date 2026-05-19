@@ -48,7 +48,11 @@ function renderStudentNavbar($activePage, $newAnnCount)
                 <a class="<?= esc(studentNavLinkClass($activePage, 'home')) ?>" href="student_dashboard.php">Home</a>
                 <a class="<?= esc(studentNavLinkClass($activePage, 'profile')) ?>" href="edit_profile.php">Edit Profile</a>
                 <a class="<?= esc(studentNavLinkClass($activePage, 'reservations')) ?>" href="reservations.php">Reservations</a>
+                <a class="<?= esc(studentNavLinkClass($activePage, 'software')) ?>" href="software_availability.php">Software & Labs</a>
                 <a class="<?= esc(studentNavLinkClass($activePage, 'history')) ?>" href="sit_in_history_student.php">Sit-in History</a>
+                <button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode" aria-label="Toggle dark mode">
+                    <span class="material-symbols-outlined" id="darkModeIcon">dark_mode</span>
+                </button>
                 <a class="nav-logout" href="<?= esc($currentPage) ?>?logout=1">Log out</a>
             </div>
         </div>
@@ -288,6 +292,32 @@ function renderStudentNotificationScript($notificationFeatureEnabled)
             if (notificationFeatureEnabled) {
                 window.setInterval(loadNotifications, 60000);
             }
+        })();
+    </script>
+    <script>
+        (function() {
+            var toggle = document.getElementById('darkModeToggle');
+            var icon = document.getElementById('darkModeIcon');
+            if (!toggle || !icon) return;
+
+            function applyTheme(dark) {
+                if (dark) {
+                    document.body.classList.add('dark-theme');
+                    icon.textContent = 'light_mode';
+                } else {
+                    document.body.classList.remove('dark-theme');
+                    icon.textContent = 'dark_mode';
+                }
+            }
+
+            var savedTheme = localStorage.getItem('theme');
+            applyTheme(savedTheme === 'dark');
+
+            toggle.addEventListener('click', function() {
+                var isDark = document.body.classList.contains('dark-theme');
+                localStorage.setItem('theme', isDark ? 'light' : 'dark');
+                applyTheme(!isDark);
+            });
         })();
     </script>
     <?php

@@ -66,6 +66,8 @@ h1 {
     min-width: 160px;
     display: flex;
     flex-direction: column;
+    position: relative;
+    overflow: hidden;
 }
 
 .stat-label {
@@ -464,17 +466,6 @@ tr:hover td {
 
 .view-feedbacks-btn:active {
     transform: translateY(0) scale(0.98);
-}
-
-.view-feedbacks-btn.export-btn {
-    background-color: var(--primary-fixed);
-    color: var(--on-primary-fixed);
-    border-color: var(--primary);
-}
-
-.view-feedbacks-btn.export-btn:hover {
-    background-color: var(--primary);
-    color: #fff;
 }
 
 

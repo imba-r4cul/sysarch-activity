@@ -2,6 +2,7 @@
 session_start();
 require_once '../../config/database.php';
 require_once '../includes/helpers.php';
+require_once '../includes/dark_mode.php';
 
 if (!isset($_SESSION['admin_id'])) {
     header('Location: ../auth/index.php');
@@ -166,6 +167,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/shared/global.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/shared/navbar.css">
     <link rel="stylesheet" href="../assets/css/admin/admin_dashboard.css">
     <link rel="stylesheet" href="../assets/css/admin/sit_in_history_admin.css">
@@ -183,10 +185,11 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                 </button>
                 <a class="nav-link" href="admin_dashboard.php">Home</a>
                 <a class="nav-link" href="student_information.php">Student Information</a>
-                <a class="nav-link" href="active_sessions.php">Active Sessions</a>
-                <a class="nav-link active" href="sit_in_history_admin.php">Sit-in History</a>
+                <a class="nav-link active" href="active_sessions.php">Active Sessions</a>
                 <a class="nav-link" href="leaderboard.php">Leaderboard</a>
                 <a class="nav-link" href="reservations_admin.php">Reservations</a>
+                <a class="nav-link" href="software_upload.php">Software & Labs</a>
+                <?php renderDarkModeToggle(); ?>
                 <a class="nav-logout" href="sit_in_history_admin.php?logout=1">Logout</a>
             </div>
         </div>
@@ -213,12 +216,18 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
             </div>
             <div class="stats-container">
                 <div class="stat-card">
-                    <span class="stat-label">Total Records</span>
-                    <span class="stat-value primary" id="totalRecordsValue"><?= number_format($totalRecords) ?></span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 12px;">
+                        <span class="stat-label" style="margin-bottom: 0;">Total Records</span>
+                        <span class="material-symbols-outlined" style="font-size: 22px; color: var(--primary); opacity: 0.85;">history</span>
+                    </div>
+                    <span class="stat-value primary" id="totalRecordsValue" style="text-align: center; margin-top: 8px;"><?= number_format($totalRecords) ?></span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-label">Filtered Results</span>
-                    <span class="stat-value" id="filteredRecordsValue"><?= number_format(count($historyRecords)) ?></span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 12px;">
+                        <span class="stat-label" style="margin-bottom: 0;">Filtered Results</span>
+                        <span class="material-symbols-outlined" style="font-size: 22px; color: var(--on-surface-variant); opacity: 0.85;">filter_alt</span>
+                    </div>
+                    <span class="stat-value" id="filteredRecordsValue" style="text-align: center; margin-top: 8px;"><?= number_format(count($historyRecords)) ?></span>
                 </div>
             </div>
         </header>
@@ -677,6 +686,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
 
         })();
     </script>
+    <?php renderDarkModeScript(); ?>
 </body>
 
 </html>

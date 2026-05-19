@@ -349,7 +349,7 @@ tr:hover td {
     padding: 10px 40px 10px 12px; /* Extra padding-right for icon */
     border-radius: 8px;
     border: 1px solid var(--outline-variant);
-    background-color: #ffffff;
+    background-color: var(--surface-container-lowest, #ffffff);
     color: var(--on-surface);
     resize: none;
     transition: border-color 0.2s, box-shadow 0.2s;

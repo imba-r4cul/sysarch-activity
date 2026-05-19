@@ -2,6 +2,7 @@
 session_start();
 require_once '../../config/database.php';
 require_once '../includes/helpers.php';
+require_once '../includes/dark_mode.php';
 
 // Guard: admin only
 if (!isset($_SESSION['admin_id'])) {
@@ -83,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sitin_id_number'])) {
     $sitinIdNumber = trim($_POST['sitin_id_number']);
     $sitinPurpose = trim($_POST['sitin_purpose']);
     $sitinLab = trim($_POST['sitin_lab']);
+    $sitinPcNumber = isset($_POST['sitin_pc_number']) && $_POST['sitin_pc_number'] !== '' ? (int)$_POST['sitin_pc_number'] : null;
 
     // Get user details from id_number
     $stmt = $conn->prepare("SELECT id, first_name, last_name FROM users WHERE id_number = ?");
@@ -94,9 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sitin_id_number'])) {
             $uid = (int) $user['id'];
             $firstName = (string) $user['first_name'];
             $lastName = (string) $user['last_name'];
-            $ins = $conn->prepare("INSERT INTO sit_in_records (user_id, id_number, first_name, last_name, purpose, lab) VALUES (?, ?, ?, ?, ?, ?)");
+            $ins = $conn->prepare("INSERT INTO sit_in_records (user_id, id_number, first_name, last_name, purpose, lab, pc_number) VALUES (?, ?, ?, ?, ?, ?, ?)");
             if ($ins) {
-                $ins->bind_param('isssss', $uid, $sitinIdNumber, $firstName, $lastName, $sitinPurpose, $sitinLab);
+                $ins->bind_param('isssssi', $uid, $sitinIdNumber, $firstName, $lastName, $sitinPurpose, $sitinLab, $sitinPcNumber);
                 $ins->execute();
                 $ins->close();
             }
@@ -130,6 +132,7 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/shared/global.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/shared/navbar.css">
     <link rel="stylesheet" href="../assets/css/admin/admin_dashboard.css">
 </head>
@@ -150,6 +153,8 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
                 <a class="nav-link" href="active_sessions.php">Active Sessions</a>
                 <a class="nav-link" href="leaderboard.php">Leaderboard</a>
                 <a class="nav-link" href="reservations_admin.php">Reservations</a>
+                <a class="nav-link" href="software_upload.php">Software & Labs</a>
+                <?php renderDarkModeToggle(); ?>
                 <a class="nav-logout" href="admin_dashboard.php?logout=1">Logout</a>
             </div>
         </div>
@@ -397,6 +402,8 @@ $purposePalette = ['#002a5c', '#0c458b', '#84aefa', '#d7e3ff', '#004085', '#722b
             });
         });
     </script>
+
+    <?php renderDarkModeScript(); ?>
 
 </body>
 

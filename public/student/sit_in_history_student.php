@@ -57,6 +57,35 @@ if ($stmt) {
     $stmt->close();
 }
 
+// ── User Sit-in Summary Stats ──
+$totalHours = 0;
+$numSessions = 0;
+$avgDuration = 0;
+$longestSession = 0;
+
+$statSql = "
+    SELECT 
+        COUNT(*) AS num_sessions,
+        COALESCE(SUM(TIMESTAMPDIFF(MINUTE, time_in, time_out)) / 60, 0) AS total_hours,
+        COALESCE(AVG(TIMESTAMPDIFF(MINUTE, time_in, time_out)) / 60, 0) AS avg_duration,
+        COALESCE(MAX(TIMESTAMPDIFF(MINUTE, time_in, time_out)) / 60, 0) AS longest_session
+    FROM sit_in_records
+    WHERE user_id = ? AND status = 'Completed' AND time_out IS NOT NULL
+";
+$statStmt = $conn->prepare($statSql);
+if ($statStmt) {
+    $statStmt->bind_param('i', $userId);
+    $statStmt->execute();
+    $statResult = $statStmt->get_result();
+    if ($statRow = $statResult->fetch_assoc()) {
+        $numSessions = (int) $statRow['num_sessions'];
+        $totalHours = (float) $statRow['total_hours'];
+        $avgDuration = (float) $statRow['avg_duration'];
+        $longestSession = (float) $statRow['longest_session'];
+    }
+    $statStmt->close();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -70,6 +99,8 @@ if ($stmt) {
     <link rel="stylesheet" href="../assets/css/shared/navbar.css">
     <link rel="stylesheet" href="../assets/css/student/student_dashboard.css">
     <link rel="stylesheet" href="../assets/css/student/sit_in_history_student.css">
+    <!-- Material Symbols Outlined -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet">
     <!-- FontAwesome CDN for standard icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -84,20 +115,49 @@ if ($stmt) {
             </div>
         </header>
 
+        <!-- User Sit-in Summary -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+            <!-- Total Hours -->
+            <div style="background: var(--surface-container, #fff); color: var(--on-surface, #1e293b); border: 1px solid var(--outline-variant, #e0e0e0); border-top: 4px solid var(--primary, #002a5c); border-radius: 12px; padding: 1.25rem 1.5rem; position: relative; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                <div style="font-size: 12px; font-weight: 600; color: var(--on-surface-variant, #64748b); text-transform: uppercase; letter-spacing: 0.5px;">Total Sit-in Hours</div>
+                <div style="font-size: 2rem; font-weight: 800; margin-top: 4px; color: var(--primary, #002a5c);"><?= number_format($totalHours, 1) ?></div>
+                <span class="material-symbols-outlined" style="position: absolute; top: 1.25rem; right: 1.5rem; font-size: 28px; color: var(--primary, #002a5c); opacity: 0.85;">schedule</span>
+            </div>
+            <!-- Number of Sessions -->
+            <div style="background: var(--surface-container, #fff); color: var(--on-surface, #1e293b); border: 1px solid var(--outline-variant, #e0e0e0); border-top: 4px solid #2e7d32; border-radius: 12px; padding: 1.25rem 1.5rem; position: relative; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                <div style="font-size: 12px; font-weight: 600; color: var(--on-surface-variant, #64748b); text-transform: uppercase; letter-spacing: 0.5px;">Number of Sessions</div>
+                <div style="font-size: 2rem; font-weight: 800; margin-top: 4px; color: #2e7d32;"><?= $numSessions ?></div>
+                <span class="material-symbols-outlined" style="position: absolute; top: 1.25rem; right: 1.5rem; font-size: 28px; color: #2e7d32; opacity: 0.85;">counter_7</span>
+            </div>
+            <!-- Average Duration -->
+            <div style="background: var(--surface-container, #fff); color: var(--on-surface, #1e293b); border: 1px solid var(--outline-variant, #e0e0e0); border-top: 4px solid #e65100; border-radius: 12px; padding: 1.25rem 1.5rem; position: relative; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                <div style="font-size: 12px; font-weight: 600; color: var(--on-surface-variant, #64748b); text-transform: uppercase; letter-spacing: 0.5px;">Average Session Duration</div>
+                <div style="font-size: 2rem; font-weight: 800; margin-top: 4px; color: #e65100;"><?= number_format($avgDuration, 2) ?></div>
+                <span class="material-symbols-outlined" style="position: absolute; top: 1.25rem; right: 1.5rem; font-size: 28px; color: #e65100; opacity: 0.85;">avg_pace</span>
+            </div>
+            <!-- Longest Session -->
+            <div style="background: var(--surface-container, #fff); color: var(--on-surface, #1e293b); border: 1px solid var(--outline-variant, #e0e0e0); border-top: 4px solid #7b1fa2; border-radius: 12px; padding: 1.25rem 1.5rem; position: relative; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                <div style="font-size: 12px; font-weight: 600; color: var(--on-surface-variant, #64748b); text-transform: uppercase; letter-spacing: 0.5px;">Longest Session</div>
+                <div style="font-size: 2rem; font-weight: 800; margin-top: 4px; color: #7b1fa2;"><?= number_format($longestSession, 2) ?></div>
+                <span class="material-symbols-outlined" style="position: absolute; top: 1.25rem; right: 1.5rem; font-size: 28px; color: #7b1fa2; opacity: 0.85;">timer</span>
+            </div>
+        </div>
+
         <section class="table-container">
             <div class="scrollable-table">
                 <table>
                     <thead>
                         <tr>
                             <th class="text-center">SIT ID NUMBER</th>
-                            <!-- <th>ID NUMBER</th> -->
-                            <!-- <th>NAME</th> -->
                             <th>PURPOSE</th>
                             <th>SIT LAB</th>
                             <th class="text-center">SESSION #</th>
+                            <th class="text-center">PC NO.</th>
                             <th>STATUS</th>
-                            <th>STARTED AT</th>
-                            <th>ENDED AT</th>
+                            <th>DATE</th>
+                            <th>TIME-IN</th>
+                            <th>TIME-OUT</th>
+                            <th class="text-center">DURATION</th>
                             <th>FEEDBACK</th>
                         </tr>
                     </thead>
@@ -110,7 +170,7 @@ if ($stmt) {
                         ?>
                         <?php if (empty($historyRecords)): ?>
                             <tr id="historyNoDataRow">
-                                <td colspan="9" class="no-data">No sit-in history available</td>
+                                <td colspan="11" class="no-data">No sit-in history available</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($historyRecords as $idx => $record):
@@ -123,31 +183,39 @@ if ($stmt) {
                                 } elseif (strcasecmp($status, 'Ended') === 0) {
                                     $statusClass = 'status-ended';
                                 }
+                                // Calculate duration
+                                $duration = '—';
+                                if (!empty($record['time_in']) && !empty($record['time_out'])) {
+                                    $tin = strtotime($record['time_in']);
+                                    $tout = strtotime($record['time_out']);
+                                    if ($tin && $tout && $tout > $tin) {
+                                        $durationHrs = ($tout - $tin) / 3600;
+                                        $duration = number_format($durationHrs, 2) . ' hrs';
+                                    }
+                                }
+                                // Extract date only
+                                $dateOnly = !empty($record['time_in']) ? date('M d, Y', strtotime($record['time_in'])) : '—';
+                                $timeInOnly = !empty($record['time_in']) ? date('h:i A', strtotime($record['time_in'])) : '—';
+                                $timeOutOnly = !empty($record['time_out']) ? date('h:i A', strtotime($record['time_out'])) : '—';
                             ?>
                                 <tr class="data-row">
                                     <td class="sit-id-col text-center"><?= esc($record['id']) ?></td>
-                                    <!-- <td><?= esc($record['id_number']) ?></td> -->
-                                    <!-- <td>
-                                        <div class="name-cell">
-                                            <div class="avatar" style="background-color: <?= esc($style['bg']) ?>; color: <?= esc($style['fg']) ?>;">
-                                                <?= esc(studentInitials($record['first_name'], $record['last_name'])) ?>
-                                            </div>
-                                            <span class="student-name"><?= esc(strtoupper($displayName)) ?></span>
-                                        </div>
-                                    </td> -->
                                     <td><?= esc($record['purpose']) ?></td>
                                     <td><span class="lab-badge"><?= esc($record['lab']) ?></span></td>
                                     <td class="text-center"><?= esc($record['session_no']) ?></td>
+                                    <td class="text-center" style="color: var(--outline); font-style: italic;">—</td>
                                     <td>
                                         <div class="status-badge <?= $statusClass ?>">
                                             <span class="dot"></span>
                                             <?= esc(strtoupper($status)) ?>
                                         </div>
                                     </td>
-                                    <td class="time-cell"><?= esc(formatDateTime($record['time_in'] ?? null)) ?></td>
+                                    <td class="time-cell"><?= esc($dateOnly) ?></td>
+                                    <td class="time-cell"><?= esc($timeInOnly) ?></td>
                                     <td class="time-cell<?= empty($record['time_out']) ? ' muted' : '' ?>">
-                                        <?= esc(formatDateTime($record['time_out'] ?? null)) ?>
+                                        <?= esc($timeOutOnly) ?>
                                     </td>
+                                    <td class="text-center" style="font-weight: 600;"><?= $duration ?></td>
                                     <td class="feedback-cell">
                                         <?php if (!empty($record['feedback'])): ?>
                                             <div class="feedback-display" id="fb-display-<?= esc($record['id']) ?>">

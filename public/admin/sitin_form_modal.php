@@ -44,6 +44,10 @@
                         <option value="544">544</option>
                     </select>
                 </div>
+                <div class="modal-field">
+                    <label for="sitin_pc_number">PC Number (Optional)</label>
+                    <input type="number" id="sitin_pc_number" name="sitin_pc_number" min="1" max="100" placeholder="e.g. 15">
+                </div>
             </div>
             <div class="modal-actions">
                 <button type="button" class="modal-btn btn-cancel" onclick="closeModal('sitinModal')">Close</button>
@@ -59,6 +63,7 @@
         document.getElementById('sitin_student_name').value = '';
         document.getElementById('sitin_purpose').selectedIndex = 0;
         document.getElementById('sitin_lab').selectedIndex = 0;
+        document.getElementById('sitin_pc_number').value = '';
         document.getElementById('sitin_sessions').value = 30;
         openModal('sitinModal');
     }

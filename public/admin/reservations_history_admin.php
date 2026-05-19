@@ -2,6 +2,7 @@
 session_start();
 require_once '../../config/database.php';
 require_once '../includes/helpers.php';
+require_once '../includes/dark_mode.php';
 
 // Guard: admin only
 if (!isset($_SESSION['admin_id'])) {
@@ -65,6 +66,7 @@ if ($res) {
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/shared/global.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/shared/navbar.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/admin/reservations_admin.css?v=<?= time() ?>">
 </head>
@@ -85,6 +87,8 @@ if ($res) {
                 <a class="nav-link" href="active_sessions.php">Active Sessions</a>
                 <a class="nav-link" href="leaderboard.php">Leaderboard</a>
                 <a class="nav-link active" href="reservations_admin.php">Reservations</a>
+                <a class="nav-link" href="software_upload.php">Software & Labs</a>
+                <?php renderDarkModeToggle(); ?>
                 <a class="nav-logout" href="reservations_history_admin.php?logout=1">Logout</a>
             </div>
         </div>
@@ -467,6 +471,7 @@ if ($res) {
             applyFilters();
         })();
     </script>
+<?php renderDarkModeScript(); ?>
 </body>
 
 </html>

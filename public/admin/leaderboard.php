@@ -2,6 +2,7 @@
 session_start();
 require_once '../../config/database.php';
 require_once '../includes/helpers.php';
+require_once '../includes/dark_mode.php';
 
 // Guard: admin only
 if (!isset($_SESSION['admin_id'])) {
@@ -55,6 +56,7 @@ usort($students, function($a, $b) {
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/shared/global.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/shared/navbar.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/admin/admin_dashboard.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/admin/leaderboard.css?v=<?= time() ?>">
@@ -76,6 +78,8 @@ usort($students, function($a, $b) {
                 <a class="nav-link" href="active_sessions.php">Active Sessions</a>
                 <a class="nav-link active" href="leaderboard.php">Leaderboard</a>
                 <a class="nav-link" href="reservations_admin.php">Reservations</a>
+                <a class="nav-link" href="software_upload.php">Software & Labs</a>
+                <?php renderDarkModeToggle(); ?>
                 <a class="nav-logout" href="leaderboard.php?logout=1">Logout</a>
             </div>
         </div>
@@ -168,5 +172,6 @@ usort($students, function($a, $b) {
             });
         });
     </script>
+<?php renderDarkModeScript(); ?>
 </body>
 </html>
