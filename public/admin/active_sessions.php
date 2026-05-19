@@ -107,6 +107,7 @@ $sql = "
         sr.last_name,
         sr.purpose,
         sr.lab,
+        sr.pc_number,
         sr.status,
         sr.time_in,
         (
@@ -250,6 +251,7 @@ unset($_SESSION['current_sitin_flash']);
                             <th>Name</th>
                             <th>Purpose</th>
                             <th>Sit Lab</th>
+                            <th style="text-align: center;">PC</th>
                             <th style="text-align: center;">Session</th>
                             <th style="text-align: center;">Status</th>
                             <th class="text-right">Actions</th>
@@ -274,7 +276,8 @@ unset($_SESSION['current_sitin_flash']);
                                     ($record['id_number'] ?? '') . ' ' .
                                     $displayName . ' ' .
                                     ($record['purpose'] ?? '') . ' ' .
-                                    ($record['lab'] ?? '')
+                                    ($record['lab'] ?? '') . ' ' .
+                                    ($record['pc_number'] ?? '')
                                 ));
                             ?>
                             <tr class="data-row" data-search="<?= esc($searchBlob) ?>">
@@ -290,6 +293,7 @@ unset($_SESSION['current_sitin_flash']);
                                 </td>
                                 <td><?= esc($record['purpose']) ?></td>
                                 <td class="lab-text"><?= esc($record['lab']) ?></td>
+                                <td class="lab-text" style="text-align: center; font-weight: 600; color: var(--primary);"><?= esc($record['pc_number'] ?? 'N/A') ?></td>
                                 <td class="session-time" style="text-align: center;"><?= esc($record['session_no']) ?></td>
                                 <td style="text-align: center;">
                                     <span class="status-badge<?= ($record['status'] ?? '') === 'Completed' ? ' completed' : '' ?>">

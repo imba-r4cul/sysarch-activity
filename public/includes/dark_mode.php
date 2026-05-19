@@ -1,4 +1,11 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (isset($_SESSION['admin_name']) && $_SESSION['admin_name'] === 'CCS Admin') {
+    $_SESSION['admin_name'] = 'Admin';
+}
+
 /**
  * Renders a dark mode toggle button for the admin navbar.
  * Place this inside the .nav-links div, before the logout link.

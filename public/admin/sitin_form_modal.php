@@ -45,8 +45,8 @@
                     </select>
                 </div>
                 <div class="modal-field">
-                    <label for="sitin_pc_number">PC Number (Optional)</label>
-                    <input type="number" id="sitin_pc_number" name="sitin_pc_number" min="1" max="100" placeholder="e.g. 15">
+                    <label for="sitin_pc_number">PC Number</label>
+                    <input type="number" id="sitin_pc_number" name="sitin_pc_number" min="1" max="100" placeholder="e.g. 15" required>
                 </div>
             </div>
             <div class="modal-actions">

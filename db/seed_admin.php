@@ -11,7 +11,7 @@ require_once __DIR__ . '/../config/database.php';
 
 $username = 'admin';
 $password = 'admin123';
-$displayName = 'CCS Admin';
+$displayName = 'Admin';
 
 $hashed = password_hash($password, PASSWORD_DEFAULT);
 

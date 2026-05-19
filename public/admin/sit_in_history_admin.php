@@ -40,7 +40,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
     
     $whereSql = implode(' AND ', $whereClauses);
     $sql = "
-        SELECT sr.id, sr.id_number, sr.first_name, sr.last_name, sr.purpose, sr.lab, sr.status, sr.time_in, sr.time_out, sr.feedback
+        SELECT sr.id, sr.id_number, sr.first_name, sr.last_name, sr.purpose, sr.lab, sr.pc_number, sr.status, sr.time_in, sr.time_out, sr.feedback
         FROM sit_in_records sr
         WHERE $whereSql
         ORDER BY sr.time_in DESC
@@ -93,10 +93,10 @@ if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
     echo '</div>';
     echo '<table>'; 
     echo '<thead><tr>';
-    echo '<th>Record ID</th><th>ID Number</th><th>Name</th><th>Purpose</th><th>Lab</th><th>Status</th><th>Time In</th><th>Time Out</th><th>Feedback</th>';
+    echo '<th>Record ID</th><th>ID Number</th><th>Name</th><th>Purpose</th><th>Lab</th><th>PC</th><th>Status</th><th>Time In</th><th>Time Out</th><th>Feedback</th>';
     echo '</tr></thead><tbody>';
     if (count($rows) === 0) {
-        echo '<tr><td colspan="9">No records found.</td></tr>';
+        echo '<tr><td colspan="10">No records found.</td></tr>';
     } else {
         foreach ($rows as $row) {
             $name = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
@@ -106,6 +106,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
             echo '<td>' . esc($name) . '</td>';
             echo '<td>' . esc($row['purpose']) . '</td>';
             echo '<td>' . esc($row['lab']) . '</td>';
+            echo '<td>' . esc($row['pc_number'] ?? 'N/A') . '</td>';
             echo '<td class="status">' . esc($row['status']) . '</td>';
             echo '<td>' . esc(formatDateTime($row['time_in'] ?? null)) . '</td>';
             echo '<td>' . esc(formatDateTime($row['time_out'] ?? null)) . '</td>';
@@ -131,6 +132,7 @@ $sql = "
         sr.last_name,
         sr.purpose,
         sr.lab,
+        sr.pc_number,
         sr.status,
         sr.feedback,
         sr.time_in,
@@ -319,6 +321,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                             <th>NAME</th>
                             <th>PURPOSE</th>
                             <th>SIT LAB</th>
+                            <th class="text-center">PC</th>
                             <th class="text-center">SESSION #</th>
                             <th>STATUS</th>
                             <th>STARTED AT</th>
@@ -334,7 +337,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                         ?>
                         <?php if (empty($historyRecords)): ?>
                             <tr id="historyNoDataRow">
-                                <td colspan="9" class="no-data">No sit-in history available</td>
+                                <td colspan="10" class="no-data">No sit-in history available</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($historyRecords as $idx => $record):
@@ -346,6 +349,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                                     $displayName . ' ' .
                                     ($record['purpose'] ?? '') . ' ' .
                                     ($record['lab'] ?? '') . ' ' .
+                                    ($record['pc_number'] ?? '') . ' ' .
                                     ($record['status'] ?? '')
                                 ));
                                 $status = (string) ($record['status'] ?? 'Unknown');
@@ -375,6 +379,7 @@ if ($totalResult && ($totalRow = $totalResult->fetch_assoc())) {
                                     </td>
                                     <td><?= esc($record['purpose']) ?></td>
                                     <td><span class="lab-badge"><?= esc($record['lab']) ?></span></td>
+                                    <td class="text-center font-weight-bold" style="color: var(--primary);">PC <?= esc($record['pc_number'] ?? 'N/A') ?></td>
                                     <td class="text-center"><?= esc($record['session_no']) ?></td>
                                     <td>
                                         <div class="status-badge <?= $statusClass ?>">

@@ -17,9 +17,9 @@ body.dark-theme {
     color: #e0e2e8 !important;
 
     /* Custom tokens redefined for student dashboard in dark theme */
-    --dh-primary: #a3c7ff !important;
-    --dh-secondary: #ffb4ab !important;
-    --dh-tertiary: #ffb894 !important;
+    --dh-primary: #2563eb !important; /* Premium Accessible Deep Blue */
+    --dh-secondary: #b6171e !important; /* Premium Accessible Deep Red */
+    --dh-tertiary: #d97706 !important; /* Premium Dark Mode Gold/Amber */
     --dh-surface: #111318 !important;
     --dh-surface-container: #1e2128 !important;
     --dh-surface-container-low: #1a1d24 !important;
@@ -28,14 +28,20 @@ body.dark-theme {
     --dh-on-surface-variant: #c0c4cc !important;
     --dh-outline: #4d515d !important;
     --dh-outline-variant: #2d3139 !important;
+    --dh-secondary-fixed: #b6171e !important; /* Premium Deep Red container in dark mode */
+    --dh-on-secondary-fixed: #ffffff !important; /* Pristine White text */
+    --dh-tertiary-fixed-bg: rgba(217, 119, 6, 0.2) !important;
+    --dh-on-tertiary-fixed-variant: #ffb894 !important;
 
     /* General theme variables mapped for all pages in dark theme */
-    --primary: #a3c7ff !important;
-    --primary-container: #00458f !important;
-    --on-primary: #001b3f !important;
-    --secondary: #ffb4ab !important;
-    --on-secondary: #690005 !important;
-    --tertiary: #ffb894 !important;
+    --primary: #2563eb !important; /* Premium Accessible Deep Blue */
+    --primary-container: #1e3a8a !important; /* Deep Navy Blue container */
+    --on-primary: #ffffff !important; /* Pristine White text on primary */
+    --secondary: #b6171e !important; /* Premium Accessible Deep Red */
+    --on-secondary: #ffffff !important; /* Pristine White text on secondary */
+    --tertiary: #d97706 !important; /* Premium Dark Mode Gold/Amber */
+    --primary-fixed: #1e3a8a !important; /* Deep navy blue background in dark mode */
+    --on-primary-fixed: #ffffff !important; /* Pristine White text */
     --surface: #111318 !important;
     --surface-container-lowest: #0c0e12 !important;
     --surface-container-low: #17191d !important;
@@ -483,3 +489,66 @@ body.dark-theme .btn-secondary:hover {
     background: #2d3139 !important;
 }
 
+/* ── Premium High-Contrast Element Overrides in Dark Mode ── */
+
+/* Maintain clear high-contrast white text & icons on primary and secondary action elements */
+body.dark-theme .clear-btn,
+body.dark-theme .clear-btn *,
+body.dark-theme .sw-stat-chip,
+body.dark-theme .sw-stat-chip *,
+body.dark-theme .btn-primary,
+body.dark-theme .btn-primary *,
+body.dark-theme .sw-btn-primary,
+body.dark-theme .sw-btn-primary *,
+body.dark-theme .modal-btn.btn-confirm,
+body.dark-theme .modal-btn.btn-confirm *,
+body.dark-theme .sw-btn-danger,
+body.dark-theme .sw-btn-danger * {
+    color: #ffffff !important;
+}
+
+/* Software & Lab Management status chip dynamic styling overrides */
+body.dark-theme .sw-stat-chip {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Premium Success & Error banners/messages dark mode overrides */
+body.dark-theme .sw-msg-success,
+body.dark-theme #success-message,
+body.dark-theme .res-msg.success {
+    background: rgba(46, 125, 50, 0.15) !important;
+    color: #81c784 !important;
+    border: 1px solid rgba(74, 179, 79, 0.3) !important;
+}
+
+body.dark-theme .sw-msg-error,
+body.dark-theme .res-msg.error {
+    background: rgba(198, 40, 40, 0.15) !important;
+    color: #e57373 !important;
+    border: 1px solid rgba(239, 83, 80, 0.3) !important;
+}
+
+/* Premium Outline Danger Button (e.g. sw-btn-danger outline style) dark mode overrides */
+body.dark-theme .sw-btn-danger {
+    background: transparent !important;
+    border: 1.5px solid var(--secondary) !important;
+    color: var(--secondary) !important;
+    transition: all 0.2s ease !important;
+}
+body.dark-theme .sw-btn-danger:hover {
+    background: rgba(182, 23, 30, 0.15) !important;
+    box-shadow: 0 0 10px rgba(182, 23, 30, 0.2) !important;
+}
+
+/* Reservations Disabled Banner Dark Mode Override */
+body.dark-theme #disabled-banner {
+    background: rgba(198, 40, 40, 0.15) !important;
+    border: 1px solid rgba(239, 83, 80, 0.3) !important;
+}
+body.dark-theme #disabled-banner span.material-symbols-outlined,
+body.dark-theme #disabled-banner h2 {
+    color: #e57373 !important;
+}
+body.dark-theme #disabled-banner p {
+    color: #ffb4ab !important;
+}
