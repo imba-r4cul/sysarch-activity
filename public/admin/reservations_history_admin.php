@@ -30,7 +30,7 @@ if ($r) {
     $pendingCount = (int) $r->fetch_assoc()['c'];
 }
 
-$r = $conn->query("SELECT COUNT(*) AS c FROM reservations WHERE status='Approved'");
+$r = $conn->query("SELECT COUNT(*) AS c FROM reservations WHERE status IN ('Approved', 'Completed')");
 if ($r) {
     $approvedCount = (int) $r->fetch_assoc()['c'];
 }
@@ -40,14 +40,14 @@ if ($r) {
     $rejectedCount = (int) $r->fetch_assoc()['c'];
 }
 
-// ── Fetch reservations (Approved & Rejected only) ──
+// ── Fetch reservations (Approved, Rejected, Completed) ──
 $reservationsList = [];
 $q = "SELECT r.id, r.user_id, r.purpose, r.lab, r.pc_number, r.reservation_date, r.reservation_time, r.status, r.admin_note, r.created_at,
              u.id_number, u.first_name, u.last_name,
              (SELECT COUNT(*) + 1 FROM reservations r2 WHERE r2.id < r.id) as display_id
       FROM reservations r
       JOIN users u ON r.user_id = u.id
-      WHERE r.status IN ('Approved', 'Rejected')
+      WHERE r.status IN ('Approved', 'Rejected', 'Completed')
       ORDER BY r.created_at DESC";
 $res = $conn->query($q);
 if ($res) {
@@ -258,6 +258,9 @@ if ($res) {
                                     ($record['status'] ?? '')
                                 ));
                                 $status = (string) ($record['status'] ?? 'Approved');
+                                if ($status === 'Completed') {
+                                    $status = 'Approved';
+                                }
                                 $statusClass = 'status-approved';
                                 if ($status === 'Rejected') {
                                     $statusClass = 'status-rejected';

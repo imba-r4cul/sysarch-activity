@@ -94,10 +94,8 @@ function old($field, $default = '')
                 <h1 class="brand-title">College of Computer Studies Sit-in Monitoring System</h1>
             </div>
             <div class="nav-links">
-                <a class="nav-link" href="index.php">Home</a>
-                <a class="nav-link" href="#community">Community</a>
-                <a class="nav-link" href="#about">About</a>
                 <a class="nav-link" href="index.php">Login</a>
+                <a class="nav-link" href="leaderboards.php">Leaderboards</a>
                 <a class="nav-link active" href="register.php">Register</a>
             </div>
         </div>

@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - CCS</title>
+    <title>Login - CCS</title>
     <link rel="stylesheet" href="../assets/css/shared/global.css">
     <link rel="stylesheet" href="../assets/css/shared/navbar.css">
     <link rel="stylesheet" href="../assets/css/auth/auth.css">
@@ -93,10 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h1 class="brand-title">College of Computer Studies Sit-in Monitoring System</h1>
             </div>
             <div class="nav-links">
-                <a class="nav-link active" href="#home">Home</a>
-                <a class="nav-link" href="#community">Community</a>
-                <a class="nav-link" href="#about">About</a>
-                <a class="nav-link" href="#login">Login</a>
+                <a class="nav-link active" href="index.php">Login</a>
+                <a class="nav-link" href="leaderboards.php">Leaderboards</a>
                 <a class="nav-link" href="register.php">Register</a>
             </div>
         </div>
