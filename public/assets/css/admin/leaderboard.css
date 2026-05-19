@@ -113,4 +113,8 @@
     transform: scale(0.95);
 }
 
+.text-center {
+    text-align: center;
+}
+
 

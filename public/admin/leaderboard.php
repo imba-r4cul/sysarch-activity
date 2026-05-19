@@ -16,10 +16,11 @@ if (isset($_GET['logout'])) {
     exit;
 }
 
-// Fetch all students and calculate total hours
+// Fetch all students and calculate total hours and completed sessions dynamically
 $students = [];
 $sql = "
-    SELECT u.id, u.id_number, u.first_name, u.last_name, u.profile_image, u.earned_points, u.tasks_completed,
+    SELECT u.id, u.id_number, u.first_name, u.last_name, u.profile_image, u.earned_points,
+    COALESCE((SELECT COUNT(*) FROM sit_in_records WHERE user_id = u.id AND status = 'Completed'), 0) as tasks_completed,
     COALESCE((SELECT SUM(TIMESTAMPDIFF(MINUTE, time_in, time_out))/60 
               FROM sit_in_records 
               WHERE user_id = u.id AND time_out IS NOT NULL), 0) as total_hours
@@ -28,7 +29,7 @@ $sql = "
 $result = $conn->query($sql);
 if ($result) {
     while ($row = $result->fetch_assoc()) {
-        // Calculate weighted score: (points * 0.5) + (hours * 0.3) + (tasks * 0.2)
+        // Calculate weighted score: (points * 0.5) + (hours * 0.3) + (completed sessions * 0.2)
         $score = ($row['earned_points'] * 0.5) + ((float)$row['total_hours'] * 0.3) + ($row['tasks_completed'] * 0.2);
         $row['score'] = $score;
         $students[] = $row;
@@ -54,9 +55,9 @@ usort($students, function($a, $b) {
     <link rel="icon" type="image/x-icon" href="../assets/images/ccs.png">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/shared/navbar.css">
-    <link rel="stylesheet" href="../assets/css/admin/admin_dashboard.css">
-    <link rel="stylesheet" href="../assets/css/admin/leaderboard.css">
+    <link rel="stylesheet" href="../assets/css/shared/navbar.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/admin/admin_dashboard.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/admin/leaderboard.css?v=<?= time() ?>">
 </head>
 
 <body>
@@ -85,27 +86,26 @@ usort($students, function($a, $b) {
             <header class="page-header">
                 <div>
                     <h1 class="dashboard-title">Leaderboard</h1>
-                    <p class="dashboard-subtitle">Top Students based on Points, Sit-in Hours, and Tasks Completed.</p>
+                    <p class="dashboard-subtitle">Top Students based on Points, Sit-in Hours, and Sessions Completed.</p>
                 </div>
             </header>
             
             <div class="leaderboard-card">
                 <div class="leaderboard-header">
-                    <h3>Top Students - 2nd Semester</h3>
-                    <div class="current-badge">Current</div>
+                    <h3>Top Students</h3>
                 </div>
                 
                 <div class="table-responsive">
                     <table class="leaderboard-table">
                         <thead>
                             <tr>
-                                <th>Rank</th>
+                                <th class="text-center">Rank</th>
                                 <th>Student</th>
-                                <th>ID</th>
-                                <th>Earned Points</th>
-                                <th>Total Hours</th>
-                                <th>Tasks</th>
-                                <th>Score</th>
+                                <th class="text-center">ID</th>
+                                <th class="text-center">Earned Points</th>
+                                <th class="text-center">Total Hours</th>
+                                <th class="text-center">Session Completed</th>
+                                <th class="text-center">Score</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -116,7 +116,7 @@ usort($students, function($a, $b) {
                             <?php else: ?>
                                 <?php $rank = 1; foreach ($students as $student): ?>
                                     <tr class="<?= $rank <= 3 ? 'top-rank rank-' . $rank : '' ?>">
-                                        <td>
+                                        <td class="text-center">
                                             <?php if ($rank === 1): ?>
                                                 <span class="medal">🥇</span>
                                             <?php elseif ($rank === 2): ?>
@@ -130,11 +130,11 @@ usort($students, function($a, $b) {
                                         <td class="student-cell">
                                             <?= esc($student['first_name'] . ' ' . $student['last_name']) ?>
                                         </td>
-                                        <td><?= esc($student['id_number']) ?></td>
-                                        <td><?= (int)$student['earned_points'] ?></td>
-                                        <td><?= number_format($student['total_hours'], 2) ?>h</td>
-                                        <td><?= (int)$student['tasks_completed'] ?></td>
-                                        <td><strong><?= number_format($student['score'], 1) ?></strong></td>
+                                        <td class="text-center"><?= esc($student['id_number']) ?></td>
+                                        <td class="text-center"><?= (int)$student['earned_points'] ?></td>
+                                        <td class="text-center"><?= number_format($student['total_hours'], 2) ?>h</td>
+                                        <td class="text-center"><?= (int)$student['tasks_completed'] ?></td>
+                                        <td class="text-center"><strong><?= number_format($student['score'], 1) ?></strong></td>
                                     </tr>
                                 <?php $rank++; endforeach; ?>
                             <?php endif; ?>
